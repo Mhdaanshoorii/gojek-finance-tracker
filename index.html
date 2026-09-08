@@ -1,17 +1,15 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
 
-<title>Gojek Finance Tracker V5</title>
+<title>Gojek Finance Tracker V7</title>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
@@ -94,6 +92,10 @@ h1{
 h2{
   margin:0 0 14px;
   font-size:20px;
+}
+
+h3{
+  margin:15px 0 10px;
 }
 
 input,
@@ -256,99 +258,48 @@ button{
   margin-top:10px;
   font-size:11px;
   white-space:pre-wrap;
-  max-height:250px;
+  max-height:280px;
   overflow:auto;
-  display:none;
-}
-
-.success{
-  background:#e8f7ef;
-  color:#087f4e;
-  padding:10px;
-  border-radius:10px;
-  font-size:13px;
-  margin-top:10px;
 }
 
 @media(max-width:600px){
-
   .cards{
     grid-template-columns:1fr;
   }
-
-  .grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .actions{
-    flex-direction:column;
-  }
-
 }
-
 </style>
-
 </head>
-
 
 <body>
 
 <div class="container">
 
-
 <header>
-
 <h1>🛵 Gojek Finance Tracker</h1>
-
-<div class="sub">
-Catat pemasukan & pengeluaran driver
-</div>
-
+<div class="sub">Catat pemasukan & pengeluaran driver</div>
 </header>
-
-
-<!-- =========================
-     SUMMARY
-========================= -->
 
 <div class="cards">
 
 <div class="card">
 <small>📈 Pemasukan</small>
-<strong
-  class="green"
-  id="income"
->
-Rp 0
-</strong>
+<strong class="green" id="income">Rp 0</strong>
 </div>
 
 <div class="card">
 <small>📉 Pengeluaran</small>
-<strong
-  class="red"
-  id="expense"
->
-Rp 0
-</strong>
+<strong class="red" id="expense">Rp 0</strong>
 </div>
 
 <div class="card">
 <small>💰 Bersih</small>
-<strong
-  class="blue"
-  id="net"
->
-Rp 0
-</strong>
+<strong class="blue" id="net">Rp 0</strong>
 </div>
 
 </div>
 
 
-<!-- =========================
-     SCAN
-========================= -->
+<!-- SCAN -->
 
 <div class="box">
 
@@ -368,11 +319,7 @@ Rp 0
 🔎 Baca Screenshot
 </button>
 
-
-<div
-  id="status"
-  class="status"
->
+<div id="status" class="status">
 
 <div id="statusText">
 Menunggu screenshot...
@@ -385,21 +332,12 @@ Menunggu screenshot...
 </div>
 
 
-<!-- REVIEW -->
+<div id="review" class="review">
 
-<div
-  id="review"
-  class="review"
->
-
-<h3>
-🔍 Periksa Hasil Scan
-</h3>
+<h3>🔍 Periksa Hasil Scan</h3>
 
 <div class="note">
-
 Semua hasil bisa diedit sebelum disimpan.
-
 </div>
 
 <div id="reviewList"></div>
@@ -424,26 +362,16 @@ Batal
 
 </div>
 
-
 <div class="note">
+💡 Screenshot sebaiknya menampilkan seluruh transaksi.
+</div>
 
-💡 Screenshot harus menampilkan seluruh transaksi.
-Sistem membaca setiap bagian yang diawali nominal Rp.
+<div id="debug" class="debug"></div>
 
 </div>
 
 
-<div
-  id="debug"
-  class="debug"
-></div>
-
-</div>
-
-
-<!-- =========================
-     EXPENSE
-========================= -->
+<!-- EXPENSE -->
 
 <div class="box">
 
@@ -452,33 +380,25 @@ Sistem membaca setiap bagian yang diawali nominal Rp.
 <div class="grid">
 
 <div class="field">
-
 <label>Nominal</label>
-
 <input
   id="expenseAmount"
   type="number"
   inputmode="numeric"
-  placeholder="Contoh: 10000"
+  placeholder="10000"
 >
-
 </div>
 
-
 <div class="field">
-
 <label>Keterangan</label>
-
 <input
   id="expenseNote"
   type="text"
-  placeholder="Contoh: Bensin"
+  placeholder="Bensin"
 >
-
 </div>
 
 </div>
-
 
 <button
   id="addExpense"
@@ -490,9 +410,7 @@ Sistem membaca setiap bagian yang diawali nominal Rp.
 </div>
 
 
-<!-- =========================
-     HISTORY
-========================= -->
+<!-- HISTORY -->
 
 <div class="box">
 
@@ -509,30 +427,26 @@ Sistem membaca setiap bagian yang diawali nominal Rp.
 
 </div>
 
-
 </div>
 
 
 <script>
 
-
 /* =====================================================
-   STORAGE
+   DATA
 ===================================================== */
 
 const STORAGE_KEY =
-  "gojekFinanceTransactionsV5";
-
+  "gojekFinanceTransactionsV7";
 
 let transactions =
   loadData();
-
 
 let pending = [];
 
 
 /* =====================================================
-   ID
+   HELPER
 ===================================================== */
 
 function uid(){
@@ -541,9 +455,7 @@ function uid(){
     window.crypto &&
     crypto.randomUUID
   ){
-
     return crypto.randomUUID();
-
   }
 
   return Date.now() +
@@ -555,40 +467,22 @@ function uid(){
 }
 
 
-/* =====================================================
-   TANGGAL LOKAL INDONESIA
-===================================================== */
-
 function today(){
 
-  const d =
-    new Date();
+  const d = new Date();
 
-  const y =
-    d.getFullYear();
-
-  const m =
+  return d.getFullYear() +
+    "-" +
     String(
       d.getMonth()+1
-    ).padStart(2,"0");
-
-  const day =
+    ).padStart(2,"0") +
+    "-" +
     String(
       d.getDate()
     ).padStart(2,"0");
 
-  return y +
-    "-" +
-    m +
-    "-" +
-    day;
-
 }
 
-
-/* =====================================================
-   RUPIAH
-===================================================== */
 
 function rupiah(n){
 
@@ -598,10 +492,6 @@ function rupiah(n){
 
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
 
 function escapeHtml(s){
 
@@ -621,8 +511,34 @@ function escapeHtml(s){
 }
 
 
+function formatDate(d){
+
+  if(!d) return "";
+
+  try{
+
+    return new Date(
+      d + "T00:00:00"
+    ).toLocaleDateString(
+      "id-ID",
+      {
+        day:"numeric",
+        month:"numeric",
+        year:"numeric"
+      }
+    );
+
+  }catch(e){
+
+    return d;
+
+  }
+
+}
+
+
 /* =====================================================
-   LOAD DATA
+   LOAD
 ===================================================== */
 
 function loadData(){
@@ -642,9 +558,7 @@ function loadData(){
       if(
         Array.isArray(data)
       ){
-
         return data;
-
       }
 
     }
@@ -652,117 +566,10 @@ function loadData(){
   }catch(e){}
 
 
-  /*
-    Ambil data versi lama.
-  */
-
-  const oldKeys = [
-
-    "gojekFinanceTransactionsV4",
-    "gojekFinanceTransactionsV3",
-    "gojekTransactions",
-    "transactions",
-    "gojekFinance",
-    "gojekFinanceData"
-
-  ];
-
-
-  for(
-    const key of oldKeys
-  ){
-
-    try{
-
-      const raw =
-        localStorage.getItem(
-          key
-        );
-
-      if(!raw) continue;
-
-
-      const data =
-        JSON.parse(raw);
-
-
-      if(
-        Array.isArray(data) &&
-        data.length
-      ){
-
-        return data.map(
-          normalizeOld
-        );
-
-      }
-
-    }catch(e){}
-
-  }
-
-
   return [];
 
 }
 
-
-/* =====================================================
-   NORMALIZE DATA LAMA
-===================================================== */
-
-function normalizeOld(x){
-
-  return {
-
-    id:
-      x.id ||
-      uid(),
-
-    type:
-      x.type ||
-      "income",
-
-    amount:
-      Number(x.amount) ||
-      0,
-
-    source:
-      x.source ||
-      "Gojek",
-
-    time:
-      x.time ||
-      "",
-
-    endTime:
-      x.endTime ||
-      "",
-
-    distance:
-      x.distance ||
-      "",
-
-    payment:
-      x.payment ||
-      "",
-
-    date:
-      x.date ||
-      today(),
-
-    createdAt:
-      x.createdAt ||
-      Date.now()
-
-  };
-
-}
-
-
-/* =====================================================
-   SAVE
-===================================================== */
 
 function saveData(){
 
@@ -791,11 +598,9 @@ function render(){
           x.type === "income"
       )
       .reduce(
-        (a,x) =>
-          a +
-          Number(
-            x.amount || 0
-          ),
+        (sum,x) =>
+          sum +
+          Number(x.amount || 0),
         0
       );
 
@@ -807,35 +612,27 @@ function render(){
           x.type === "expense"
       )
       .reduce(
-        (a,x) =>
-          a +
-          Number(
-            x.amount || 0
-          ),
+        (sum,x) =>
+          sum +
+          Number(x.amount || 0),
         0
       );
 
 
   document
-    .getElementById(
-      "income"
-    )
+    .getElementById("income")
     .textContent =
     rupiah(income);
 
 
   document
-    .getElementById(
-      "expense"
-    )
+    .getElementById("expense")
     .textContent =
     rupiah(expense);
 
 
   document
-    .getElementById(
-      "net"
-    )
+    .getElementById("net")
     .textContent =
     rupiah(
       income - expense
@@ -848,9 +645,7 @@ function render(){
     );
 
 
-  if(
-    !transactions.length
-  ){
+  if(!transactions.length){
 
     el.innerHTML =
       '<div class="empty">Belum ada transaksi.</div>';
@@ -864,12 +659,8 @@ function render(){
     [...transactions]
       .sort(
         (a,b) =>
-          (
-            b.createdAt || 0
-          ) -
-          (
-            a.createdAt || 0
-          )
+          (b.createdAt || 0) -
+          (a.createdAt || 0)
       );
 
 
@@ -892,22 +683,16 @@ function render(){
                 ${rupiah(x.amount)}
               </b>
 
-              — Pengeluaran
-
-              ${escapeHtml(
-                x.source || ""
+              — ${escapeHtml(
+                x.source || "Pengeluaran"
               )}
 
             </div>
 
             <div class="tx-date">
-
               ${escapeHtml(
-                formatDate(
-                  x.date
-                )
+                formatDate(x.date)
               )}
-
             </div>
 
           </div>
@@ -917,20 +702,14 @@ function render(){
         }
 
 
-        let time = "";
+        let time =
+          x.time || "";
 
-        if(x.time){
+        if(x.endTime){
 
-          time =
-            x.time;
-
-          if(x.endTime){
-
-            time +=
-              " - " +
-              x.endTime;
-
-          }
+          time +=
+            " - " +
+            x.endTime;
 
         }
 
@@ -950,7 +729,6 @@ function render(){
             — Gojek
 
           </div>
-
 
           <div class="tx-meta">
 
@@ -982,15 +760,10 @@ function render(){
 
           </div>
 
-
           <div class="tx-date">
-
             ${escapeHtml(
-              formatDate(
-                x.date
-              )
+              formatDate(x.date)
             )}
-
           </div>
 
         </div>
@@ -999,41 +772,6 @@ function render(){
 
       }
     ).join("");
-
-}
-
-
-/* =====================================================
-   FORMAT DATE
-===================================================== */
-
-function formatDate(d){
-
-  if(!d){
-
-    return "";
-
-  }
-
-
-  try{
-
-    return new Date(
-      d + "T00:00:00"
-    ).toLocaleDateString(
-      "id-ID",
-      {
-        day:"numeric",
-        month:"numeric",
-        year:"numeric"
-      }
-    );
-
-  }catch(e){
-
-    return d;
-
-  }
 
 }
 
@@ -1125,7 +863,7 @@ document
 
 
 /* =====================================================
-   DELETE ALL
+   DELETE
 ===================================================== */
 
 document
@@ -1150,7 +888,7 @@ document
 
 
 /* =====================================================
-   FILE INPUT
+   FILE
 ===================================================== */
 
 document
@@ -1290,7 +1028,7 @@ function preprocess(
     }
 
 
-    image.data[i] =
+    gray =
       Math.max(
         0,
         Math.min(
@@ -1299,11 +1037,15 @@ function preprocess(
         )
       );
 
+
+    image.data[i] =
+      gray;
+
     image.data[i+1] =
-      image.data[i];
+      gray;
 
     image.data[i+2] =
-      image.data[i];
+      gray;
 
   }
 
@@ -1323,21 +1065,35 @@ function preprocess(
 
 
 /* =====================================================
-   NOMINAL
+   NORMALIZE OCR TEXT
+===================================================== */
+
+function normalizeOCR(
+  text
+){
+
+  return String(
+    text || ""
+  )
+    .replace(
+      /\r/g,
+      ""
+    )
+    .replace(
+      /[–—−]/g,
+      "-"
+    );
+
+}
+
+
+/* =====================================================
+   AMOUNT
 ===================================================== */
 
 function findAmount(
   text
 ){
-
-  /*
-    Contoh:
-
-    Rp14.400
-    Rp 14.400
-    R p14.400
-    Rp12,800
-  */
 
   const regex =
     /(?:R\s*P|Rp|Re)\s*([0-9][0-9.,\s]*)/i;
@@ -1347,31 +1103,19 @@ function findAmount(
     text.match(regex);
 
 
-  if(!m){
-
-    return 0;
-
-  }
+  if(!m) return 0;
 
 
-  let raw =
+  const raw =
     m[1]
       .replace(
         /\s/g,
         ""
+      )
+      .replace(
+        /[.,]/g,
+        ""
       );
-
-
-  /*
-    Hilangkan titik/koma
-    sebagai pemisah ribuan.
-  */
-
-  raw =
-    raw.replace(
-      /[.,]/g,
-      ""
-    );
 
 
   const value =
@@ -1397,23 +1141,15 @@ function findAmount(
 
 
 /* =====================================================
-   TIME RANGE
+   TIME
 ===================================================== */
 
 function findTimeRange(
   text
 ){
 
-  /*
-    Contoh:
-
-    15:08 - 15:32
-    14:08-14:29
-    13.47 - 13.56
-  */
-
   const regex =
-    /\b([01]?\d|2[0-3])[\.:]([0-5]\d)\s*[-–—]\s*([01]?\d|2[0-3])[\.:]([0-5]\d)\b/;
+    /\b([01]?\d|2[0-3])[\.:]([0-5]\d)\s*-\s*([01]?\d|2[0-3])[\.:]([0-5]\d)\b/;
 
 
   const m =
@@ -1431,21 +1167,21 @@ function findTimeRange(
 
     start:
       String(m[1])
-        .padStart(
-          2,
-          "0"
-        ) +
+        .padStart(2,"0") +
       ":" +
       m[2],
 
     end:
       String(m[3])
-        .padStart(
-          2,
-          "0"
-        ) +
+        .padStart(2,"0") +
       ":" +
-      m[4]
+      m[4],
+
+    index:
+      m.index,
+
+    length:
+      m[0].length
 
   };
 
@@ -1453,31 +1189,124 @@ function findTimeRange(
 
 
 /* =====================================================
-   DISTANCE
+   DISTANCE V7
 ===================================================== */
 
-function findDistance(
-  text
+function findDistanceAfterTime(
+  block,
+  time
 ){
 
+  if(!time){
+
+    return "";
+
+  }
+
+
   /*
+    ==================================================
+    PERBAIKAN UTAMA V7
+    ==================================================
+
+    Jangan mencari KM dari seluruh blok.
+
+    Cari posisi pasangan jam terlebih dahulu:
+
+      12:20 - 12:53
+
+    Kemudian hanya lihat teks SETELAH jam tersebut.
+
     Contoh:
 
-    6,79 km
-    6.79 km
-    8,44 km
-    8.44 km
+      Rp18.400 @ GoPay
+      12:20 - 12:53
+      8,44 km
+      Selesai
+
+    Maka yang diambil adalah 8,44.
+
+    Angka 9.40 yang muncul di bagian lain
+    tidak akan didahulukan.
+  */
+
+
+  const afterTime =
+    block.slice(
+      time.index +
+      time.length
+    );
+
+
+  /*
+    Kita hanya ambil bagian
+    dekat dengan pasangan jam.
+
+    Maksimal 180 karakter.
+  */
+
+  const nearby =
+    afterTime.slice(
+      0,
+      180
+    );
+
+
+  /*
+    Terima:
+
+      8,44 km
+      8.44 km
+      8,44 k m
+      8.44k m
   */
 
   const regex =
-    /\b(\d{1,2})[.,](\d{1,2})\s*(?:km|k\s*m)\b/i;
+    /\b(\d{1,2})[.,](\d{1,2})\s*k\s*m\b/i;
 
 
   const m =
-    text.match(regex);
+    nearby.match(
+      regex
+    );
 
 
   if(!m){
+
+    /*
+      Fallback lebih longgar.
+    */
+
+    const fallback =
+      nearby.match(
+        /\b(\d{1,2})[.,](\d{1,2})\s*km\b/i
+      );
+
+
+    if(!fallback){
+
+      return "";
+
+    }
+
+
+    const v =
+      Number(
+        fallback[1] +
+        "." +
+        fallback[2]
+      );
+
+
+    if(
+      v > 0 &&
+      v < 100
+    ){
+
+      return v.toFixed(2);
+
+    }
+
 
     return "";
 
@@ -1512,30 +1341,29 @@ function findDistance(
 ===================================================== */
 
 function findPayment(
-  text
+  block
 ){
 
-  if(
+  /*
+    Cari pembayaran sebelum
+    pasangan jam terlebih dahulu.
+  */
+
+  const gopay =
     /GoPay/i.test(
-      text
-    )
-  ){
-
-    return "GoPay";
-
-  }
+      block
+    );
 
 
-  if(
-    /Tunai|Cash/i.test(
-      text
-    )
-  ){
+  const tunai =
+    /Tunai/i.test(
+      block
+    );
 
-    return "Tunai";
 
-  }
+  if(tunai) return "Tunai";
 
+  if(gopay) return "GoPay";
 
   return "";
 
@@ -1543,68 +1371,29 @@ function findPayment(
 
 
 /* =====================================================
-   BUILD TRANSACTIONS
+   BUILD TRANSACTIONS V7
 ===================================================== */
 
 function buildScannedTransactions(
   raw
 ){
 
-  let text =
-    String(
-      raw || ""
-    )
-      .replace(
-        /\r/g,
-        ""
-      )
-      .replace(
-        /[–—]/g,
-        "-"
-      );
+  const text =
+    normalizeOCR(
+      raw
+    );
 
 
   /*
-    ==================================================
-    INI BAGIAN UTAMA V5
-    ==================================================
-
-    Cari SEMUA "Rp".
-
-    Setiap Rp dianggap sebagai
-    AWAL SATU TRANSAKSI.
-
-    Contoh:
-
-    Rp14.400 @ GoPay
-    15:08 - 15:32
-    6,79 km
-
-    Rp12.800 @ Tunai
-    14:08 - 14:29
-    5,91 km
-
-    Jadi kita potong:
-
-    BLOK 1 = Rp14.400 sampai
-             sebelum Rp12.800
-
-    BLOK 2 = Rp12.800 sampai
-             sebelum Rp9.200
-
-    dst.
-
-    Dengan cara ini,
-    data tidak akan mengambil
-    km dari transaksi berikutnya.
+    Cari semua nominal Rp.
+    Setiap nominal = awal transaksi.
   */
-
 
   const amountRegex =
     /(?:R\s*P|Rp|Re)\s*[0-9][0-9.,\s]*/gi;
 
 
-  const matches =
+  const amounts =
     [
       ...text.matchAll(
         amountRegex
@@ -1617,12 +1406,12 @@ function buildScannedTransactions(
 
   for(
     let i=0;
-    i<matches.length;
+    i<amounts.length;
     i++
   ){
 
     const current =
-      matches[i];
+      amounts[i];
 
 
     const start =
@@ -1631,16 +1420,10 @@ function buildScannedTransactions(
 
     const end =
       i <
-      matches.length - 1
-
-      ? matches[i+1].index
-
+      amounts.length - 1
+      ? amounts[i+1].index
       : text.length;
 
-
-    /*
-      SATU BLOK TRANSAKSI
-    */
 
     const block =
       text.slice(
@@ -1670,9 +1453,15 @@ function buildScannedTransactions(
       );
 
 
+    /*
+      Jarak sekarang dicari
+      SETELAH jam transaksi.
+    */
+
     const distance =
-      findDistance(
-        block
+      findDistanceAfterTime(
+        block,
+        time
       );
 
 
@@ -1721,30 +1510,7 @@ function buildScannedTransactions(
 
 
   /*
-    ==================================================
-    FALLBACK
-    ==================================================
-
-    Kalau karena OCR posisi teks
-    kacau dan blok tidak berhasil,
-    coba cari nominal saja.
-  */
-
-  if(
-    !result.length
-  ){
-
-    return fallbackAmounts(
-      text
-    );
-
-  }
-
-
-  /*
-    ==================================================
-    HAPUS DUPLIKAT
-    ==================================================
+    Hapus duplikat.
   */
 
   const unique = [];
@@ -1757,6 +1523,7 @@ function buildScannedTransactions(
     const duplicate =
       unique.some(
         x =>
+
           x.amount ===
           item.amount &&
 
@@ -1765,6 +1532,7 @@ function buildScannedTransactions(
 
           x.endTime ===
           item.endTime
+
       );
 
 
@@ -1787,82 +1555,7 @@ function buildScannedTransactions(
 
 
 /* =====================================================
-   FALLBACK AMOUNT
-===================================================== */
-
-function fallbackAmounts(
-  text
-){
-
-  const regex =
-    /(?:R\s*P|Rp|Re)\s*([0-9][0-9.,\s]*)/gi;
-
-
-  const result = [];
-
-
-  let m;
-
-
-  while(
-    (m =
-      regex.exec(text))
-    !== null
-  ){
-
-    const amount =
-      findAmount(
-        m[0]
-      );
-
-
-    if(
-      amount
-    ){
-
-      result.push({
-
-        type:
-          "income",
-
-        source:
-          "Gojek",
-
-        amount:
-          amount,
-
-        time:
-          "",
-
-        endTime:
-          "",
-
-        distance:
-          "",
-
-        payment:
-          "",
-
-        date:
-          today(),
-
-        selected:
-          true
-
-      });
-
-    }
-
-  }
-
-
-  return result;
-
-}
-
-
-/* =====================================================
-   DUPLICATE CHECK
+   DUPLICATE DATABASE CHECK
 ===================================================== */
 
 function isDuplicate(
@@ -1882,41 +1575,24 @@ function isDuplicate(
       }
 
 
-      const sameAmount =
+      return (
+
         Number(
           old.amount
         ) ===
         Number(
           item.amount
-        );
+        ) &&
 
-
-      const sameDate =
         old.date ===
-        item.date;
+        item.date &&
 
-
-      const sameStart =
-        old.time &&
-        item.time &&
         old.time ===
-        item.time;
+        item.time &&
 
-
-      const sameEnd =
-        old.endTime &&
-        item.endTime &&
         old.endTime ===
-        item.endTime;
+        item.endTime
 
-
-      return (
-        sameAmount &&
-        sameDate &&
-        (
-          sameStart ||
-          sameEnd
-        )
       );
 
     }
@@ -1941,34 +1617,26 @@ function showReview(
     );
 
 
+  const review =
+    document.getElementById(
+      "review"
+    );
+
+
   const list =
     document.getElementById(
       "reviewList"
     );
 
 
-  document
-    .getElementById(
-      "review"
-    )
-    .style.display =
+  review.style.display =
     "block";
 
 
-  if(
-    !items.length
-  ){
+  if(!items.length){
 
-    list.innerHTML = `
-
-      <div class="empty">
-
-        ❌ Tidak ada transaksi
-        yang terbaca.
-
-      </div>
-
-    `;
+    list.innerHTML =
+      '<div class="empty">❌ Tidak ada transaksi terbaca.</div>';
 
     return;
 
@@ -1982,20 +1650,14 @@ function showReview(
       <div class="scan-card">
 
         <div class="scan-title">
-
           Transaksi ${i+1}
-
         </div>
-
 
         <div class="grid">
 
-
           <div class="field">
 
-            <label>
-              Nominal
-            </label>
+            <label>Nominal</label>
 
             <input
               type="number"
@@ -2009,9 +1671,7 @@ function showReview(
 
           <div class="field">
 
-            <label>
-              Jam mulai
-            </label>
+            <label>Jam mulai</label>
 
             <input
               type="text"
@@ -2028,9 +1688,7 @@ function showReview(
 
           <div class="field">
 
-            <label>
-              Jam selesai
-            </label>
+            <label>Jam selesai</label>
 
             <input
               type="text"
@@ -2047,9 +1705,7 @@ function showReview(
 
           <div class="field">
 
-            <label>
-              Jarak (km)
-            </label>
+            <label>Jarak (km)</label>
 
             <input
               type="text"
@@ -2066,49 +1722,36 @@ function showReview(
 
           <div class="field">
 
-            <label>
-              Pembayaran
-            </label>
+            <label>Pembayaran</label>
 
             <select
               data-i="${i}"
               data-field="payment"
             >
 
-              <option
-                value=""
+              <option value=""
                 ${
                   !x.payment
                   ? "selected"
                   : ""
                 }
-              >
-                -
-              </option>
+              >-</option>
 
-              <option
-                value="GoPay"
+              <option value="GoPay"
                 ${
-                  x.payment ===
-                  "GoPay"
+                  x.payment === "GoPay"
                   ? "selected"
                   : ""
                 }
-              >
-                GoPay
-              </option>
+              >GoPay</option>
 
-              <option
-                value="Tunai"
+              <option value="Tunai"
                 ${
-                  x.payment ===
-                  "Tunai"
+                  x.payment === "Tunai"
                   ? "selected"
                   : ""
                 }
-              >
-                Tunai
-              </option>
+              >Tunai</option>
 
             </select>
 
@@ -2117,41 +1760,32 @@ function showReview(
 
           <div class="field">
 
-            <label>
-              Simpan?
-            </label>
+            <label>Simpan?</label>
 
             <select
               data-i="${i}"
               data-field="selected"
             >
 
-              <option
-                value="true"
+              <option value="true"
                 ${
                   x.selected
                   ? "selected"
                   : ""
                 }
-              >
-                Ya
-              </option>
+              >Ya</option>
 
-              <option
-                value="false"
+              <option value="false"
                 ${
                   !x.selected
                   ? "selected"
                   : ""
                 }
-              >
-                Tidak
-              </option>
+              >Tidak</option>
 
             </select>
 
           </div>
-
 
         </div>
 
@@ -2164,7 +1798,7 @@ function showReview(
 
 
 /* =====================================================
-   REVIEW EDIT
+   EDIT REVIEW
 ===================================================== */
 
 document
@@ -2173,11 +1807,10 @@ document
   )
   .addEventListener(
     "input",
-    function(e){
+    e => {
 
       const i =
         e.target.dataset.i;
-
 
       const field =
         e.target.dataset.field;
@@ -2193,21 +1826,12 @@ document
       }
 
 
-      if(
+      pending[i][field] =
         field === "amount"
-      ){
-
-        pending[i][field] =
-          Number(
+        ? Number(
             e.target.value
-          );
-
-      }else{
-
-        pending[i][field] =
-          e.target.value;
-
-      }
+          )
+        : e.target.value;
 
     }
   );
@@ -2219,11 +1843,10 @@ document
   )
   .addEventListener(
     "change",
-    function(e){
+    e => {
 
       const i =
         e.target.dataset.i;
-
 
       const field =
         e.target.dataset.field;
@@ -2240,8 +1863,7 @@ document
 
 
       if(
-        field ===
-        "selected"
+        field === "selected"
       ){
 
         pending[i].selected =
@@ -2295,11 +1917,9 @@ document
   )
   .onclick = () => {
 
-    let added =
-      0;
+    let added = 0;
 
-    let skipped =
-      0;
+    let skipped = 0;
 
 
     for(
@@ -2333,20 +1953,16 @@ document
           ),
 
         time:
-          x.time ||
-          "",
+          x.time || "",
 
         endTime:
-          x.endTime ||
-          "",
+          x.endTime || "",
 
         distance:
-          x.distance ||
-          "",
+          x.distance || "",
 
         payment:
-          x.payment ||
-          "",
+          x.payment || "",
 
         date:
           today(),
@@ -2395,33 +2011,29 @@ document
       "none";
 
 
-    let message =
+    let msg =
       "✅ " +
       added +
       " transaksi baru disimpan.";
 
 
-    if(
-      skipped
-    ){
+    if(skipped){
 
-      message +=
-        " " +
+      msg +=
+        "\n" +
         skipped +
         " duplikat dilewati.";
 
     }
 
 
-    alert(
-      message
-    );
+    alert(msg);
 
   };
 
 
 /* =====================================================
-   SCAN OCR
+   OCR
 ===================================================== */
 
 document
@@ -2462,7 +2074,7 @@ document
       );
 
 
-    const progressBar =
+    const progress =
       document.getElementById(
         "progressBar"
       );
@@ -2478,20 +2090,12 @@ document
       "block";
 
 
-    progressBar.style.width =
+    progress.style.width =
       "0%";
 
 
-    debug.style.display =
-      "none";
-
-
-    document
-      .getElementById(
-        "review"
-      )
-      .style.display =
-      "none";
+    debug.textContent =
+      "";
 
 
     try{
@@ -2504,14 +2108,14 @@ document
         new Image();
 
 
-      const objectUrl =
+      const url =
         URL.createObjectURL(
           file
         );
 
 
       img.src =
-        objectUrl;
+        url;
 
 
       await new Promise(
@@ -2528,7 +2132,7 @@ document
 
 
       /*
-        Tiga mode OCR.
+        Cukup dua mode.
       */
 
       const variants = [
@@ -2541,11 +2145,6 @@ document
         preprocess(
           img,
           "contrast"
-        ),
-
-        preprocess(
-          img,
-          "bw"
         )
 
       ];
@@ -2563,11 +2162,7 @@ document
         statusText.textContent =
           "🔎 Membaca screenshot " +
           (i+1) +
-          "/3...";
-
-
-        progressBar.style.width =
-          "0%";
+          "/2...";
 
 
         const result =
@@ -2593,7 +2188,7 @@ document
                       );
 
 
-                    progressBar.style.width =
+                    progress.style.width =
                       p + "%";
 
                   }
@@ -2616,60 +2211,35 @@ document
 
 
         /*
-          Nilai kualitas.
+          Prioritas:
 
-          Jumlah transaksi penting,
-          tetapi data lengkap juga
-          diberi nilai tambahan.
+          1. Jumlah transaksi
+          2. Jam
+          3. Jam selesai
+          4. Jarak
+          5. Pembayaran
         */
 
         let score =
           parsed.length *
-          100;
+          1000;
 
 
         for(
           const x of parsed
         ){
 
-          if(
-            x.time
-          ){
+          if(x.time)
+            score += 50;
 
-            score +=
-              20;
+          if(x.endTime)
+            score += 50;
 
-          }
+          if(x.distance)
+            score += 50;
 
-
-          if(
-            x.endTime
-          ){
-
-            score +=
-              20;
-
-          }
-
-
-          if(
-            x.distance
-          ){
-
-            score +=
-              15;
-
-          }
-
-
-          if(
-            x.payment
-          ){
-
-            score +=
-              10;
-
-          }
+          if(x.payment)
+            score += 25;
 
         }
 
@@ -2699,21 +2269,17 @@ document
 
 
       URL.revokeObjectURL(
-        objectUrl
+        url
       );
 
 
-      progressBar.style.width =
+      progress.style.width =
         "100%";
 
 
       debug.textContent =
         "OCR MENTAH:\\n\\n" +
         best.raw;
-
-
-      debug.style.display =
-        "block";
 
 
       statusText.textContent =
@@ -2745,7 +2311,6 @@ document
     }
 
   };
-
 
 </script>
 
