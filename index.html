@@ -4,8 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V10</title>
+<title>Gojek Finance Tracker V11</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}.container{max-width:760px;margin:auto;padding:16px}
 header{background:#111827;color:#fff;border-radius:20px;padding:22px;margin-bottom:14px}h1{margin:0 0 6px;font-size:25px}.sub{opacity:.75;font-size:14px}
@@ -19,7 +20,7 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 .today{font-size:13px;color:#666;margin-top:-7px;margin-bottom:12px}.metric{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #eee}.metric:last-child{border-bottom:0}.metric b{font-size:15px}
 @media(max-width:600px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}}
 </style>
-</head>
+<style>#financeChart,#expenseChart{max-height:300px} .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1;min-width:120px}</style></head>
 <body>
 <div class="container">
 <header><h1>🛵 Gojek Finance Tracker</h1><div class="sub">Catat pemasukan & pengeluaran driver</div></header>
@@ -74,6 +75,8 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 </div>
 
 
+<div class="box"><h2>📊 Grafik Keuangan</h2><div class="grid"><div><h3>Pemasukan vs Pengeluaran</h3><canvas id="financeChart"></canvas></div><div><h3>Pengeluaran per Kategori</h3><canvas id="expenseChart"></canvas></div></div></div>
+<div class="box"><h2>💾 Backup & Data</h2><p>Simpan data transaksi ke file JSON agar aman dan bisa dipulihkan.</p><div class="actions"><button id="exportBackup" class="secondary">⬇️ Backup Data</button><button id="importBtn" class="secondary">⬆️ Pulihkan Data</button><input id="backupInput" type="file" accept=".json,application/json" hidden><button id="wipeData" class="danger">🗑️ Hapus Semua</button></div></div>
 <div class="box">
 <h2>📅 Laporan & Riwayat</h2>
 <div class="grid">
@@ -337,5 +340,5 @@ document.getElementById("scanBtn").onclick=async function(){
  }catch(e){console.error(e);st.textContent="❌ OCR gagal.";alert("OCR gagal. Pastikan internet aktif lalu coba lagi.")}
 };
 </script>
-</body>
+<script>let fChart,eChart;function v11tx(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}function drawV11(){if(typeof Chart==="undefined")return;const d=v11tx(),inc=d.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0),exp=d.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);if(fChart)fChart.destroy();fChart=new Chart(document.getElementById("financeChart"),{type:"doughnut",data:{labels:["Pemasukan","Pengeluaran"],datasets:[{data:[inc,exp]}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});const c={};d.filter(x=>x.type==="expense").forEach(x=>c[x.category||"Lainnya"]=(c[x.category||"Lainnya"]||0)+Number(x.amount||0));if(eChart)eChart.destroy();eChart=new Chart(document.getElementById("expenseChart"),{type:"bar",data:{labels:Object.keys(c),datasets:[{label:"Pengeluaran",data:Object.values(c)}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}})}function backup(){const b=new Blob([JSON.stringify({app:"Gojek Finance Tracker",version:"V11",exportedAt:new Date().toISOString(),transactions:v11tx()},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="gojek-finance-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()}document.getElementById("exportBackup").onclick=backup;document.getElementById("importBtn").onclick=()=>document.getElementById("backupInput").click();document.getElementById("backupInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),t=Array.isArray(j)?j:j.transactions;if(!Array.isArray(t))throw Error("Format tidak dikenali");if(confirm("Pulihkan "+t.length+" transaksi? Data sekarang akan diganti.")){localStorage.setItem("gojekFinanceTransactionsV7",JSON.stringify(t));if(typeof renderAll==="function")renderAll();drawV11();alert("Backup berhasil dipulihkan.")}}catch(err){alert("Backup gagal: "+err.message)}};r.readAsText(f)};document.getElementById("wipeData").onclick=()=>{if(confirm("Hapus semua data? Pastikan sudah backup.")){localStorage.removeItem("gojekFinanceTransactionsV7");if(typeof renderAll==="function")renderAll();drawV11()}};window.addEventListener("load",()=>setTimeout(drawV11,500));</script></body>
 </html>
