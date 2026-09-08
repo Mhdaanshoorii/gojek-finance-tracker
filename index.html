@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V23</title>
+<title>Gojek Finance Tracker V24</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -404,6 +404,21 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v23Compare .v23-table th{color:#6b7280}
 #v23Compare .v23-advice{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc}
 @media(max-width:700px){#v23Compare .v23-grid{grid-template-columns:1fr 1fr}}
+</style>
+
+
+<style id="V24_CSS">
+#v24Dashboard .v24-hero{padding:16px;border:1px solid #e5e7eb;border-radius:18px;background:#f8fafc;margin-bottom:12px}
+#v24Dashboard .v24-hero small{color:#6b7280}
+#v24Dashboard .v24-hero h3{font-size:28px;margin:5px 0}
+#v24Dashboard .v24-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v24Dashboard .v24-card{border:1px solid #e5e7eb;border-radius:15px;padding:13px;background:#fff}
+#v24Dashboard .v24-card small{color:#6b7280}
+#v24Dashboard .v24-card b{display:block;font-size:18px;margin-top:4px}
+#v24Dashboard .v24-progress{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
+#v24Dashboard .v24-fill{height:100%;width:0%;background:currentColor;border-radius:99px}
+#v24Dashboard .v24-advice{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:15px;background:#f8fafc;line-height:1.5}
+@media(max-width:700px){#v24Dashboard .v24-grid{grid-template-columns:1fr 1fr}}
 </style>
 
 </head>
@@ -1405,6 +1420,31 @@ window.addEventListener("load",()=>{
 
 
 
+
+<!-- V24_PREMIUM_DASHBOARD -->
+<section class="box" id="v24Dashboard">
+  <h2>✨ Dashboard Premium</h2>
+  <div class="v24-hero">
+    <small>Bersih hari ini</small>
+    <h3 id="v24NetToday">Rp 0</h3>
+    <div id="v24Status">Belum ada data hari ini.</div>
+  </div>
+  <div class="v24-grid">
+    <div class="v24-card"><small>💰 Pemasukan hari ini</small><b id="v24Income">Rp 0</b></div>
+    <div class="v24-card"><small>💸 Pengeluaran hari ini</small><b id="v24Expense">Rp 0</b></div>
+    <div class="v24-card"><small>🛵 Order</small><b id="v24Orders">0</b></div>
+    <div class="v24-card"><small>📍 Jarak</small><b id="v24Distance">0 km</b></div>
+    <div class="v24-card"><small>💵 Bersih/order</small><b id="v24PerOrder">Rp 0</b></div>
+    <div class="v24-card"><small>⏱️ Bersih/jam</small><b id="v24PerHour">Rp 0</b></div>
+  </div>
+  <div class="v24-card" style="margin-top:10px">
+    <small>🎯 Progress target bersih harian</small>
+    <b id="v24TargetText">Rp 0 / Rp 0</b>
+    <div class="v24-progress"><div class="v24-fill" id="v24TargetFill"></div></div>
+  </div>
+  <div class="v24-advice" id="v24Advice">Catat transaksi untuk mendapatkan ringkasan.</div>
+</section>
+
 <!-- V23_COMPARISON -->
 <section class="box" id="v23Compare">
   <h2>⚡ Perbandingan Performa</h2>
@@ -1594,6 +1634,55 @@ window.addEventListener("load",()=>{
     render();
   },1800));
   window.renderV23=render;
+})();
+</script>
+
+
+<script id="V24_PREMIUM_DASHBOARD">
+(function(){
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  const num=n=>Number(n||0);
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function dk(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
+  function mins(x){
+    const a=String(x.startTime||"").match(/(\d{1,2})[:.](\d{2})/);
+    const b=String(x.endTime||"").match(/(\d{1,2})[:.](\d{2})/);
+    if(!a||!b)return 0;
+    let m=(+b[1]*60+ +b[2])-(+a[1]*60+ +a[2]);
+    if(m<0)m+=1440;
+    return Math.min(m,720);
+  }
+  function render(){
+    const today=new Date().toISOString().slice(0,10);
+    const list=txs().filter(x=>dk(x)===today);
+    const income=list.filter(x=>x.type==="income");
+    const expense=list.filter(x=>x.type==="expense");
+    const inc=income.reduce((s,x)=>s+num(x.amount),0);
+    const exp=expense.reduce((s,x)=>s+num(x.amount),0);
+    const net=inc-exp;
+    const dist=income.reduce((s,x)=>s+num(x.distance),0);
+    const hours=income.reduce((s,x)=>s+mins(x)/60,0);
+    const target=num(localStorage.getItem("gojekFinanceProfitTargetV18"));
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v24NetToday",money(net));set("v24Income",money(inc));set("v24Expense",money(exp));
+    set("v24Orders",income.length);set("v24Distance",dist.toFixed(2)+" km");
+    set("v24PerOrder",money(income.length?net/income.length:0));
+    set("v24PerHour",money(hours?net/hours:0));
+    set("v24TargetText",money(net)+" / "+money(target));
+    const fill=document.getElementById("v24TargetFill");
+    if(fill)fill.style.width=(target>0?Math.min(100,Math.max(0,net/target*100)):0)+"%";
+    const status=document.getElementById("v24Status");
+    if(status)status.textContent=net>0?"🔥 Hari ini sudah menghasilkan profit.":net<0?"⚠️ Hari ini masih minus.":"Belum ada profit hari ini.";
+    const advice=document.getElementById("v24Advice");
+    if(advice){
+      if(!income.length)advice.textContent="📝 Belum ada order hari ini. Begitu transaksi masuk, dashboard akan otomatis menghitung performamu.";
+      else if(target>0&&net>=target)advice.textContent="🏆 Target profit harian tercapai! Kalau masih mau lanjut narik, kamu sedang berada di posisi yang bagus.";
+      else if(target>0)advice.textContent="🎯 Target belum tercapai. Kurang sekitar "+money(Math.max(0,target-net))+" untuk mencapai target profit hari ini.";
+      else advice.textContent="💡 Target profit belum diatur. Atur target di bagian Target Kerja agar progress harian lebih jelas.";
+    }
+  }
+  window.addEventListener("load",()=>setTimeout(render,2000));
+  window.renderV24=render;
 })();
 </script>
 
