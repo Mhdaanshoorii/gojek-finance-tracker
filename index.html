@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gojek Finance Tracker</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f6f8;
+  color:#222
+}
+header{
+  background:#00aa5b;
+  color:white;
+  padding:22px 18px;
+  border-radius:0 0 22px 22px
+}
+h1{margin:0 0 5px;font-size:24px}
+main{max-width:700px;margin:auto;padding:16px}
+.card{
+  background:white;
+  border-radius:16px;
+  padding:16px;
+  margin:12px 0;
+  box-shadow:0 2px 10px #0001
+}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px
+}
+.stat{
+  background:#f1f8f4;
+  padding:12px;
+  border-radius:12px
+}
+.stat b{
+  display:block;
+  margin-top:5px;
+  font-size:17px
+}
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 15px;
+  font-weight:bold;
+  background:#00aa5b;
+  color:white;
+  font-size:15px
+}
+button:disabled{opacity:.5}
+input,select{
+  width:100%;
+  padding:12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  margin:6px 0 10px;
+  font-size:16px
+}
+.row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
+.preview{
+  width:100%;
+  max-height:400px;
+  object-fit:contain;
+  border-radius:12px;
+  margin:10px 0;
+  background:#eee
+}
+.status{
+  background:#f1f3f5;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px
+}
+.item{
+  padding:11px 0;
+  border-bottom:1px solid #eee
+}
+.income{color:#087f43}
+.expense{color:#c62828}
+.danger{background:#dc3545}
+small{color:#666}
+pre{
+  white-space:pre-wrap;
+  background:#111;
+  color:#eee;
+  padding:10px;
+  border-radius:10px;
+  max-height:200px;
+  overflow:auto;
+  font-size:12px
+}
+@media(max-width:480px){
+  .stats,.row{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h1>Gojek Finance Tracker</h1>
+<div>Catat pemasukan & pengeluaran driver</div>
+</header>
+
+<main>
+
+<div class="card">
+<h2>📊 Ringkasan</h2>
+
+<div class="stats">
+
+<div class="stat">
+Pemasukan
+<b id="income">Rp0</b>
+</div>
+
+<div class="stat">
+Pengeluaran
+<b id="expense">Rp0</b>
+</div>
+
+<div class="stat">
+Bersih
+<b id="net">Rp0</b>
+</div>
+
+</div>
+</div>
+
+
+<div class="card">
+
+<h2>📸 Scan Screenshot Gojek</h2>
+
+<p>
+Upload screenshot riwayat perjalanan Gojek.
+Aplikasi akan mencoba membaca nominal, waktu, jarak dan metode pembayaran.
+</p>
+
+<input id="photo" type="file" accept="image/*">
+
+<img id="preview" class="preview" hidden>
+
+<button id="scan" disabled>
+🔎 Baca Screenshot
+</button>
+
+<div id="status" class="status">
+Pilih screenshot terlebih dahulu.
+</div>
+
+<details>
+<summary>Hasil OCR</summary>
+<pre id="ocr"></pre>
+</details>
+
+</div>
+
+
+<div class="card">
+
+<h2>➕ Tambah Manual</h2>
+
+<div class="row">
+
+<div>
+<label>Jenis</label>
+
+<select id="type">
+<option value="income">Pemasukan</option>
+<option value="expense">Pengeluaran</option>
+</select>
+
+</div>
+
+<div>
+<label>Nominal</label>
+
+<input id="amount"
+type="number"
+placeholder="15000">
+
+</div>
+
+</div>
+
+<input id="note"
+placeholder="Catatan, contoh: bensin">
+
+<button onclick="addManual()">
+Simpan
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>🧾 Transaksi</h2>
+
+<div id="list"></div>
+
+<br>
+
+<button class="danger" onclick="clearAll()">
+Hapus Semua Data
+</button>
+
+</div>
+
+</main>
+
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+<script>
+
+const KEY="gojekFinanceData";
+
+let data=JSON.parse(
+localStorage.getItem(KEY)||"[]"
+);
+
+const $=id=>document.getElementById(id);
+
+
+function rupiah(n){
+
+return new Intl.NumberFormat(
+"id-ID",
+{
+style:"currency",
+currency:"IDR",
+maximumFractionDigits:0
+}
+).format(n);
+
+}
+
+
+function save(){
+
+localStorage.setItem(
+KEY,
+JSON.stringify(data)
+);
+
+render();
+
+}
+
+
+function render(){
+
+let income=data
+.filter(x=>x.type==="income")
+.reduce((a,x)=>a+x.amount,0);
+
+let expense=data
+.filter(x=>x.type==="expense")
+.reduce((a,x)=>a+x.amount,0);
+
+$("income").textContent=rupiah(income);
+$("expense").textContent=rupiah(expense);
+$("net").textContent=rupiah(income-expense);
+
+
+if(!data.length){
+
+$("list").innerHTML=
+"<small>Belum ada transaksi.</small>";
+
+return;
+
+}
+
+
+$("list").innerHTML=data
+.slice()
+.reverse()
+.map(x=>`
+
+<div class="item">
+
+<span class="${x.type}">
+
+${x.type==="income"?"⬆️":"⬇️"}
+
+<b>${rupiah(x.amount)}</b>
+
+</span>
+
+${x.note ? " — "+escapeHtml(x.note):""}
+
+<br>
+
+<small>
+${new Date(x.date).toLocaleString("id-ID")}
+</small>
+
+</div>
+
+`).join("");
+
+}
+
+
+function escapeHtml(s){
+
+return String(s).replace(
+/[&<>"']/g,
+m=>({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#039;"
+}[m])
+);
+
+}
+
+
+function addManual(){
+
+let amount=Number(
+$("amount").value
+);
+
+if(!amount){
+
+alert("Isi nominal dulu.");
+
+return;
+
+}
+
+
+data.push({
+
+type:$("type").value,
+
+amount:amount,
+
+note:$("note").value,
+
+date:new Date().toISOString()
+
+});
+
+
+$("amount").value="";
+$("note").value="";
+
+save();
+
+}
+
+
+function clearAll(){
+
+if(confirm("Hapus semua transaksi?")){
+
+data=[];
+
+save();
+
+}
+
+}
+
+
+/* FOTO */
+
+let selectedFile=null;
+
+
+$("photo").addEventListener(
+"change",
+function(e){
+
+selectedFile=e.target.files[0];
+
+$("scan").disabled=!selectedFile;
+
+if(selectedFile){
+
+$("preview").src=
+URL.createObjectURL(selectedFile);
+
+$("preview").hidden=false;
+
+$("status").textContent=
+"Screenshot siap. Tekan Baca Screenshot.";
+
+}
+
+});
+
+
+/* NOMINAL */
+
+function getMoney(text){
+
+let match=text.match(
+/Rp\s*\.?\s*[\d.,]+/i
+);
+
+if(!match)return null;
+
+let raw=match[0]
+.replace(/Rp/i,"")
+.replace(/\s/g,"")
+.replace(/\./g,"")
+.replace(/,/g,"");
+
+let value=Number(raw);
+
+if(
+!Number.isFinite(value) ||
+value<=0 ||
+value>10000000
+)return null;
+
+return value;
+
+}
+
+
+/* SCAN */
+
+$("scan").addEventListener(
+"click",
+async function(){
+
+if(!selectedFile)return;
+
+$("scan").disabled=true;
+
+$("status").textContent=
+"⏳ Memulai OCR...";
+
+try{
+
+const result=
+await Tesseract.recognize(
+selectedFile,
+"eng",
+{
+
+logger:function(m){
+
+if(m.status){
+
+let percent="";
+
+if(m.progress){
+
+percent=
+" "+Math.round(
+m.progress*100
+)+"%";
+
+}
+
+$("status").textContent=
+"⏳ "+m.status+percent;
+
+}
+
+}
+
+}
+);
+
+
+let text=result.data.text;
+
+$("ocr").textContent=text;
+
+
+/* Cari semua nominal */
+
+let matches=
+text.match(
+/Rp\s*\.?\s*[\d.,]+/gi
+)||[];
+
+
+let added=0;
+
+
+/* Hindari nominal terlalu kecil/aneh */
+
+for(let m of matches){
+
+let amount=getMoney(m);
+
+if(!amount)continue;
+
+
+/* Cegah duplikat */
+
+let exists=data.some(
+x=>
+x.type==="income" &&
+x.amount===amount &&
+x.note==="Hasil Scan Gojek"
+);
+
+
+if(!exists){
+
+data.push({
+
+type:"income",
+
+amount:amount,
+
+note:"Hasil Scan Gojek",
+
+date:new Date().toISOString()
+
+});
+
+added++;
+
+}
+
+}
+
+
+save();
+
+
+if(added){
+
+$("status").textContent=
+"✅ Selesai! "+
+added+
+" transaksi berhasil dibaca dan disimpan. Cek daftar transaksi di bawah.";
+
+}else{
+
+$("status").textContent=
+"⚠️ OCR selesai tetapi nominal belum ditemukan. Coba screenshot yang lebih jelas.";
+
+}
+
+}
+catch(error){
+
+console.error(error);
+
+$("status").textContent=
+"❌ OCR gagal. Pastikan koneksi internet aktif lalu coba lagi.";
+
+}
+
+$("scan").disabled=false;
+
+});
+
+
+render();
+
+</script>
+
+</body>
+  </html>
