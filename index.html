@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V18</title>
+<title>Gojek Finance Tracker V19</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -47,6 +47,36 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 
 
 
+
+
+<!-- V19_PEAK_HOURS -->
+<section class="box" id="v19PeakHours">
+  <h2>📈 Analisis Jam Ramai</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Analisis berdasarkan</label>
+      <select id="v19Range">
+        <option value="30">30 hari terakhir</option>
+        <option value="7">7 hari terakhir</option>
+        <option value="all">Semua data</option>
+      </select>
+    </div>
+  </div>
+  <div class="v19-grid">
+    <div class="v19-card"><small>🔥 Jam paling cuan</small><b id="v19BestHour">-</b></div>
+    <div class="v19-card"><small>💰 Pendapatan/jam terbaik</small><b id="v19BestRate">Rp 0</b></div>
+    <div class="v19-card"><small>🏆 Hari paling cuan</small><b id="v19BestDay">-</b></div>
+    <div class="v19-card"><small>🛵 Jam paling banyak order</small><b id="v19MostOrders">-</b></div>
+  </div>
+  <div class="v19-note">Jam dihitung dari waktu mulai order. Data makin banyak, pola yang ditemukan makin berguna.</div>
+  <div style="overflow:auto">
+    <table class="v19-table">
+      <thead><tr><th>Jam</th><th>Order</th><th>Pemasukan</th><th>Rata-rata</th></tr></thead>
+      <tbody id="v19Rows"><tr><td colspan="4">Belum ada data.</td></tr></tbody>
+    </table>
+  </div>
+  <div class="v19-advice" id="v19Advice">Kumpulkan lebih banyak data untuk melihat jam produktifmu.</div>
+</section>
 
 <!-- V18_GOALS -->
 <section class="box" id="v18Goals">
@@ -242,6 +272,20 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v18Goals .v18-note{font-size:12px;color:#6b7280;margin-top:7px}
 #v18Goals .v18-advice{margin-top:12px;padding:12px 14px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;font-weight:600}
 @media(max-width:700px){#v18Goals .v18-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="V19_CSS">
+#v19PeakHours .v19-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v19PeakHours .v19-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+#v19PeakHours .v19-card small{color:#6b7280}
+#v19PeakHours .v19-card b{display:block;font-size:18px;margin-top:5px}
+#v19PeakHours .v19-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+#v19PeakHours .v19-table th,#v19PeakHours .v19-table td{padding:9px 6px;border-bottom:1px solid #e5e7eb;text-align:left}
+#v19PeakHours .v19-table th{color:#6b7280;font-weight:600}
+#v19PeakHours .v19-note{font-size:12px;color:#6b7280;margin-top:7px}
+#v19PeakHours .v19-advice{margin-top:12px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;font-weight:600}
+@media(max-width:700px){#v19PeakHours .v19-grid{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -1036,6 +1080,82 @@ window.addEventListener("load",()=>{
   }
   window.addEventListener("load",()=>setTimeout(bind,900));
   window.renderV18=render;
+})();
+</script>
+
+
+<script id="V19_PEAK_HOURS">
+(function(){
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function dateKey(x){return x.date||x.day||x.tanggal||""}
+  function startMin(x){
+    const s=x.startTime||x.start||x.timeStart||"";
+    const m=String(s).match(/(\d{1,2})[:.](\d{2})/);
+    return m?+m[1]*60+ +m[2]:null;
+  }
+  function render(){
+    const mode=document.getElementById("v19Range")?.value||"30";
+    const all=txs().filter(x=>x.type==="income");
+    const cutoff=mode==="all"?null:new Date(Date.now()-Number(mode)*86400000);
+    const list=all.filter(x=>{
+      if(!cutoff)return true;
+      const d=new Date(dateKey(x)+"T23:59:59");
+      return !Number.isNaN(d.getTime())&&d>=cutoff;
+    });
+    const byHour={};
+    const byDay={};
+    list.forEach(x=>{
+      const t=startMin(x), amount=Number(x.amount||0);
+      if(t!=null){
+        const h=Math.floor(t/60);
+        if(!byHour[h])byHour[h]={orders:0,income:0};
+        byHour[h].orders++;byHour[h].income+=amount;
+      }
+      const day=dateKey(x);
+      if(day){
+        if(!byDay[day])byDay[day]={orders:0,income:0};
+        byDay[day].orders++;byDay[day].income+=amount;
+      }
+    });
+    const hours=Object.entries(byHour).map(([h,v])=>({h:+h,...v,avg:v.income/v.orders}));
+    hours.sort((a,b)=>b.avg-a.avg);
+    const ordersSorted=[...hours].sort((a,b)=>b.orders-a.orders);
+    const days=Object.entries(byDay).map(([day,v])=>({day,...v}));
+    days.sort((a,b)=>b.income-a.income);
+
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    if(hours.length){
+      const best=hours[0], rate=best.avg;
+      set("v19BestHour",String(best.h).padStart(2,"0")+":00–"+String(best.h+1).padStart(2,"0")+":00");
+      set("v19BestRate",money(rate)+" / order");
+      const mo=ordersSorted[0];
+      set("v19MostOrders",String(mo.h).padStart(2,"0")+":00–"+String(mo.h+1).padStart(2,"0")+":00 • "+mo.orders+" order");
+    }else{
+      set("v19BestHour","-");set("v19BestRate","Rp 0");set("v19MostOrders","-");
+    }
+    if(days.length){
+      const d=days[0];
+      const label=new Date(d.day+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short"});
+      set("v19BestDay",label+" • "+money(d.income));
+    }else set("v19BestDay","-");
+
+    const rows=document.getElementById("v19Rows");
+    if(rows){
+      rows.innerHTML=hours.slice(0,10).map(v=>`<tr><td>${String(v.h).padStart(2,"0")}:00–${String(v.h+1).padStart(2,"0")}:00</td><td>${v.orders}</td><td>${money(v.income)}</td><td>${money(v.avg)}</td></tr>`).join("") || '<tr><td colspan="4">Belum ada data waktu order.</td></tr>';
+    }
+    const advice=document.getElementById("v19Advice");
+    if(advice){
+      if(!hours.length) advice.textContent="📝 Belum ada waktu order yang bisa dianalisis.";
+      else if(hours.length<3) advice.textContent="📊 Baru sedikit data. Tambah beberapa hari lagi supaya pola jam ramai lebih akurat.";
+      else advice.textContent="🔥 Coba prioritaskan jam "+String(hours[0].h).padStart(2,"0")+":00–"+String(hours[0].h+1).padStart(2,"0")+":00 dan bandingkan hasilnya dengan jam lain.";
+    }
+  }
+  window.addEventListener("load",()=>setTimeout(()=>{
+    document.getElementById("v19Range")?.addEventListener("change",render);
+    render();
+  },1000));
+  window.renderV19=render;
 })();
 </script>
 
