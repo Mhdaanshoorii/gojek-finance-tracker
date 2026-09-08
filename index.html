@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V9</title>
+<title>Gojek Finance Tracker V10</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}.container{max-width:760px;margin:auto;padding:16px}
@@ -73,6 +73,40 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 <div id="categorySummary"></div>
 </div>
 
+
+<div class="box">
+<h2>📅 Laporan & Riwayat</h2>
+<div class="grid">
+  <div class="field">
+    <label>Periode</label>
+    <select id="reportPeriod">
+      <option value="today">Hari ini</option>
+      <option value="yesterday">Kemarin</option>
+      <option value="week">Minggu ini</option>
+      <option value="month">Bulan ini</option>
+      <option value="all">Semua data</option>
+      <option value="custom">Tanggal tertentu</option>
+    </select>
+  </div>
+  <div class="field" id="customDateWrap" style="display:none">
+    <label>Tanggal</label>
+    <input id="customDate" type="date">
+  </div>
+</div>
+
+<div class="cards" style="margin-top:12px">
+  <div class="card"><small>📈 Pemasukan</small><strong class="green" id="reportIncome">Rp 0</strong></div>
+  <div class="card"><small>📉 Pengeluaran</small><strong class="red" id="reportExpense">Rp 0</strong></div>
+  <div class="card"><small>💰 Bersih</small><strong class="blue" id="reportNet">Rp 0</strong></div>
+  <div class="card"><small>🛵 Order</small><strong id="reportOrders">0</strong></div>
+  <div class="card"><small>📏 Jarak</small><strong id="reportDistance">0 km</strong></div>
+  <div class="card"><small>💵 Rata-rata/Order</small><strong id="reportAvg">Rp 0</strong></div>
+</div>
+
+<h3 style="margin-top:18px">💸 Pengeluaran per Kategori</h3>
+<div id="reportCategories"></div>
+</div>
+
 <div class="box">
 <h2>🧾 Riwayat Transaksi</h2><div id="transactions"></div>
 <button id="clearAll" class="danger">🗑️ Hapus Semua Data</button>
@@ -89,7 +123,90 @@ function rupiah(n){return"Rp "+Number(n||0).toLocaleString("id-ID")}
 function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function formatDate(d){if(!d)return"";try{return new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"numeric",year:"numeric"})}catch(e){return d}}
 function loadData(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d))return d}}catch(e){}return[]}
-function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(transactions));render()}
+function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(transactions));renderAll()}
+
+
+function dateObjOnly(d){ return new Date(d+"T00:00:00"); }
+
+function startOfWeekDate(){
+  const d=new Date();
+  d.setHours(0,0,0,0);
+  const day=d.getDay();
+  const diff=(day===0?-6:1-day);
+  d.setDate(d.getDate()+diff);
+  return d;
+}
+
+function reportTransactions(){
+  const period=document.getElementById("reportPeriod").value;
+  const now=new Date();
+  const todayStr=today();
+
+  if(period==="all") return [...transactions];
+
+  if(period==="today")
+    return transactions.filter(x=>x.date===todayStr);
+
+  if(period==="yesterday"){
+    const d=new Date(); d.setDate(d.getDate()-1);
+    const s=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    return transactions.filter(x=>x.date===s);
+  }
+
+  if(period==="week"){
+    const start=startOfWeekDate();
+    return transactions.filter(x=>{
+      const d=dateObjOnly(x.date);
+      return d>=start && d<=now;
+    });
+  }
+
+  if(period==="month"){
+    return transactions.filter(x=>{
+      const d=dateObjOnly(x.date);
+      return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
+    });
+  }
+
+  if(period==="custom"){
+    const selected=document.getElementById("customDate").value;
+    return selected ? transactions.filter(x=>x.date===selected) : [];
+  }
+
+  return [];
+}
+
+function renderReport(){
+  const data=reportTransactions();
+  const inc=data.filter(x=>x.type==="income");
+  const exp=data.filter(x=>x.type==="expense");
+  const income=inc.reduce((s,x)=>s+Number(x.amount||0),0);
+  const expense=exp.reduce((s,x)=>s+Number(x.amount||0),0);
+  const km=inc.reduce((s,x)=>s+(parseFloat(String(x.distance||"").replace(",","."))||0),0);
+  const orders=inc.length;
+
+  document.getElementById("reportIncome").textContent=rupiah(income);
+  document.getElementById("reportExpense").textContent=rupiah(expense);
+  document.getElementById("reportNet").textContent=rupiah(income-expense);
+  document.getElementById("reportOrders").textContent=orders;
+  document.getElementById("reportDistance").textContent=km.toFixed(2)+" km";
+  document.getElementById("reportAvg").textContent=rupiah(orders?income/orders:0);
+
+  const cats={};
+  exp.forEach(x=>{
+    const c=x.category||x.source||"Lainnya";
+    cats[c]=(cats[c]||0)+Number(x.amount||0);
+  });
+  const rows=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+  document.getElementById("reportCategories").innerHTML=rows.length
+    ? rows.map(([c,v])=>`<div class="metric"><span>${escapeHtml(c)}</span><b class="red">${rupiah(v)}</b></div>`).join("")
+    : '<div class="empty">Belum ada pengeluaran pada periode ini.</div>';
+}
+
+function renderAll(){
+  render();
+  renderReport();
+}
 
 function render(){
  const t=today();
@@ -127,7 +244,7 @@ function render(){
   return `<div class="transaction"><div class="tx-top">⬆️ <b class="green">${rupiah(x.amount)}</b> — Gojek</div><div class="tx-meta">${time?"🕐 "+escapeHtml(time):""}${x.distance?" · 📏 "+escapeHtml(x.distance)+" km":""}${x.payment?" · 💳 "+escapeHtml(x.payment):""}</div><div class="tx-date">${escapeHtml(formatDate(x.date))}</div></div>`;
  }).join("");
 }
-render();
+renderAll();
 
 document.getElementById("addExpense").onclick=()=>{
  const amount=Number(document.getElementById("expenseAmount").value);
@@ -140,6 +257,14 @@ document.getElementById("addExpense").onclick=()=>{
  saveData();
 };
 document.getElementById("clearAll").onclick=()=>{if(confirm("Yakin ingin menghapus semua data?")){transactions=[];saveData()}};
+
+document.getElementById("reportPeriod").addEventListener("change",()=>{
+  const v=document.getElementById("reportPeriod").value;
+  document.getElementById("customDateWrap").style.display=v==="custom"?"block":"none";
+  renderReport();
+});
+document.getElementById("customDate").addEventListener("change",renderReport);
+
 document.getElementById("fileInput").addEventListener("change",function(){document.getElementById("scanBtn").disabled=!(this.files&&this.files[0])});
 
 function preprocess(img,mode){
