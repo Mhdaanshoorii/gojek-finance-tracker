@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V19</title>
+<title>Gojek Finance Tracker V20</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -48,6 +48,43 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 
 
 
+
+
+<!-- V20_REPORTS -->
+<section class="box" id="v20Reports">
+  <h2>🧾 Laporan Profesional</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Periode laporan</label>
+      <select id="v20Range">
+        <option value="today">Hari ini</option>
+        <option value="7">7 hari terakhir</option>
+        <option value="30">30 hari terakhir</option>
+        <option value="month">Bulan ini</option>
+        <option value="all">Semua data</option>
+      </select>
+    </div>
+  </div>
+  <div class="v20-summary">
+    <div class="v20-card"><small>Pemasukan</small><b id="v20Income">Rp 0</b></div>
+    <div class="v20-card"><small>Pengeluaran</small><b id="v20Expense">Rp 0</b></div>
+    <div class="v20-card"><small>Bersih</small><b id="v20Net">Rp 0</b></div>
+    <div class="v20-card"><small>Order</small><b id="v20Orders">0</b></div>
+    <div class="v20-card"><small>Jarak</small><b id="v20Distance">0 km</b></div>
+    <div class="v20-card"><small>Rata-rata/order</small><b id="v20Avg">Rp 0</b></div>
+  </div>
+  <div class="v20-actions">
+    <button class="v20-btn" id="v20Csv">⬇️ Export CSV</button>
+    <button class="v20-btn" id="v20Print">🖨️ Cetak / PDF</button>
+  </div>
+  <div style="overflow:auto">
+    <table class="v20-table">
+      <thead><tr><th>Tanggal</th><th>Jam</th><th>Jenis</th><th>Kategori</th><th>Nominal</th><th>Jarak</th></tr></thead>
+      <tbody id="v20Rows"></tbody>
+    </table>
+  </div>
+  <div class="v20-note">CSV bisa dibuka di Excel, Google Sheets, atau aplikasi spreadsheet di HP.</div>
+</section>
 
 <!-- V19_PEAK_HOURS -->
 <section class="box" id="v19PeakHours">
@@ -286,6 +323,21 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v19PeakHours .v19-note{font-size:12px;color:#6b7280;margin-top:7px}
 #v19PeakHours .v19-advice{margin-top:12px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;font-weight:600}
 @media(max-width:700px){#v19PeakHours .v19-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="V20_CSS">
+#v20Reports .v20-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+#v20Reports .v20-btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
+#v20Reports .v20-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+#v20Reports .v20-table th,#v20Reports .v20-table td{padding:8px 6px;border-bottom:1px solid #e5e7eb;text-align:left}
+#v20Reports .v20-table th{color:#6b7280}
+#v20Reports .v20-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#v20Reports .v20-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:12px}
+#v20Reports .v20-card small{color:#6b7280}
+#v20Reports .v20-card b{display:block;font-size:17px;margin-top:4px}
+#v20Reports .v20-note{font-size:12px;color:#6b7280;margin-top:8px}
+@media(max-width:700px){#v20Reports .v20-summary{grid-template-columns:1fr 1fr}}
 </style>
 
 </head>
@@ -1156,6 +1208,67 @@ window.addEventListener("load",()=>{
     render();
   },1000));
   window.renderV19=render;
+})();
+</script>
+
+
+<script id="V20_REPORTS">
+(function(){
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  const num=n=>Number(n||0);
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function dk(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
+  function inPeriod(x,mode){
+    const d=dk(x), now=new Date(), today=new Date();
+    const todayKey=today.toISOString().slice(0,10);
+    if(mode==="all")return true;
+    if(!d)return false;
+    if(mode==="today")return d===todayKey;
+    if(mode==="month")return d.slice(0,7)===todayKey.slice(0,7);
+    const base=new Date(todayKey+"T00:00:00");
+    const dd=new Date(d+"T00:00:00");
+    const days=Number(mode);
+    return !Number.isNaN(dd.getTime()) && (base-dd)/(86400000)<days && dd<=base;
+  }
+  function selected(){const mode=document.getElementById("v20Range")?.value||"today";return txs().filter(x=>inPeriod(x,mode))}
+  function render(){
+    const list=selected();
+    let inc=0,exp=0,orders=0,dist=0;
+    list.forEach(x=>{
+      if(x.type==="income"){inc+=num(x.amount);orders++;dist+=num(x.distance)}
+      else if(x.type==="expense")exp+=num(x.amount);
+    });
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v20Income",money(inc));set("v20Expense",money(exp));set("v20Net",money(inc-exp));
+    set("v20Orders",orders);set("v20Distance",dist.toFixed(2)+" km");set("v20Avg",money(orders?inc/orders:0));
+    const rows=document.getElementById("v20Rows");
+    if(rows){
+      rows.innerHTML=list.slice().sort((a,b)=>(dk(b)+String(b.startTime||"")).localeCompare(dk(a)+String(a.startTime||""))).map(x=>{
+        const type=x.type==="income"?"Pemasukan":"Pengeluaran";
+        return `<tr><td>${dk(x)||"-"}</td><td>${x.startTime||x.time||"-"}</td><td>${type}</td><td>${x.category||"-"}</td><td>${money(x.amount)}</td><td>${x.distance?num(x.distance).toFixed(2)+" km":"-"}</td></tr>`;
+      }).join("")||'<tr><td colspan="6">Belum ada transaksi pada periode ini.</td></tr>';
+    }
+  }
+  function csv(){
+    const list=selected();
+    const head=["Tanggal","Jam Mulai","Jam Selesai","Jenis","Kategori","Nominal","Jarak (km)","Pembayaran","Catatan"];
+    const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+    const body=list.map(x=>[
+      dk(x),x.startTime||"",x.endTime||"",x.type==="income"?"Pemasukan":"Pengeluaran",
+      x.category||"",num(x.amount),x.distance||"",x.payment||"",x.note||""
+    ].map(esc).join(","));
+    const blob=new Blob(["\ufeff"+[head.map(esc).join(","),...body].join("\n")],{type:"text/csv;charset=utf-8"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+    a.download="laporan-gojek-"+(document.getElementById("v20Range")?.value||"all")+".csv";
+    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+  }
+  window.addEventListener("load",()=>setTimeout(()=>{
+    document.getElementById("v20Range")?.addEventListener("change",render);
+    document.getElementById("v20Csv")?.addEventListener("click",csv);
+    document.getElementById("v20Print")?.addEventListener("click",()=>window.print());
+    render();
+  },1200));
+  window.renderV20=render;
 })();
 </script>
 
