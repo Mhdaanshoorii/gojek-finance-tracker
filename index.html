@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V13</title>
+<title>Gojek Finance Tracker V14</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -42,6 +42,61 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v13Performance .perf-status{padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;margin-top:12px}
 @media(max-width:700px){#v13Performance .perf-grid{grid-template-columns:1fr}}
 </style>
+
+
+<!-- V14_PWA -->
+<meta name="theme-color" content="#111827" id="v14ThemeColor">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<script id="V14_PWA">
+(function(){
+  function showInstallButton(){
+    if(document.getElementById("v14InstallBtn")) return;
+    const btn=document.createElement("button");
+    btn.id="v14InstallBtn";
+    btn.type="button";
+    btn.textContent="📲 Pasang di HP";
+    btn.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9999;padding:12px 15px;border:0;border-radius:999px;background:#111827;color:#fff;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.2)";
+    document.body.appendChild(btn);
+    btn.onclick=async()=>{
+      if(window.__v14Prompt){
+        window.__v14Prompt.prompt();
+        await window.__v14Prompt.userChoice;
+        window.__v14Prompt=null; btn.remove();
+      }else{
+        alert("Untuk memasang sebagai aplikasi, buka menu browser lalu pilih 'Tambahkan ke layar utama' / 'Install app' jika tersedia.");
+      }
+    };
+  }
+  window.addEventListener("beforeinstallprompt",e=>{
+    e.preventDefault(); window.__v14Prompt=e; showInstallButton();
+  });
+  window.addEventListener("appinstalled",()=>{
+    const b=document.getElementById("v14InstallBtn"); if(b)b.remove();
+  });
+
+  // Register an inline service worker where browsers allow Blob URLs.
+  if("serviceWorker" in navigator && location.protocol!=="file:"){
+    const sw=`const CACHE='gojek-finance-v14';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll([location.href])))});self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(x=>{const y=x.clone();caches.open(CACHE).then(c=>c.put(e.request,y));return x}).catch(()=>caches.match(location.href))))});`;
+    try{
+      const blob=new Blob([sw],{type:"text/javascript"});
+      const url=URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url).catch(()=>{});
+    }catch(e){}
+  }
+  window.addEventListener("load",()=>{
+    const host=document.querySelector("body");
+    if(host){
+      const note=document.createElement("div");
+      note.id="v14OfflineNote";
+      note.style.cssText="text-align:center;color:#6b7280;font-size:12px;padding:8px 12px";
+      note.textContent="V14 • Data tersimpan di HP kamu (localStorage).";
+      host.appendChild(note);
+    }
+  });
+})();
+</script>
 
 </head>
 <body>
