@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V8</title>
+<title>Gojek Finance Tracker V9</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}.container{max-width:760px;margin:auto;padding:16px}
@@ -51,9 +51,26 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 
 <div class="box">
 <h2>💸 Tambah Pengeluaran</h2>
-<div class="grid"><div class="field"><label>Nominal</label><input id="expenseAmount" type="number" inputmode="numeric" placeholder="10000"></div>
-<div class="field"><label>Keterangan</label><input id="expenseNote" type="text" placeholder="Bensin"></div></div>
+<div class="grid">
+<div class="field"><label>Nominal</label><input id="expenseAmount" type="number" inputmode="numeric" placeholder="10000"></div>
+<div class="field"><label>Kategori</label>
+<select id="expenseCategory">
+<option value="Bensin">⛽ Bensin</option>
+<option value="Makan/Minum">🍜 Makan/Minum</option>
+<option value="Parkir">🅿️ Parkir</option>
+<option value="Pulsa/Data">📱 Pulsa/Data</option>
+<option value="Servis/Maintenance">🔧 Servis/Maintenance</option>
+<option value="Cicilan/Angsuran">💳 Cicilan/Angsuran</option>
+<option value="Lainnya">📦 Lainnya</option>
+</select></div>
+<div class="field" style="grid-column:1/-1"><label>Keterangan (opsional)</label><input id="expenseNote" type="text" placeholder="Contoh: bensin Pertalite"></div>
+</div>
 <button id="addExpense" class="primary">➕ Tambah Pengeluaran</button>
+</div>
+
+<div class="box">
+<h2>📊 Pengeluaran per Kategori</h2>
+<div id="categorySummary"></div>
 </div>
 
 <div class="box">
@@ -90,11 +107,22 @@ function render(){
  document.getElementById("avgOrder").textContent=rupiah(orders?income/orders:0);
  document.getElementById("perKm").textContent=rupiah(km?income/km:0);
 
+ const cats={};
+ day.filter(x=>x.type==="expense").forEach(x=>{
+   const c=x.category||x.source||"Lainnya";
+   cats[c]=(cats[c]||0)+Number(x.amount||0);
+ });
+ const catEl=document.getElementById("categorySummary");
+ const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
+ catEl.innerHTML=entries.length
+   ? entries.map(([c,v])=>`<div class="metric"><span>${escapeHtml(c)}</span><b class="red">${rupiah(v)}</b></div>`).join("")
+   : '<div class="empty">Belum ada pengeluaran hari ini.</div>';
+
  const el=document.getElementById("transactions");
  if(!transactions.length){el.innerHTML='<div class="empty">Belum ada transaksi.</div>';return}
  const sorted=[...transactions].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
  el.innerHTML=sorted.map(x=>{
-  if(x.type==="expense")return `<div class="transaction"><div class="tx-top">🔻 <b class="red">${rupiah(x.amount)}</b> — ${escapeHtml(x.source||"Pengeluaran")}</div><div class="tx-date">${escapeHtml(formatDate(x.date))}</div></div>`;
+  if(x.type==="expense")return `<div class="transaction"><div class="tx-top">🔻 <b class="red">${rupiah(x.amount)}</b> — ${escapeHtml(x.category||x.source||"Pengeluaran")}</div><div class="tx-meta">${escapeHtml(x.source&&x.source!=="Pengeluaran"&&x.source!==(x.category||"")?x.source:"")}</div><div class="tx-date">${escapeHtml(formatDate(x.date))}</div></div>`;
   let time=x.time||"";if(x.endTime)time+=" - "+x.endTime;
   return `<div class="transaction"><div class="tx-top">⬆️ <b class="green">${rupiah(x.amount)}</b> — Gojek</div><div class="tx-meta">${time?"🕐 "+escapeHtml(time):""}${x.distance?" · 📏 "+escapeHtml(x.distance)+" km":""}${x.payment?" · 💳 "+escapeHtml(x.payment):""}</div><div class="tx-date">${escapeHtml(formatDate(x.date))}</div></div>`;
  }).join("");
@@ -102,10 +130,14 @@ function render(){
 render();
 
 document.getElementById("addExpense").onclick=()=>{
- const amount=Number(document.getElementById("expenseAmount").value),note=document.getElementById("expenseNote").value.trim()||"Pengeluaran";
+ const amount=Number(document.getElementById("expenseAmount").value);
+ const category=document.getElementById("expenseCategory").value;
+ const note=document.getElementById("expenseNote").value.trim();
  if(!amount){alert("Masukkan nominal pengeluaran.");return}
- transactions.push({id:uid(),type:"expense",amount,source:note,date:today(),createdAt:Date.now()});
- document.getElementById("expenseAmount").value="";document.getElementById("expenseNote").value="";saveData();
+ transactions.push({id:uid(),type:"expense",amount,category,source:note||category,date:today(),createdAt:Date.now()});
+ document.getElementById("expenseAmount").value="";
+ document.getElementById("expenseNote").value="";
+ saveData();
 };
 document.getElementById("clearAll").onclick=()=>{if(confirm("Yakin ingin menghapus semua data?")){transactions=[];saveData()}};
 document.getElementById("fileInput").addEventListener("change",function(){document.getElementById("scanBtn").disabled=!(this.files&&this.files[0])});
