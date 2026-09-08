@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V12</title>
+<title>Gojek Finance Tracker V13</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -29,6 +29,18 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 .progress-wrap{margin-top:10px;background:#e5e7eb;border-radius:99px;height:10px;overflow:hidden}
 .progress-bar{height:100%;width:0;transition:.25s}
 @media(max-width:700px){.insight-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="V13_CSS">
+#v13Performance .perf-note{color:#6b7280;font-size:13px;margin-top:6px}
+#v13Performance .perf-good{font-weight:700}
+#v13Performance .perf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v13Performance .perf-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+#v13Performance .perf-card small{color:#6b7280}
+#v13Performance .perf-card b{display:block;font-size:19px;margin-top:5px}
+#v13Performance .perf-status{padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;margin-top:12px}
+@media(max-width:700px){#v13Performance .perf-grid{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -352,6 +364,35 @@ document.getElementById("scanBtn").onclick=async function(){
 };
 </script>
 <script>let fChart,eChart;function v11tx(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}function drawV11(){if(typeof Chart==="undefined")return;const d=v11tx(),inc=d.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0),exp=d.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);if(fChart)fChart.destroy();fChart=new Chart(document.getElementById("financeChart"),{type:"doughnut",data:{labels:["Pemasukan","Pengeluaran"],datasets:[{data:[inc,exp]}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});const c={};d.filter(x=>x.type==="expense").forEach(x=>c[x.category||"Lainnya"]=(c[x.category||"Lainnya"]||0)+Number(x.amount||0));if(eChart)eChart.destroy();eChart=new Chart(document.getElementById("expenseChart"),{type:"bar",data:{labels:Object.keys(c),datasets:[{label:"Pengeluaran",data:Object.values(c)}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}})}function backup(){const b=new Blob([JSON.stringify({app:"Gojek Finance Tracker",version:"V11",exportedAt:new Date().toISOString(),transactions:v11tx()},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="gojek-finance-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()}document.getElementById("exportBackup").onclick=backup;document.getElementById("importBtn").onclick=()=>document.getElementById("backupInput").click();document.getElementById("backupInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),t=Array.isArray(j)?j:j.transactions;if(!Array.isArray(t))throw Error("Format tidak dikenali");if(confirm("Pulihkan "+t.length+" transaksi? Data sekarang akan diganti.")){localStorage.setItem("gojekFinanceTransactionsV7",JSON.stringify(t));if(typeof renderAll==="function")renderAll();drawV11();alert("Backup berhasil dipulihkan.")}}catch(err){alert("Backup gagal: "+err.message)}};r.readAsText(f)};document.getElementById("wipeData").onclick=()=>{if(confirm("Hapus semua data? Pastikan sudah backup.")){localStorage.removeItem("gojekFinanceTransactionsV7");if(typeof renderAll==="function")renderAll();drawV11()}};window.addEventListener("load",()=>setTimeout(drawV11,500));</script>
+
+<!-- V13_PERFORMANCE -->
+<section class="box" id="v13Performance">
+  <h2>📊 Analisis Performa</h2>
+  <p class="perf-note">Hitungan otomatis berdasarkan transaksi yang tersimpan. Jam kerja memakai waktu order pertama sampai order terakhir pada periode.</p>
+  <div class="grid">
+    <div class="field">
+      <label>Periode</label>
+      <select id="v13Period">
+        <option value="today">Hari ini</option>
+        <option value="week">7 hari terakhir</option>
+        <option value="month">Bulan ini</option>
+        <option value="all">Semua data</option>
+      </select>
+    </div>
+  </div>
+  <div class="perf-grid">
+    <div class="perf-card"><small>⏱️ Jam kerja terdeteksi</small><b id="v13Hours">0 jam</b></div>
+    <div class="perf-card"><small>💰 Bersih per jam</small><b id="v13PerHour">Rp 0</b></div>
+    <div class="perf-card"><small>🛵 Pendapatan per km</small><b id="v13PerKm">Rp 0</b></div>
+    <div class="perf-card"><small>🧾 Biaya per km</small><b id="v13CostKm">Rp 0</b></div>
+    <div class="perf-card"><small>💸 Total pemasukan</small><b id="v13Income">Rp 0</b></div>
+    <div class="perf-card"><small>💳 Total pengeluaran</small><b id="v13Expense">Rp 0</b></div>
+    <div class="perf-card"><small>🧮 Bersih</small><b id="v13Net">Rp 0</b></div>
+    <div class="perf-card"><small>🛣️ Total jarak</small><b id="v13Distance">0 km</b></div>
+  </div>
+  <div class="perf-status" id="v13Status">Belum ada data untuk dianalisis.</div>
+</section>
+
 <!-- V12_INSIGHTS -->
 <section class="box" id="v12Insights">
   <h2>🎯 Insight Kerja</h2>
@@ -464,6 +505,85 @@ window.addEventListener("load",()=>{
     if(inp) inp.addEventListener("change",saveV12Target);
   },400);
 });
+</script>
+
+
+<script id="V13_JS">
+(function(){
+  function m(n){return "Rp "+Math.round(Number(n||0)).toLocaleString("id-ID")}
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function dateOf(x){return x.date||x.day||x.tanggal||""}
+  function periodStart(mode){
+    const d=new Date(); d.setHours(0,0,0,0);
+    if(mode==="week"){d.setDate(d.getDate()-6)}
+    if(mode==="month"){d.setDate(1)}
+    if(mode==="all")return null;
+    return d;
+  }
+  function parseTime(s){
+    const z=String(s||"").match(/(\d{1,2})[:.](\d{2})/);
+    if(!z)return null;
+    const d=new Date(); d.setHours(+z[1],+z[2],0,0); return d;
+  }
+  function hoursFor(list){
+    const times=[];
+    list.filter(x=>x.type==="income").forEach(x=>{
+      const t1=parseTime(x.startTime||x.start||x.timeStart);
+      const t2=parseTime(x.endTime||x.end||x.timeEnd);
+      if(t1)times.push(t1);
+      if(t2)times.push(t2);
+    });
+    if(times.length<2)return 0;
+    let min=Math.min(...times.map(x=>x.getTime())), max=Math.max(...times.map(x=>x.getTime()));
+    if(max<min)max+=86400000;
+    return (max-min)/3600000;
+  }
+  function renderV13(){
+    const mode=document.getElementById("v13Period")?.value||"today";
+    const start=periodStart(mode);
+    const all=txs();
+    const list=all.filter(x=>{
+      if(!start)return true;
+      const k=dateOf(x); if(!k)return false;
+      const d=new Date(k+"T00:00:00"); return d>=start;
+    });
+    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
+    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
+    const net=inc-exp;
+    const km=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.distance||x.km||0),0);
+    const hrs=hoursFor(list);
+    const perHour=hrs?net/hrs:0;
+    const perKm=km?inc/km:0;
+    const costKm=km?exp/km:0;
+
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v13Hours",hrs?hrs.toFixed(1)+" jam":"0 jam");
+    set("v13PerHour",m(perHour));
+    set("v13PerKm",m(perKm));
+    set("v13CostKm",m(costKm));
+    set("v13Income",m(inc));
+    set("v13Expense",m(exp));
+    set("v13Net",m(net));
+    set("v13Distance",km.toFixed(2)+" km");
+
+    const status=document.getElementById("v13Status");
+    if(status){
+      if(!list.length) status.textContent="Belum ada transaksi pada periode ini.";
+      else if(net<0) status.textContent="⚠️ Periode ini masih minus. Coba cek pengeluaran dan biaya operasional.";
+      else if(perHour>=50000) status.textContent="🔥 Mantap! Pendapatan bersih per jam kamu sudah tinggi.";
+      else if(perHour>=30000) status.textContent="💪 Lumayan bagus. Tinggal optimalkan jam dan area narik.";
+      else status.textContent="🛵 Masih bisa digenjot. Pantau jam ramai dan biaya operasional.";
+    }
+  }
+  window.addEventListener("load",()=>{
+    setTimeout(()=>{
+      const s=document.getElementById("v13Period");
+      if(s)s.addEventListener("change",renderV13);
+      renderV13();
+    },500);
+  });
+  window.renderV13=renderV13;
+})();
 </script>
 
 </body>
