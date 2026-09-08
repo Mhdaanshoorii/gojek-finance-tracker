@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V21</title>
+<title>Gojek Finance Tracker V22</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -381,6 +381,14 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v21Insights .v21-list{margin:8px 0 0 18px;padding:0}
 #v21Insights .v21-note{font-size:12px;color:#6b7280;margin-top:8px}
 @media(max-width:700px){#v21Insights .v21-grid{grid-template-columns:1fr 1fr}}
+</style>
+
+
+<style id="V22_CSS">
+#v22Security .v22-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+#v22Security .v22-btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
+#v22Security .v22-status{margin-top:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc}
+#v22Security .v22-note{font-size:12px;color:#6b7280;margin-top:8px;line-height:1.5}
 </style>
 
 </head>
@@ -1377,6 +1385,107 @@ window.addEventListener("load",()=>{
     render();
   },1400));
   window.renderV21=render;
+})();
+</script>
+
+
+<!-- V22_SECURITY -->
+<section class="box" id="v22Security">
+  <h2>🔐 Keamanan & Data</h2>
+  <div class="v22-actions">
+    <button class="v22-btn" id="v22Backup">💾 Backup Data</button>
+    <button class="v22-btn" id="v22Restore">♻️ Pulihkan Data</button>
+    <button class="v22-btn" id="v22Clear">🗑️ Hapus Semua Data</button>
+    <input type="file" id="v22File" accept=".json,application/json" hidden>
+  </div>
+  <div class="v22-status" id="v22Status">Data tersimpan secara lokal di browser/perangkat ini.</div>
+  <div class="v22-note">
+    🔒 Data transaksi utama disimpan di localStorage dan tidak dikirim ke server oleh fitur aplikasi ini.
+    Backup JSON sebaiknya disimpan di tempat aman. Jika browser/site data dihapus, data lokal dapat ikut terhapus.
+  </div>
+</section>
+
+
+<script id="V22_SECURITY">
+(function(){
+  const KEY="gojekFinanceTransactionsV7";
+  const safeParse=s=>{try{return JSON.parse(s)}catch(e){return null}};
+  const getData=()=>safeParse(localStorage.getItem(KEY)||"[]")||[];
+  const status=t=>{const e=document.getElementById("v22Status");if(e)e.textContent=t};
+
+  function backup(){
+    const data=getData();
+    const payload={
+      app:"Gojek Finance Tracker",
+      version:"V22",
+      exportedAt:new Date().toISOString(),
+      transactions:data,
+      settings:{
+        dailyTarget:localStorage.getItem("gojekFinanceDailyTarget"),
+        incomeTarget:localStorage.getItem("gojekFinanceIncomeTargetV18"),
+        profitTarget:localStorage.getItem("gojekFinanceProfitTargetV18"),
+        orderTarget:localStorage.getItem("gojekFinanceOrderTargetV18"),
+        hourTarget:localStorage.getItem("gojekFinanceHourTargetV18"),
+        fuelEfficiency:localStorage.getItem("gojekFinanceFuelEfficiencyV16"),
+        fuelPrice:localStorage.getItem("gojekFinanceFuelPriceV16")
+      }
+    };
+    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="backup-gojek-finance-"+new Date().toISOString().slice(0,10)+".json";
+    a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+    status("✅ Backup berhasil dibuat: "+data.length+" transaksi.");
+  }
+
+  function restore(file){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const payload=safeParse(reader.result);
+      const data=Array.isArray(payload)?payload:(payload&&Array.isArray(payload.transactions)?payload.transactions:null);
+      if(!data){alert("File backup tidak valid.");return;}
+      if(!confirm("Pulihkan "+data.length+" transaksi? Data saat ini akan diganti."))return;
+      localStorage.setItem(KEY,JSON.stringify(data));
+      if(payload.settings){
+        Object.entries(payload.settings).forEach(([k,v])=>{
+          const map={
+            dailyTarget:"gojekFinanceDailyTarget",
+            incomeTarget:"gojekFinanceIncomeTargetV18",
+            profitTarget:"gojekFinanceProfitTargetV18",
+            orderTarget:"gojekFinanceOrderTargetV18",
+            hourTarget:"gojekFinanceHourTargetV18",
+            fuelEfficiency:"gojekFinanceFuelEfficiencyV16",
+            fuelPrice:"gojekFinanceFuelPriceV16"
+          };
+          const target=map[k];
+          if(target && v!==null && v!==undefined)localStorage.setItem(target,v);
+        });
+      }
+      status("✅ Data berhasil dipulihkan. Memuat ulang aplikasi...");
+      setTimeout(()=>location.reload(),500);
+    };
+    reader.readAsText(file);
+  }
+
+  function clearAll(){
+    if(!confirm("Yakin hapus SEMUA transaksi dan data target/pengaturan? Tindakan ini tidak bisa dibatalkan."))return;
+    localStorage.removeItem(KEY);
+    ["gojekFinanceDailyTarget","gojekFinanceIncomeTargetV18","gojekFinanceProfitTargetV18","gojekFinanceOrderTargetV18","gojekFinanceHourTargetV18","gojekFinanceFuelEfficiencyV16","gojekFinanceFuelPriceV16"].forEach(k=>localStorage.removeItem(k));
+    status("🗑️ Semua data aplikasi telah dihapus.");
+    setTimeout(()=>location.reload(),500);
+  }
+
+  window.addEventListener("load",()=>setTimeout(()=>{
+    document.getElementById("v22Backup")?.addEventListener("click",backup);
+    document.getElementById("v22Restore")?.addEventListener("click",()=>document.getElementById("v22File")?.click());
+    document.getElementById("v22File")?.addEventListener("change",e=>{
+      if(e.target.files&&e.target.files[0])restore(e.target.files[0]);
+      e.target.value="";
+    });
+    document.getElementById("v22Clear")?.addEventListener("click",clearAll);
+    status("🔒 Mode lokal aktif • "+getData().length+" transaksi tersimpan.");
+  },1600));
 })();
 </script>
 
