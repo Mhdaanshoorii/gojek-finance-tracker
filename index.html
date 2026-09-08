@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V22</title>
+<title>Gojek Finance Tracker V23</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -389,6 +389,21 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v22Security .v22-btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
 #v22Security .v22-status{margin-top:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc}
 #v22Security .v22-note{font-size:12px;color:#6b7280;margin-top:8px;line-height:1.5}
+</style>
+
+
+<style id="V23_CSS">
+#v23Compare .v23-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v23Compare .v23-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
+#v23Compare .v23-card small{color:#6b7280}
+#v23Compare .v23-card b{display:block;font-size:18px;margin-top:4px}
+#v23Compare .v23-bar{height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
+#v23Compare .v23-fill{height:100%;width:0%;background:currentColor;border-radius:99px}
+#v23Compare .v23-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
+#v23Compare .v23-table th,#v23Compare .v23-table td{padding:8px 6px;border-bottom:1px solid #e5e7eb;text-align:left}
+#v23Compare .v23-table th{color:#6b7280}
+#v23Compare .v23-advice{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc}
+@media(max-width:700px){#v23Compare .v23-grid{grid-template-columns:1fr 1fr}}
 </style>
 
 </head>
@@ -1389,6 +1404,34 @@ window.addEventListener("load",()=>{
 </script>
 
 
+
+<!-- V23_COMPARISON -->
+<section class="box" id="v23Compare">
+  <h2>⚡ Perbandingan Performa</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Bandingkan</label>
+      <select id="v23Mode">
+        <option value="week">Minggu ini vs minggu lalu</option>
+        <option value="month">Bulan ini vs bulan lalu</option>
+      </select>
+    </div>
+  </div>
+  <div class="v23-grid">
+    <div class="v23-card"><small>Periode sekarang</small><b id="v23Current">Rp 0</b></div>
+    <div class="v23-card"><small>Periode sebelumnya</small><b id="v23Previous">Rp 0</b></div>
+    <div class="v23-card"><small>Perubahan bersih</small><b id="v23Change">0%</b></div>
+    <div class="v23-card"><small>Perubahan order</small><b id="v23OrderChange">0%</b></div>
+  </div>
+  <div class="v23-advice" id="v23Advice">Belum ada data untuk dibandingkan.</div>
+  <div style="overflow:auto">
+    <table class="v23-table">
+      <thead><tr><th>Indikator</th><th>Sekarang</th><th>Sebelumnya</th><th>Perubahan</th></tr></thead>
+      <tbody id="v23Rows"></tbody>
+    </table>
+  </div>
+</section>
+
 <!-- V22_SECURITY -->
 <section class="box" id="v22Security">
   <h2>🔐 Keamanan & Data</h2>
@@ -1486,6 +1529,71 @@ window.addEventListener("load",()=>{
     document.getElementById("v22Clear")?.addEventListener("click",clearAll);
     status("🔒 Mode lokal aktif • "+getData().length+" transaksi tersimpan.");
   },1600));
+})();
+</script>
+
+
+<script id="V23_COMPARISON">
+(function(){
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  const num=n=>Number(n||0);
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function key(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
+  function period(mode,offset){
+    const now=new Date();now.setHours(0,0,0,0);
+    let start,end;
+    if(mode==="week"){
+      const day=now.getDay();
+      const monday=(day+6)%7;
+      start=new Date(now);start.setDate(now.getDate()-monday-(offset?7:0));
+      end=new Date(start);end.setDate(start.getDate()+7);
+    }else{
+      const y=now.getFullYear(),m=now.getMonth()- (offset?1:0);
+      start=new Date(y,m,1);
+      end=new Date(y,m+1,1);
+    }
+    return {start,end};
+  }
+  function calc(mode,offset){
+    const p=period(mode,offset);
+    let income=0,expense=0,orders=0,distance=0,hours=0;
+    txs().forEach(x=>{
+      const d=new Date(key(x)+"T00:00:00");
+      if(Number.isNaN(d.getTime())||d<p.start||d>=p.end)return;
+      if(x.type==="income"){income+=num(x.amount);orders++;distance+=num(x.distance);}
+      else if(x.type==="expense")expense+=num(x.amount);
+    });
+    return {income,expense,net:income-expense,orders,distance};
+  }
+  function pct(a,b){return b===0?(a===0?0:100):((a-b)/Math.abs(b))*100}
+  function render(){
+    const mode=document.getElementById("v23Mode")?.value||"week";
+    const a=calc(mode,0),b=calc(mode,1);
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v23Current",money(a.net));set("v23Previous",money(b.net));
+    set("v23Change",(pct(a.net,b.net)>=0?"+":"")+pct(a.net,b.net).toFixed(1)+"%");
+    set("v23OrderChange",(pct(a.orders,b.orders)>=0?"+":"")+pct(a.orders,b.orders).toFixed(1)+"%");
+    const rows=[
+      ["Pemasukan",a.income,b.income],
+      ["Pengeluaran",a.expense,b.expense],
+      ["Bersih",a.net,b.net],
+      ["Order",a.orders,b.orders],
+      ["Jarak",a.distance,b.distance]
+    ];
+    const body=document.getElementById("v23Rows");
+    if(body)body.innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[0]==="Order"?r[1]:r[0]==="Jarak"?r[1].toFixed(2)+" km":money(r[1])}</td><td>${r[0]==="Order"?r[2]:r[0]==="Jarak"?r[2].toFixed(2)+" km":money(r[2])}</td><td>${(pct(r[1],r[2])>=0?"+":"")+pct(r[1],r[2]).toFixed(1)}%</td></tr>`).join("");
+    const advice=document.getElementById("v23Advice");
+    if(advice){
+      if(a.net>b.net) advice.textContent="🚀 Performa periode sekarang lebih baik. Pertahankan pola kerja dan cek jam ramai di V19 untuk mencari penyebabnya.";
+      else if(a.net<b.net) advice.textContent="⚠️ Bersih periode sekarang turun. Cek pengeluaran, jarak, dan jam kerja sebelum mengubah strategi narik.";
+      else advice.textContent="📊 Performa relatif sama. Tambahkan data agar perbandingan makin bermakna.";
+    }
+  }
+  window.addEventListener("load",()=>setTimeout(()=>{
+    document.getElementById("v23Mode")?.addEventListener("change",render);
+    render();
+  },1800));
+  window.renderV23=render;
 })();
 </script>
 
