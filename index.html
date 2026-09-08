@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V11</title>
+<title>Gojek Finance Tracker V12</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -20,7 +20,18 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 .today{font-size:13px;color:#666;margin-top:-7px;margin-bottom:12px}.metric{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #eee}.metric:last-child{border-bottom:0}.metric b{font-size:15px}
 @media(max-width:600px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}}
 </style>
-<style>#financeChart,#expenseChart{max-height:300px} .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1;min-width:120px}</style></head>
+<style>#financeChart,#expenseChart{max-height:300px} .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1;min-width:120px}</style>
+<style id="V12_CSS">
+.insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.insight{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
+.insight b{display:block;font-size:18px;margin-top:5px}
+.insight small{color:#6b7280}
+.progress-wrap{margin-top:10px;background:#e5e7eb;border-radius:99px;height:10px;overflow:hidden}
+.progress-bar{height:100%;width:0;transition:.25s}
+@media(max-width:700px){.insight-grid{grid-template-columns:1fr}}
+</style>
+
+</head>
 <body>
 <div class="container">
 <header><h1>🛵 Gojek Finance Tracker</h1><div class="sub">Catat pemasukan & pengeluaran driver</div></header>
@@ -340,5 +351,120 @@ document.getElementById("scanBtn").onclick=async function(){
  }catch(e){console.error(e);st.textContent="❌ OCR gagal.";alert("OCR gagal. Pastikan internet aktif lalu coba lagi.")}
 };
 </script>
-<script>let fChart,eChart;function v11tx(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}function drawV11(){if(typeof Chart==="undefined")return;const d=v11tx(),inc=d.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0),exp=d.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);if(fChart)fChart.destroy();fChart=new Chart(document.getElementById("financeChart"),{type:"doughnut",data:{labels:["Pemasukan","Pengeluaran"],datasets:[{data:[inc,exp]}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});const c={};d.filter(x=>x.type==="expense").forEach(x=>c[x.category||"Lainnya"]=(c[x.category||"Lainnya"]||0)+Number(x.amount||0));if(eChart)eChart.destroy();eChart=new Chart(document.getElementById("expenseChart"),{type:"bar",data:{labels:Object.keys(c),datasets:[{label:"Pengeluaran",data:Object.values(c)}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}})}function backup(){const b=new Blob([JSON.stringify({app:"Gojek Finance Tracker",version:"V11",exportedAt:new Date().toISOString(),transactions:v11tx()},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="gojek-finance-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()}document.getElementById("exportBackup").onclick=backup;document.getElementById("importBtn").onclick=()=>document.getElementById("backupInput").click();document.getElementById("backupInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),t=Array.isArray(j)?j:j.transactions;if(!Array.isArray(t))throw Error("Format tidak dikenali");if(confirm("Pulihkan "+t.length+" transaksi? Data sekarang akan diganti.")){localStorage.setItem("gojekFinanceTransactionsV7",JSON.stringify(t));if(typeof renderAll==="function")renderAll();drawV11();alert("Backup berhasil dipulihkan.")}}catch(err){alert("Backup gagal: "+err.message)}};r.readAsText(f)};document.getElementById("wipeData").onclick=()=>{if(confirm("Hapus semua data? Pastikan sudah backup.")){localStorage.removeItem("gojekFinanceTransactionsV7");if(typeof renderAll==="function")renderAll();drawV11()}};window.addEventListener("load",()=>setTimeout(drawV11,500));</script></body>
+<script>let fChart,eChart;function v11tx(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}function drawV11(){if(typeof Chart==="undefined")return;const d=v11tx(),inc=d.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0),exp=d.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);if(fChart)fChart.destroy();fChart=new Chart(document.getElementById("financeChart"),{type:"doughnut",data:{labels:["Pemasukan","Pengeluaran"],datasets:[{data:[inc,exp]}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});const c={};d.filter(x=>x.type==="expense").forEach(x=>c[x.category||"Lainnya"]=(c[x.category||"Lainnya"]||0)+Number(x.amount||0));if(eChart)eChart.destroy();eChart=new Chart(document.getElementById("expenseChart"),{type:"bar",data:{labels:Object.keys(c),datasets:[{label:"Pengeluaran",data:Object.values(c)}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}})}function backup(){const b=new Blob([JSON.stringify({app:"Gojek Finance Tracker",version:"V11",exportedAt:new Date().toISOString(),transactions:v11tx()},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="gojek-finance-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()}document.getElementById("exportBackup").onclick=backup;document.getElementById("importBtn").onclick=()=>document.getElementById("backupInput").click();document.getElementById("backupInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),t=Array.isArray(j)?j:j.transactions;if(!Array.isArray(t))throw Error("Format tidak dikenali");if(confirm("Pulihkan "+t.length+" transaksi? Data sekarang akan diganti.")){localStorage.setItem("gojekFinanceTransactionsV7",JSON.stringify(t));if(typeof renderAll==="function")renderAll();drawV11();alert("Backup berhasil dipulihkan.")}}catch(err){alert("Backup gagal: "+err.message)}};r.readAsText(f)};document.getElementById("wipeData").onclick=()=>{if(confirm("Hapus semua data? Pastikan sudah backup.")){localStorage.removeItem("gojekFinanceTransactionsV7");if(typeof renderAll==="function")renderAll();drawV11()}};window.addEventListener("load",()=>setTimeout(drawV11,500));</script>
+<!-- V12_INSIGHTS -->
+<section class="box" id="v12Insights">
+  <h2>🎯 Insight Kerja</h2>
+  <div class="insight-grid">
+    <div class="insight"><small>💰 Bersih hari ini</small><b id="v12TodayNet">Rp 0</b></div>
+    <div class="insight"><small>🛵 Order hari ini</small><b id="v12TodayOrders">0</b></div>
+    <div class="insight"><small>💵 Bersih / order</small><b id="v12ProfitOrder">Rp 0</b></div>
+    <div class="insight"><small>⛽ Pengeluaran hari ini</small><b id="v12TodayExpense">Rp 0</b></div>
+    <div class="insight"><small>📈 Margin bersih</small><b id="v12Margin">0%</b></div>
+    <div class="insight"><small>🏆 Hari terbaik</small><b id="v12BestDay">-</b></div>
+  </div>
+  <h3>🎯 Target Bersih Harian</h3>
+  <div class="grid">
+    <div class="field">
+      <label>Target (Rp)</label>
+      <input id="v12Target" type="number" inputmode="numeric" placeholder="Contoh: 150000">
+    </div>
+    <div class="field">
+      <label>Progress</label>
+      <div id="v12TargetText">Rp 0 / Rp 0</div>
+      <div class="progress-wrap"><div id="v12TargetBar" class="progress-bar"></div></div>
+    </div>
+  </div>
+</section>
+
+
+<script id="V12_JS">
+function v12Money(n){
+  return "Rp "+Number(n||0).toLocaleString("id-ID");
+}
+function v12DateKey(d){
+  const x=new Date(d);
+  if(Number.isNaN(x.getTime())) return "";
+  return x.toISOString().slice(0,10);
+}
+function v12TodayKey(){ return v12DateKey(new Date()); }
+
+function v12Txs(){
+  try{
+    return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]");
+  }catch(e){return [];}
+}
+function v12DateOf(x){
+  return x.date || x.day || x.tanggal || "";
+}
+function v12IsIncome(x){return x.type==="income";}
+function v12IsExpense(x){return x.type==="expense";}
+
+function renderV12Insights(){
+  const tx=v12Txs(), today=v12TodayKey();
+  const todayTx=tx.filter(x=>v12DateOf(x)===today);
+  const incToday=todayTx.filter(v12IsIncome).reduce((s,x)=>s+Number(x.amount||0),0);
+  const expToday=todayTx.filter(v12IsExpense).reduce((s,x)=>s+Number(x.amount||0),0);
+  const ordersToday=todayTx.filter(v12IsIncome).length;
+  const netToday=incToday-expToday;
+  const avgProfit=ordersToday?Math.round(netToday/ordersToday):0;
+  const margin=incToday?Math.round(netToday/incToday*100):0;
+
+  const a=document.getElementById("v12TodayNet");
+  const b=document.getElementById("v12TodayOrders");
+  const c=document.getElementById("v12ProfitOrder");
+  const d=document.getElementById("v12TodayExpense");
+  const e=document.getElementById("v12Margin");
+  const f=document.getElementById("v12BestDay");
+  if(a)a.textContent=v12Money(netToday);
+  if(b)b.textContent=ordersToday;
+  if(c)c.textContent=v12Money(avgProfit);
+  if(d)d.textContent=v12Money(expToday);
+  if(e)e.textContent=margin+"%";
+
+  const byDay={};
+  tx.forEach(x=>{
+    const day=v12DateOf(x);
+    if(!day)return;
+    if(!byDay[day])byDay[day]={i:0,e:0};
+    if(v12IsIncome(x))byDay[day].i+=Number(x.amount||0);
+    if(v12IsExpense(x))byDay[day].e+=Number(x.amount||0);
+  });
+  const days=Object.entries(byDay).map(([day,v])=>({day,net:v.i-v.e}));
+  days.sort((p,q)=>q.net-p.net);
+  if(f){
+    if(days.length){
+      const best=days[0];
+      const label=new Date(best.day+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
+      f.textContent=label+" • "+v12Money(best.net);
+    }else f.textContent="-";
+  }
+
+  const target=Number(localStorage.getItem("gojekFinanceDailyTarget")||0);
+  const inp=document.getElementById("v12Target");
+  const text=document.getElementById("v12TargetText");
+  const bar=document.getElementById("v12TargetBar");
+  if(inp && document.activeElement!==inp) inp.value=target||"";
+  if(text) text.textContent=v12Money(netToday)+" / "+v12Money(target);
+  if(bar){
+    const pct=target>0?Math.min(100,Math.max(0,netToday/target*100)):0;
+    bar.style.width=pct+"%";
+  }
+}
+function saveV12Target(){
+  const n=Number(document.getElementById("v12Target")?.value||0);
+  if(n>0)localStorage.setItem("gojekFinanceDailyTarget",String(n));
+  else localStorage.removeItem("gojekFinanceDailyTarget");
+  renderV12Insights();
+}
+window.addEventListener("load",()=>{
+  setTimeout(()=>{
+    renderV12Insights();
+    const inp=document.getElementById("v12Target");
+    if(inp) inp.addEventListener("change",saveV12Target);
+  },400);
+});
+</script>
+
+</body>
 </html>
