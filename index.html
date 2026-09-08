@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V16</title>
+<title>Gojek Finance Tracker V17</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -45,6 +45,28 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 
 
 
+
+
+<!-- V17_DAILY_REPORT -->
+<section class="box" id="v17DailyReport">
+  <h2>📋 Laporan Hari Ini</h2>
+  <div class="v17-hero">
+    <h3>🛵 Ringkasan kerja</h3>
+    <div class="v17-net" id="v17Net">Rp 0</div>
+    <div id="v17Summary">Belum ada transaksi hari ini.</div>
+  </div>
+  <div class="v17-grid">
+    <div class="v17-card"><small>💰 Pemasukan</small><b id="v17Income">Rp 0</b></div>
+    <div class="v17-card"><small>💳 Pengeluaran</small><b id="v17Expense">Rp 0</b></div>
+    <div class="v17-card"><small>⛽ Estimasi bensin</small><b id="v17Fuel">Rp 0</b></div>
+    <div class="v17-card"><small>📦 Profit setelah bensin</small><b id="v17Profit">Rp 0</b></div>
+    <div class="v17-card"><small>🛵 Order</small><b id="v17Orders">0</b></div>
+    <div class="v17-card"><small>🛣️ Jarak</small><b id="v17Km">0 km</b></div>
+    <div class="v17-card"><small>⏱️ Jam kerja</small><b id="v17Hours">0 jam</b></div>
+    <div class="v17-card"><small>💵 Profit / jam</small><b id="v17Hour">Rp 0</b></div>
+  </div>
+  <div class="v17-good" id="v17Advice">Mulai catat transaksi untuk melihat evaluasi harian.</div>
+</section>
 
 <!-- V16_OPERASIONAL -->
 <section class="box" id="v16Operational">
@@ -162,6 +184,19 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v16Operational .v16-card b{display:block;font-size:18px;margin-top:5px}
 #v16Operational .v16-help{font-size:12px;color:#6b7280;margin-top:6px}
 @media(max-width:700px){#v16Operational .v16-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="V17_CSS">
+#v17DailyReport .v17-hero{background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:12px}
+#v17DailyReport .v17-hero h3{margin:0 0 6px}
+#v17DailyReport .v17-net{font-size:30px;font-weight:800;margin:4px 0}
+#v17DailyReport .v17-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v17DailyReport .v17-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
+#v17DailyReport .v17-card small{color:#6b7280}
+#v17DailyReport .v17-card b{display:block;font-size:18px;margin-top:5px}
+#v17DailyReport .v17-good{margin-top:12px;padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;font-weight:600}
+@media(max-width:700px){#v17DailyReport .v17-grid{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -818,6 +853,61 @@ window.addEventListener("load",()=>{
     },700);
   });
   window.renderV16=render;
+})();
+</script>
+
+
+<script id="V17_DAILY_REPORT">
+(function(){
+  const fuelE="gojekFinanceFuelEfficiencyV16", fuelP="gojekFinanceFuelPriceV16";
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function today(){const d=new Date();return d.toISOString().slice(0,10)}
+  function dateOf(x){return x.date||x.day||x.tanggal||""}
+  function time(s){const m=String(s||"").match(/(\d{1,2})[:.](\d{2})/);if(!m)return null;return +m[1]*60 + +m[2]}
+  function hours(list){
+    const a=[];
+    list.filter(x=>x.type==="income").forEach(x=>{
+      const s=time(x.startTime||x.start||x.timeStart),e=time(x.endTime||x.end||x.timeEnd);
+      if(s!=null)a.push(s);if(e!=null)a.push(e);
+    });
+    if(a.length<2)return 0;
+    let lo=Math.min(...a),hi=Math.max(...a);if(hi<lo)hi+=1440;
+    return (hi-lo)/60;
+  }
+  function render(){
+    const list=txs().filter(x=>dateOf(x)===today());
+    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
+    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
+    const km=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.distance||x.km||0),0);
+    const orders=list.filter(x=>x.type==="income").length;
+    const hrs=hours(list);
+    const eff=Number(localStorage.getItem(fuelE)||0), price=Number(localStorage.getItem(fuelP)||0);
+    const fuel=eff>0?km/eff*price:0;
+    const profit=inc-exp-fuel;
+    const perHour=hrs?profit/hrs:0;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v17Net",money(profit));
+    set("v17Income",money(inc));
+    set("v17Expense",money(exp));
+    set("v17Fuel",money(fuel));
+    set("v17Profit",money(profit));
+    set("v17Orders",orders);
+    set("v17Km",km.toFixed(2)+" km");
+    set("v17Hours",hrs?hrs.toFixed(1)+" jam":"0 jam");
+    set("v17Hour",money(perHour));
+    set("v17Summary",orders+" order • "+km.toFixed(1)+" km • "+(hrs?hrs.toFixed(1):"0")+" jam kerja");
+    const advice=document.getElementById("v17Advice");
+    if(advice){
+      if(!orders && !exp) advice.textContent="📝 Belum ada aktivitas tercatat hari ini.";
+      else if(profit<0) advice.textContent="⚠️ Hari ini masih minus. Cek pengeluaran dan biaya operasional.";
+      else if(perHour>=50000) advice.textContent="🔥 Mantap! Profit per jam hari ini sangat bagus.";
+      else if(perHour>=30000) advice.textContent="💪 Lumayan bagus. Pertahankan order dan tekan biaya operasional.";
+      else advice.textContent="🛵 Masih bisa digenjot. Coba fokus ke jam/area yang lebih ramai.";
+    }
+  }
+  window.addEventListener("load",()=>setTimeout(render,800));
+  window.renderV17=render;
 })();
 </script>
 
