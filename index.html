@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V14</title>
+<title>Gojek Finance Tracker V15</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -43,6 +43,23 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 @media(max-width:700px){#v13Performance .perf-grid{grid-template-columns:1fr}}
 </style>
 
+
+
+<!-- V15_MODE_NARIK -->
+<section class="box" id="v15ModeNarik">
+  <h2>🛵 Mode Narik</h2>
+  <div class="v15-live" id="v15Timer">00:00:00</div>
+  <div class="v15-actions">
+    <button id="v15StartBtn" type="button">🟢 Mulai Narik</button>
+    <button id="v15StopBtn" type="button" disabled>🔴 Selesai Narik</button>
+  </div>
+  <div class="v15-stats">
+    <div class="v15-stat"><small>Order</small><b id="v15Orders">0</b></div>
+    <div class="v15-stat"><small>Pemasukan</small><b id="v15Income">Rp 0</b></div>
+    <div class="v15-stat"><small>Bersih</small><b id="v15Net">Rp 0</b></div>
+  </div>
+  <div class="v15-history" id="v15SessionInfo">Belum ada sesi aktif.</div>
+</section>
 
 <!-- V14_PWA -->
 <meta name="theme-color" content="#111827" id="v14ThemeColor">
@@ -97,6 +114,20 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
   });
 })();
 </script>
+
+
+<style id="V15_CSS">
+#v15ModeNarik{background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-top:14px}
+.v15-live{font-size:34px;font-weight:800;text-align:center;margin:12px 0}
+.v15-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.v15-actions button{min-height:48px}
+.v15-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.v15-stat{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:10px;text-align:center}
+.v15-stat small{display:block;color:#6b7280}
+.v15-stat b{font-size:17px}
+.v15-history{margin-top:12px;font-size:13px;color:#4b5563}
+@media(max-width:600px){.v15-actions{grid-template-columns:1fr}.v15-stats{grid-template-columns:1fr 1fr 1fr}.v15-live{font-size:30px}}
+</style>
 
 </head>
 <body>
@@ -638,6 +669,69 @@ window.addEventListener("load",()=>{
     },500);
   });
   window.renderV13=renderV13;
+})();
+</script>
+
+
+<script id="V15_MODE_NARIK">
+(function(){
+  const KEY="gojekFinanceActiveSessionV15";
+  let timer=null;
+
+  function money(n){return "Rp "+Math.round(Number(n||0)).toLocaleString("id-ID")}
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function session(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
+  function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
+  function clear(){localStorage.removeItem(KEY)}
+
+  function elapsed(ms){
+    ms=Math.max(0,ms);
+    const sec=Math.floor(ms/1000), h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
+    return [h,m,s].map((v,i)=>i===0?String(v).padStart(2,"0"):String(v).padStart(2,"0")).join(":");
+  }
+  function render(){
+    const s=session();
+    const start=s?new Date(s.start).getTime():0;
+    const now=Date.now();
+    const timer=document.getElementById("v15Timer");
+    if(timer)timer.textContent=s?elapsed(now-start):"00:00:00";
+
+    const day=s?new Date(s.start).toISOString().slice(0,10):"";
+    const list=s?txs().filter(x=>(x.date||x.day||x.tanggal||"")===day):[];
+    const inc=list.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0);
+    const exp=list.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);
+    const orders=list.filter(x=>x.type==="income").length;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v15Orders",orders); set("v15Income",money(inc)); set("v15Net",money(inc-exp));
+
+    const st=document.getElementById("v15StartBtn"), sp=document.getElementById("v15StopBtn");
+    if(st)st.disabled=!!s; if(sp)sp.disabled=!s;
+    const info=document.getElementById("v15SessionInfo");
+    if(info){
+      info.textContent=s
+        ?"Sesi aktif sejak "+new Date(s.start).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
+        :"Belum ada sesi aktif.";
+    }
+  }
+  function start(){
+    if(session())return;
+    save({start:new Date().toISOString()});
+    render();
+  }
+  function stop(){
+    const s=session(); if(!s)return;
+    const duration=Date.now()-new Date(s.start).getTime();
+    clear(); render();
+    alert("Sesi selesai! Durasi: "+elapsed(duration)+"\nData transaksi hari ini tetap aman.");
+  }
+  window.addEventListener("load",()=>{
+    setTimeout(()=>{
+      document.getElementById("v15StartBtn")?.addEventListener("click",start);
+      document.getElementById("v15StopBtn")?.addEventListener("click",stop);
+      render();
+      timer=setInterval(render,1000);
+    },600);
+  });
 })();
 </script>
 
