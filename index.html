@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#061513">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Gojek Finance Tracker V27</title>
+<title>Gojek Finance Tracker V28</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -26,6 +26,8 @@
 .fade-up{animation:fadeUp .5s ease both}
 @keyframes splashIn{from{opacity:0;transform:translateY(18px) scale(.96)}to{opacity:1;transform:none}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.smart-card{border-color:#765d2b;background:linear-gradient(145deg,#132a24,#0b1c18);position:relative;overflow:hidden}.smart-card:after{content:"";position:absolute;width:120px;height:120px;border-radius:50%;right:-45px;top:-40px;background:#e7bd6118;filter:blur(2px)}
+
 
 </style>
 </head>
@@ -42,7 +44,7 @@
 
 <div class="app">
 <header class="top">
-  <div class="brand"><div class="logo">◉</div><div><b>Gojek Finance</b><small>Premium Driver Edition • V27</small></div></div>
+  <div class="brand"><div class="logo">◉</div><div><b>Gojek Finance</b><small>Premium Driver Edition • V28</small></div></div>
   <button class="icon" onclick="showSettings()">⚙️</button>
 </header>
 
@@ -73,6 +75,14 @@
     <div class="row"><div><small style="color:var(--muted)">🎯 Target profit harian</small><b id="targetText" style="display:block;margin-top:5px">Rp 0 / Rp 0</b></div><span class="pill" id="targetPct">0%</span></div>
     <div class="progress"><i id="targetBar"></i></div>
   </div>
+  <div class="card smart-card fade-up">
+    <div class="row"><div><small style="color:var(--gold);letter-spacing:.8px;text-transform:uppercase">🧠 Smart Driver</small><b id="smartTitle" style="display:block;margin-top:5px">Siap membaca pola kerja kamu</b></div><span class="pill" id="smartBadge">V28</span></div>
+    <p id="smartAdvice" style="color:var(--muted);font-size:12px;line-height:1.6;margin:10px 0 0">Tambahkan beberapa order untuk mendapatkan rekomendasi yang lebih personal.</p>
+    <div class="mini-grid" style="margin-top:10px">
+      <div class="mini"><small>🎯 Sisa target</small><b id="smartRemain">Rp 0</b></div>
+      <div class="mini"><small>⛽ Estimasi bensin</small><b id="smartFuel">Rp 0</b></div>
+    </div>
+  </div>
   <div class="section-title"><h2>Ringkasan performa</h2><span id="todayLabel"></span></div>
   <div class="stats">
     <div class="stat"><small>💵 Bersih / order</small><b id="netOrder">Rp 0</b></div>
@@ -83,7 +93,7 @@
 </section>
 
 <section id="analytics" class="screen">
-  <div class="section-title"><h2>Analisis Performa</h2><span class="pill">V26 Premium</span></div>
+  <div class="section-title"><h2>Analisis Performa</h2><span class="pill">V28 Smart</span></div>
   <div class="card">
     <div class="row"><b>Pendapatan vs pengeluaran</b><span class="pill">30 hari</span></div>
     <div class="chartbox"><canvas id="financeChart"></canvas></div>
@@ -135,9 +145,9 @@
     <div class="settings-item" onclick="backup()"><div class="si">☁️</div><div><b>Backup Data</b><small>Simpan cadangan transaksi</small></div><span>›</span></div>
     <div class="settings-item" onclick="restoreInput.click()"><div class="si">♻️</div><div><b>Pulihkan Data</b><small>Restore dari file JSON</small></div><span>›</span></div>
     <div class="settings-item" onclick="startRide()"><div class="si">🛵</div><div><b>Mode Narik</b><small>Timer dan ringkasan kerja</small></div><span>›</span></div>
-    <div class="settings-item" onclick="showAbout()"><div class="si">✨</div><div><b>Tentang</b><small>Gojek Finance Tracker V27</small></div><span>›</span></div>
+    <div class="settings-item" onclick="showAbout()"><div class="si">✨</div><div><b>Tentang</b><small>Gojek Finance Tracker V28</small></div><span>›</span></div>
   </div>
-  <div class="footer-note">Kerja Lebih Cerdas • Atur Keuangan • Capai Tujuan • Hidup Lebih Tenang<br><br>Gojek Finance Tracker V27 Premium Edition</div>
+  <div class="footer-note">Kerja Lebih Cerdas • Atur Keuangan • Capai Tujuan • Hidup Lebih Tenang<br><br>Gojek Finance Tracker V28 Premium Edition</div>
 </section>
 
 <section id="ride" class="screen mode">
@@ -203,7 +213,24 @@ function expenseSum(a){return a.filter(x=>x.type==='expense').reduce((s,x)=>s+Nu
 function kmSum(a){return a.reduce((s,x)=>s+Number(x.distance||0),0)}
 function rideHours(a){let mins=0;a.forEach(x=>{if(x.startTime&&x.endTime){let [h,m]=x.startTime.split(':').map(Number),[h2,m2]=x.endTime.split(':').map(Number);let d=(h2*60+m2)-(h*60+m);if(d>0&&d<300)mins+=d}});return mins/60}
 function fuelCost(a){let eff=Number(localStorage.getItem(effKey)||10), price=Number(localStorage.getItem(fuelKey)||10000);return eff>0?kmSum(a)/eff*price:0}
-function renderHome(){let a=todayTx(),inc=incomeSum(a),ex=expenseSum(a),net=inc-ex;document.getElementById('heroNet').textContent=rupiah(net);document.getElementById('homeIncome').textContent=rupiah(inc);document.getElementById('homeExpense').textContent=rupiah(ex);document.getElementById('homeOrders').textContent=a.filter(x=>x.type!=='expense').length;document.getElementById('homeKm').textContent=kmSum(a).toFixed(2)+' km';document.getElementById('netOrder').textContent=rupiah(a.length?net/a.filter(x=>x.type!=='expense').length:0);let h=rideHours(a);document.getElementById('netHour').textContent=rupiah(h?net/h:0);document.getElementById('incomeKm').textContent=rupiah(kmSum(a)?inc/kmSum(a):0);document.getElementById('fuelKm').textContent=rupiah(kmSum(a)?fuelCost(a)/kmSum(a):0);let target=Number(localStorage.getItem(targetKey)||0),pct=target?Math.min(100,Math.round(net/target*100)):0;document.getElementById('targetText').textContent=rupiah(net)+' / '+rupiah(target);document.getElementById('targetPct').textContent=pct+'%';document.getElementById('targetBar').style.width=pct+'%';document.getElementById('todayLabel').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short'});document.getElementById('heroDelta').textContent=net>0?'● Performa positif hari ini':'● Siap mulai kerja'}
+function renderSmart(){
+  let a=todayTx(), orders=a.filter(x=>x.type!=='expense'), inc=incomeSum(a), ex=expenseSum(a), net=inc-ex;
+  let target=Number(localStorage.getItem(targetKey)||0), remain=Math.max(0,target-net);
+  let fuel=Math.round(fuelCost(a));
+  document.getElementById('smartRemain').textContent=target?rupiah(remain):'Atur target';
+  document.getElementById('smartFuel').textContent=rupiah(fuel);
+  let hist=tx.filter(x=>x.type!=='expense' && Date.now()-parseDate(x).getTime()<30*86400000);
+  let byHour={}; hist.forEach(x=>{let h=(x.startTime||'').split(':')[0]; if(h)byHour[h]=(byHour[h]||0)+Number(x.amount||0)});
+  let best=Object.entries(byHour).sort((a,b)=>b[1]-a[1])[0];
+  let hour= new Date().getHours(), title='Waktunya atur strategi'; let advice='';
+  if(!orders.length){title='Belum ada order hari ini'; advice=best?`Data 30 hari kamu menunjukkan jam ${best[0]}:00 paling kuat. Coba prioritaskan jam itu dan catat order lewat Scan.`:'Mulai dengan Scan Order setelah beberapa perjalanan. Setelah data terkumpul, rekomendasi jam terbaik akan muncul otomatis.';}
+  else if(remain<=0 && target){title='🎉 Target hari ini tercapai'; advice=`Profit bersih ${rupiah(net)} sudah melewati target. Kalau lanjut, pertimbangkan jam yang historisnya paling menghasilkan${best?' sekitar '+best[0]+':00':''}.`; }
+  else if(target){title=`Masih ${rupiah(remain)} menuju target`; let est=orders.length?Math.max(1,Math.ceil(remain/(inc/orders.length||1))):1; advice=`Dengan rata-rata sekitar ${rupiah(inc/orders.length)} per order, kamu butuh kira-kira ${est} order lagi. ${best?'Jam historis terbaik: '+best[0]+':00.':''}`;}
+  else {title='Pasang target biar lebih terarah'; advice=`Saat ini ${orders.length} order dengan profit bersih ${rupiah(net)}. Atur target harian di Pengaturan supaya Smart Driver bisa menghitung sisa target.`;}
+  if(best && orders.length){let diff=Math.abs(hour-Number(best[0])); if(diff<=1) advice+=' 🔥 Kamu sedang dekat dengan jam performa terbaik.';}
+  document.getElementById('smartTitle').textContent=title; document.getElementById('smartAdvice').textContent=advice;
+}
+function renderHome(){renderSmart();let a=todayTx(),inc=incomeSum(a),ex=expenseSum(a),net=inc-ex;document.getElementById('heroNet').textContent=rupiah(net);document.getElementById('homeIncome').textContent=rupiah(inc);document.getElementById('homeExpense').textContent=rupiah(ex);document.getElementById('homeOrders').textContent=a.filter(x=>x.type!=='expense').length;document.getElementById('homeKm').textContent=kmSum(a).toFixed(2)+' km';document.getElementById('netOrder').textContent=rupiah(a.length?net/a.filter(x=>x.type!=='expense').length:0);let h=rideHours(a);document.getElementById('netHour').textContent=rupiah(h?net/h:0);document.getElementById('incomeKm').textContent=rupiah(kmSum(a)?inc/kmSum(a):0);document.getElementById('fuelKm').textContent=rupiah(kmSum(a)?fuelCost(a)/kmSum(a):0);let target=Number(localStorage.getItem(targetKey)||0),pct=target?Math.min(100,Math.round(net/target*100)):0;document.getElementById('targetText').textContent=rupiah(net)+' / '+rupiah(target);document.getElementById('targetPct').textContent=pct+'%';document.getElementById('targetBar').style.width=pct+'%';document.getElementById('todayLabel').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short'});document.getElementById('heroDelta').textContent=net>0?'● Performa positif hari ini':'● Siap mulai kerja'}
 function renderTx(){let list=document.getElementById('txList');let arr=[...tx].sort((a,b)=>parseDate(b)-parseDate(a)).slice(0,12);document.getElementById('countLabel').textContent=tx.length+' transaksi';if(!arr.length){list.innerHTML='<div class="empty">Belum ada transaksi.</div>';return}list.innerHTML=arr.map(x=>{let exp=x.type==='expense';return `<div class="tx"><div class="txico">${exp?'💸':'🛵'}</div><div class="txmain"><b>${exp?(x.category||'Pengeluaran'):'Order Gojek'}</b><small>${x.note||x.payment||'Transaksi'} • ${parseDate(x).toLocaleDateString('id-ID')}</small></div><div class="txamt ${exp?'expense':'income'}">${exp?'-':'+'}${rupiah(x.amount)}</div></div>`}).join('')}
 function rangeTx(){let p=document.getElementById('period')?.value||'today',now=Date.now();if(p==='all')return tx;if(p==='today')return todayTx();let days=Number(p);return tx.filter(x=>now-parseDate(x).getTime()<days*86400000)}
 function renderReports(){let a=rangeTx(),inc=incomeSum(a),ex=expenseSum(a),orders=a.filter(x=>x.type!=='expense').length;document.getElementById('reportNet').textContent=rupiah(inc-ex);document.getElementById('reportSub').textContent=orders+' order • '+kmSum(a).toFixed(1)+' km';document.getElementById('repIncome').textContent=rupiah(inc);document.getElementById('repExpense').textContent=rupiah(ex);document.getElementById('repOrders').textContent=orders;document.getElementById('repKm').textContent=kmSum(a).toFixed(2)+' km'}
@@ -224,11 +251,11 @@ function saveManual(){let a=Number(document.getElementById('mAmount').value);if(
 function showSettings(){document.getElementById('setName').value=localStorage.getItem(nameKey)||'';document.getElementById('setTarget').value=localStorage.getItem(targetKey)||'';document.getElementById('setEff').value=localStorage.getItem(effKey)||10;document.getElementById('setFuel').value=localStorage.getItem(fuelKey)||10000;document.getElementById('settingsModal').classList.add('show')}
 function closeSettings(){document.getElementById('settingsModal').classList.remove('show')}
 function saveSettings(){localStorage.setItem(nameKey,(document.getElementById('setName').value||'').trim());applyProfile();localStorage.setItem(targetKey,Number(document.getElementById('setTarget').value)||0);localStorage.setItem(effKey,Number(document.getElementById('setEff').value)||10);localStorage.setItem(fuelKey,Number(document.getElementById('setFuel').value)||10000);closeSettings();renderAll();toast('Pengaturan disimpan')}
-function backup(){let data={transactions:tx,target:localStorage.getItem(targetKey),eff:localStorage.getItem(effKey),fuel:localStorage.getItem(fuelKey),name:localStorage.getItem(nameKey)||'',version:'V27'};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='gojek-finance-v27-backup.json';a.click();toast('Backup dibuat')}
+function backup(){let data={transactions:tx,target:localStorage.getItem(targetKey),eff:localStorage.getItem(effKey),fuel:localStorage.getItem(fuelKey),name:localStorage.getItem(nameKey)||'',version:'V28'};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='gojek-finance-v28-backup.json';a.click();toast('Backup dibuat')}
 restoreInput.addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(Array.isArray(d.transactions)){tx=d.transactions;localStorage.setItem(KEY,JSON.stringify(tx));if(d.target!=null)localStorage.setItem(targetKey,d.target);if(d.eff!=null)localStorage.setItem(effKey,d.eff);if(d.fuel!=null)localStorage.setItem(fuelKey,d.fuel);if(d.name!=null)localStorage.setItem(nameKey,d.name);applyProfile();renderAll();toast('Data dipulihkan')}}catch{toast('File backup tidak valid')}};r.readAsText(f)})
-function exportCSV(){let a=rangeTx(),rows=[['Tanggal','Jenis','Nominal','Kategori','Catatan','Jarak','Mulai','Selesai']];a.forEach(x=>rows.push([parseDate(x).toLocaleDateString('id-ID'),x.type,x.amount,x.category||'',x.note||'',x.distance||'',x.startTime||'',x.endTime||'']));let csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n'),el=document.createElement('a');el.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));el.download='gojek-finance-report-v27.csv';el.click()}
+function exportCSV(){let a=rangeTx(),rows=[['Tanggal','Jenis','Nominal','Kategori','Catatan','Jarak','Mulai','Selesai']];a.forEach(x=>rows.push([parseDate(x).toLocaleDateString('id-ID'),x.type,x.amount,x.category||'',x.note||'',x.distance||'',x.startTime||'',x.endTime||'']));let csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n'),el=document.createElement('a');el.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));el.download='gojek-finance-report-v28.csv';el.click()}
 function wipe(){if(confirm('Hapus SEMUA transaksi dan pengaturan?')){localStorage.removeItem(KEY);localStorage.removeItem(targetKey);localStorage.removeItem(effKey);localStorage.removeItem(fuelKey);localStorage.removeItem(nameKey);tx=[];closeSettings();renderAll();toast('Semua data dihapus')}}
-function showAbout(){alert('Gojek Finance Tracker V27 Premium Edition\\n\\nKerja Lebih Cerdas • Atur Keuangan • Capai Tujuan • Hidup Lebih Tenang')}
+function showAbout(){alert('Gojek Finance Tracker V28 Premium Edition\\n\\nKerja Lebih Cerdas • Atur Keuangan • Capai Tujuan • Hidup Lebih Tenang')}
 function renderAll(){renderHome();renderTx();renderReports();renderAnalytics();renderRide()}
 applyProfile();renderAll();setTimeout(()=>document.getElementById('splash').classList.add('hide'),900);rideTimer=setInterval(()=>{if(document.getElementById('ride').classList.contains('active'))renderRide()},1000);
 </script>
