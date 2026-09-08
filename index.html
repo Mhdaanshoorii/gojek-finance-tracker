@@ -2,181 +2,197 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gojek Finance Tracker V2</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gojek Finance Tracker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
+*{
+  box-sizing:border-box;
+}
 
 body{
-margin:0;
-font-family:Arial,sans-serif;
-background:#f5f6f8;
-color:#222
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f5f7;
+  color:#222;
 }
 
 header{
-background:#00aa5b;
-color:white;
-padding:22px 18px;
-border-radius:0 0 22px 22px
+  background:#008f5a;
+  color:white;
+  padding:22px 18px;
 }
 
-h1{
-margin:0 0 5px;
-font-size:24px
+header h1{
+  margin:0;
+  font-size:25px;
 }
 
-main{
-max-width:720px;
-margin:auto;
-padding:16px
+header p{
+  margin:6px 0 0;
+  opacity:.9;
+}
+
+.container{
+  max-width:700px;
+  margin:auto;
+  padding:16px;
 }
 
 .card{
-background:white;
-border-radius:16px;
-padding:16px;
-margin:12px 0;
-box-shadow:0 2px 10px #0001
+  background:white;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:16px;
+  box-shadow:0 3px 12px rgba(0,0,0,.07);
 }
 
 .stats{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:9px
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
 }
 
 .stat{
-background:#f1f8f4;
-padding:13px;
-border-radius:12px
+  background:#f7f7f7;
+  padding:13px 7px;
+  border-radius:12px;
+  text-align:center;
 }
 
-.stat b{
-display:block;
-margin-top:5px;
-font-size:18px
+.stat small{
+  display:block;
+  color:#666;
+  font-size:12px;
 }
 
-.wide{
-grid-column:1/-1
-}
-
-button{
-border:0;
-border-radius:10px;
-padding:12px 15px;
-font-weight:bold;
-background:#00aa5b;
-color:white;
-font-size:15px;
-margin:4px 3px 4px 0
-}
-
-button:disabled{
-opacity:.5
-}
-
-.secondary{
-background:#e9ecef;
-color:#222
-}
-
-.danger{
-background:#dc3545
-}
-
-input,select{
-width:100%;
-padding:12px;
-border:1px solid #ddd;
-border-radius:10px;
-margin:6px 0 10px;
-font-size:16px
-}
-
-.row{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:10px
-}
-
-.preview{
-width:100%;
-max-height:430px;
-object-fit:contain;
-border-radius:12px;
-margin:10px 0;
-background:#eee
-}
-
-.status{
-background:#f1f3f5;
-padding:10px;
-border-radius:10px;
-margin-top:10px
-}
-
-.result{
-border:1px solid #ddd;
-border-radius:12px;
-padding:10px;
-margin:8px 0;
-background:#fafafa
-}
-
-.resultgrid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:8px
-}
-
-.item{
-padding:11px 0;
-border-bottom:1px solid #eee
+.stat strong{
+  display:block;
+  margin-top:6px;
+  font-size:15px;
 }
 
 .income{
-color:#087f43
+  color:#087f50;
 }
 
 .expense{
-color:#c62828
+  color:#d52d3d;
+}
+
+input,select,button{
+  width:100%;
+  padding:13px;
+  margin-top:8px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:15px;
+}
+
+button{
+  background:#008f5a;
+  color:white;
+  border:none;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+button:active{
+  transform:scale(.98);
+}
+
+button.red{
+  background:#dc3545;
+}
+
+button.gray{
+  background:#666;
+}
+
+#progress{
+  margin-top:12px;
+  font-size:14px;
+  color:#555;
+}
+
+.preview{
+  margin-top:14px;
+}
+
+.row{
+  border:1px solid #ddd;
+  border-radius:12px;
+  padding:12px;
+  margin-top:9px;
+  background:#fafafa;
+}
+
+.row-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.row input{
+  margin-top:4px;
+  padding:9px;
+}
+
+.transaction{
+  border-bottom:1px solid #eee;
+  padding:13px 0;
+}
+
+.transaction:last-child{
+  border-bottom:none;
+}
+
+.transaction-title{
+  font-size:16px;
+  font-weight:bold;
+}
+
+.transaction-info{
+  color:#555;
+  font-size:14px;
+  margin-top:4px;
+}
+
+.transaction-date{
+  color:#888;
+  font-size:12px;
+  margin-top:5px;
 }
 
 .empty{
-color:#777
+  text-align:center;
+  color:#888;
+  padding:20px;
 }
 
-.hint{
-font-size:13px;
-color:#666
+h2{
+  margin-top:0;
 }
 
-pre{
-white-space:pre-wrap;
-background:#111;
-color:#eee;
-padding:10px;
-border-radius:10px;
-max-height:220px;
-overflow:auto;
-font-size:12px
+label{
+  display:block;
+  margin-top:10px;
+  font-size:13px;
+  color:#555;
 }
 
-small{
-color:#666
+#review{
+  display:none;
 }
 
-@media(max-width:480px){
-
-.stats,
-.row,
-.resultgrid{
-grid-template-columns:1fr
-}
-
+.warning{
+  background:#fff5d6;
+  padding:10px;
+  border-radius:10px;
+  font-size:13px;
+  margin-top:10px;
 }
 </style>
 </head>
@@ -184,896 +200,876 @@ grid-template-columns:1fr
 <body>
 
 <header>
-<h1>Gojek Finance Tracker</h1>
-<div>Catat pemasukan & pengeluaran driver</div>
+  <h1>🛵 Gojek Finance Tracker</h1>
+  <p>Catat pemasukan & pengeluaran driver</p>
 </header>
 
-<main>
+<div class="container">
 
-<div class="card">
+  <!-- DASHBOARD -->
+  <div class="card">
+    <div class="stats">
+      <div class="stat">
+        <small>Pemasukan</small>
+        <strong class="income" id="totalIncome">Rp0</strong>
+      </div>
 
-<h2>📊 Ringkasan</h2>
+      <div class="stat">
+        <small>Pengeluaran</small>
+        <strong class="expense" id="totalExpense">Rp0</strong>
+      </div>
 
-<div class="stats">
-
-<div class="stat">
-Pemasukan
-<b id="income">Rp0</b>
-</div>
-
-<div class="stat">
-Pengeluaran
-<b id="expense">Rp0</b>
-</div>
-
-<div class="stat">
-Bersih
-<b id="net">Rp0</b>
-</div>
-
-<div class="stat">
-Jumlah Order
-<b id="orders">0</b>
-</div>
-
-<div class="stat wide">
-Total Jarak
-<b id="distance">0 km</b>
-</div>
-
-</div>
-</div>
+      <div class="stat">
+        <small>Bersih</small>
+        <strong id="totalNet">Rp0</strong>
+      </div>
+    </div>
+  </div>
 
 
-<div class="card">
+  <!-- SCAN -->
+  <div class="card">
+    <h2>📸 Scan Screenshot Gojek</h2>
 
-<h2>📸 Scan Screenshot Gojek</h2>
+    <p>
+      Pilih screenshot riwayat perjalanan Gojek.
+      Sistem akan membaca nominal, jam, jarak dan metode pembayaran.
+    </p>
 
-<p>
-Upload screenshot riwayat perjalanan Gojek.
-Hasil scan akan diperiksa dulu sebelum disimpan.
-</p>
+    <input
+      type="file"
+      id="imageInput"
+      accept="image/*"
+    >
 
-<input
-id="photo"
-type="file"
-accept="image/*"
->
+    <button onclick="scanImage()">
+      🔎 Baca Screenshot
+    </button>
 
-<img
-id="preview"
-class="preview"
-hidden
->
+    <div id="progress"></div>
 
-<button
-id="scan"
-disabled
->
-🔎 Baca Screenshot
-</button>
-
-<div
-id="status"
-class="status"
->
-Pilih screenshot terlebih dahulu.
-</div>
+    <div class="warning">
+      💡 Hasil scan akan diperiksa dulu. Data belum masuk transaksi
+      sampai kamu menekan tombol <b>Simpan Semua</b>.
+    </div>
+  </div>
 
 
-<div
-id="review"
-hidden
->
+  <!-- REVIEW OCR -->
+  <div class="card" id="review">
+    <h2>🔍 Periksa Hasil Scan</h2>
 
-<h3>🔍 Periksa Hasil Scan</h3>
+    <div id="reviewList"></div>
 
-<div class="hint">
-Kamu bisa mengubah nominal, waktu, jarak dan metode pembayaran.
-</div>
+    <button onclick="saveScanned()">
+      💾 Simpan Semua
+    </button>
 
-<div id="results"></div>
-
-<button id="saveScan">
-💾 Simpan Semua Hasil Scan
-</button>
-
-<button
-id="cancelScan"
-class="secondary"
->
-Batal
-</button>
-
-</div>
+    <button class="gray" onclick="cancelScan()">
+      Batal
+    </button>
+  </div>
 
 
-<details>
+  <!-- MANUAL -->
+  <div class="card">
+    <h2>➕ Tambah Transaksi</h2>
 
-<summary>Hasil OCR mentah</summary>
+    <label>Jenis</label>
+    <select id="manualType">
+      <option value="income">Pemasukan</option>
+      <option value="expense">Pengeluaran</option>
+    </select>
 
-<pre id="ocr"></pre>
+    <label>Nominal</label>
+    <input
+      type="number"
+      id="manualAmount"
+      placeholder="Contoh: 15000"
+    >
 
-</details>
+    <label>Keterangan</label>
+    <input
+      type="text"
+      id="manualNote"
+      placeholder="Contoh: Bensin"
+    >
 
-</div>
+    <button onclick="addManual()">
+      Simpan Transaksi
+    </button>
+  </div>
 
 
-<div class="card">
+  <!-- TRANSACTIONS -->
+  <div class="card">
+    <h2>🧾 Transaksi</h2>
 
-<h2>➕ Tambah Manual</h2>
+    <div id="transactions"></div>
 
-<div class="row">
-
-<div>
-
-<label>Jenis</label>
-
-<select id="type">
-
-<option value="income">
-Pemasukan
-</option>
-
-<option value="expense">
-Pengeluaran
-</option>
-
-</select>
+    <button
+      class="red"
+      onclick="deleteAll()"
+    >
+      Hapus Semua Data
+    </button>
+  </div>
 
 </div>
-
-
-<div>
-
-<label>Nominal</label>
-
-<input
-id="amount"
-type="number"
-placeholder="15000"
->
-
-</div>
-
-</div>
-
-
-<input
-id="note"
-placeholder="Catatan, contoh: bensin"
->
-
-<button onclick="addManual()">
-Simpan
-</button>
-
-</div>
-
-
-<div class="card">
-
-<h2>🧾 Transaksi</h2>
-
-<div id="list"></div>
-
-<br>
-
-<button
-class="danger"
-onclick="clearAll()"
->
-Hapus Semua Data
-</button>
-
-</div>
-
-</main>
-
-
-<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 
 <script>
 
-const KEY="gojekFinanceData";
+let transactions =
+  JSON.parse(localStorage.getItem("gojekTransactions") || "[]");
 
-let data=JSON.parse(
-localStorage.getItem(KEY)||"[]"
-);
-
-let pending=[];
-
-const $=id=>document.getElementById(id);
+let scannedData = [];
 
 
-function rupiah(n){
+/* =========================
+   FORMAT RUPIAH
+========================= */
 
-return new Intl.NumberFormat(
-"id-ID",
-{
-style:"currency",
-currency:"IDR",
-maximumFractionDigits:0
-}
-).format(n);
+function rupiah(number){
 
-}
-
-
-function save(){
-
-localStorage.setItem(
-KEY,
-JSON.stringify(data)
-);
-
-render();
+  return new Intl.NumberFormat(
+    "id-ID",
+    {
+      style:"currency",
+      currency:"IDR",
+      maximumFractionDigits:0
+    }
+  ).format(number);
 
 }
 
 
-function render(){
+/* =========================
+   SIMPAN DATA
+========================= */
 
-let income=data
-.filter(x=>x.type==="income")
-.reduce((a,x)=>a+Number(x.amount||0),0);
+function saveData(){
 
-let expense=data
-.filter(x=>x.type==="expense")
-.reduce((a,x)=>a+Number(x.amount||0),0);
-
-let orders=data
-.filter(x=>x.type==="income")
-.length;
-
-let km=data
-.reduce((a,x)=>a+Number(x.km||0),0);
-
-
-$("income").textContent=
-rupiah(income);
-
-$("expense").textContent=
-rupiah(expense);
-
-$("net").textContent=
-rupiah(income-expense);
-
-$("orders").textContent=
-orders;
-
-$("distance").textContent=
-km.toFixed(2)+" km";
-
-
-if(!data.length){
-
-$("list").innerHTML=
-"<small class='empty'>Belum ada transaksi.</small>";
-
-return;
+  localStorage.setItem(
+    "gojekTransactions",
+    JSON.stringify(transactions)
+  );
 
 }
 
 
-$("list").innerHTML=
-data
-.slice()
-.reverse()
-.map(x=>`
+/* =========================
+   DASHBOARD
+========================= */
 
-<div class="item">
+function updateDashboard(){
 
-<span class="${x.type}">
+  let income = 0;
+  let expense = 0;
 
-${x.type==="income"?"⬆️":"⬇️"}
+  transactions.forEach(t => {
 
-<b>${rupiah(x.amount)}</b>
+    if(t.type === "income"){
+      income += Number(t.amount);
+    }
 
-</span>
+    if(t.type === "expense"){
+      expense += Number(t.amount);
+    }
 
-${x.note?
-" — "+escapeHtml(x.note):""}
+  });
 
-${x.km?
-" · "+x.km+" km":""}
+  document.getElementById("totalIncome").textContent =
+    rupiah(income);
 
-${x.pay?
-" · "+escapeHtml(x.pay):""}
+  document.getElementById("totalExpense").textContent =
+    rupiah(expense);
 
-<br>
-
-<small>
-${new Date(x.date).toLocaleString("id-ID")}
-</small>
-
-</div>
-
-`)
-.join("");
+  document.getElementById("totalNet").textContent =
+    rupiah(income - expense);
 
 }
 
 
-function escapeHtml(s){
+/* =========================
+   TAMPILKAN TRANSAKSI
+========================= */
 
-return String(s).replace(
-/[&<>"']/g,
-m=>({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#039;"
-}[m])
-);
+function renderTransactions(){
+
+  const box =
+    document.getElementById("transactions");
+
+  if(transactions.length === 0){
+
+    box.innerHTML =
+      '<div class="empty">Belum ada transaksi</div>';
+
+    updateDashboard();
+    return;
+  }
+
+  box.innerHTML = "";
+
+  [...transactions]
+    .reverse()
+    .forEach(t => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "transaction";
+
+      const arrow =
+        t.type === "income" ? "⬆️" : "⬇️";
+
+      const color =
+        t.type === "income" ? "income" : "expense";
+
+      let info = "";
+
+      if(t.source === "gojek"){
+
+        info =
+          `Gojek · ${t.time || "-"} · ${t.distance || "-"} km · ${t.payment || "-"}`;
+
+      }else{
+
+        info = t.note || "Manual";
+
+      }
+
+      div.innerHTML = `
+        <div class="transaction-title ${color}">
+          ${arrow} ${rupiah(t.amount)}
+        </div>
+
+        <div class="transaction-info">
+          ${info}
+        </div>
+
+        <div class="transaction-date">
+          ${t.date || "-"}
+        </div>
+      `;
+
+      box.appendChild(div);
+
+    });
+
+  updateDashboard();
 
 }
 
+
+/* =========================
+   OCR
+========================= */
+
+async function scanImage(){
+
+  const input =
+    document.getElementById("imageInput");
+
+  const progress =
+    document.getElementById("progress");
+
+  if(!input.files || !input.files[0]){
+
+    alert("Pilih screenshot Gojek dulu.");
+
+    return;
+  }
+
+  const file = input.files[0];
+
+  progress.innerHTML =
+    "⏳ Membaca screenshot...";
+
+  try{
+
+    const result =
+      await Tesseract.recognize(
+        file,
+        "eng",
+        {
+          logger: function(m){
+
+            if(m.status === "recognizing text"){
+
+              progress.innerHTML =
+                "⏳ OCR: " +
+                Math.round(m.progress * 100) +
+                "%";
+
+            }
+
+          }
+        }
+      );
+
+    const text = result.data.text;
+
+    console.log("OCR TEXT:");
+    console.log(text);
+
+    parseOCR(text);
+
+  }catch(error){
+
+    console.error(error);
+
+    progress.innerHTML =
+      "❌ OCR gagal.";
+
+    alert(
+      "OCR gagal membaca gambar. " +
+      "Coba screenshot yang lebih jelas."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   PARSE OCR
+========================= */
+
+function parseOCR(text){
+
+  /*
+    PENTING:
+
+    Kita TIDAK memakai Set() untuk nominal.
+
+    Jadi kalau ada:
+
+    Rp14.400
+    Rp12.800
+    Rp14.400
+
+    kedua Rp14.400 tetap dianggap
+    sebagai dua transaksi.
+  */
+
+  const lines =
+    text
+      .split(/\r?\n/)
+      .map(x => x.trim())
+      .filter(Boolean);
+
+
+  /* ---------- NOMINAL ---------- */
+
+  let amounts = [];
+
+  const amountRegex =
+    /(?:Rp|R[pP])\s*\.?\s*([0-9][0-9\.\,]*)/gi;
+
+  let match;
+
+  while((match = amountRegex.exec(text)) !== null){
+
+    let raw =
+      match[1]
+        .replace(/[^\d]/g,"");
+
+    if(raw){
+
+      let amount =
+        Number(raw);
+
+      /*
+        Filter angka yang masuk akal
+        sebagai tarif perjalanan.
+      */
+
+      if(amount >= 1000 && amount <= 1000000){
+
+        amounts.push(amount);
+
+      }
+
+    }
+
+  }
+
+
+  /* ---------- JAM ---------- */
+
+  let times = [];
+
+  const timeRegex =
+    /\b([0-2]?\d)[.:]([0-5]\d)\b/g;
+
+  while((match = timeRegex.exec(text)) !== null){
+
+    let hour =
+      Number(match[1]);
+
+    let minute =
+      Number(match[2]);
+
+    if(hour >= 0 && hour <= 23){
+
+      times.push(
+        String(hour).padStart(2,"0") +
+        ":" +
+        String(minute).padStart(2,"0")
+      );
+
+    }
+
+  }
+
+
+  /* ---------- JARAK ---------- */
+
+  let distances = [];
+
+  const distanceRegex =
+    /\b([0-9]+(?:[.,][0-9]+)?)\s*km\b/gi;
+
+  while((match = distanceRegex.exec(text)) !== null){
+
+    distances.push(
+      match[1].replace(",",".")
+    );
+
+  }
+
+
+  /* ---------- PEMBAYARAN ---------- */
+
+  let payments = [];
+
+  const paymentRegex =
+    /\b(GoPay|Gopay|Tunai|Cash)\b/gi;
+
+  while((match = paymentRegex.exec(text)) !== null){
+
+    let p = match[1].toLowerCase();
+
+    if(p === "gopay"){
+      payments.push("GoPay");
+    }
+    else if(p === "tunai" || p === "cash"){
+      payments.push("Tunai");
+    }
+
+  }
+
+
+  if(amounts.length === 0){
+
+    document.getElementById("progress").innerHTML =
+      "❌ Tidak menemukan nominal.";
+
+    alert(
+      "Nominal Gojek tidak terbaca.\n\n" +
+      "Coba gunakan screenshot yang lebih jelas."
+    );
+
+    return;
+
+  }
+
+
+  /*
+    Kita membuat transaksi berdasarkan
+    URUTAN kemunculan di screenshot.
+
+    Ini penting supaya:
+
+    Rp14.400
+    ...
+    Rp14.400
+
+    tetap menjadi dua baris berbeda.
+  */
+
+  scannedData = [];
+
+
+  for(let i = 0; i < amounts.length; i++){
+
+    scannedData.push({
+
+      type:"income",
+
+      amount:amounts[i],
+
+      source:"gojek",
+
+      time:times[i] || "",
+
+      distance:distances[i] || "",
+
+      payment:payments[i] || "",
+
+      date:getToday()
+
+    });
+
+  }
+
+
+  showReview();
+
+  document.getElementById("progress").innerHTML =
+    `✅ Ditemukan ${scannedData.length} transaksi.`;
+
+}
+
+
+/* =========================
+   TANGGAL
+========================= */
+
+function getToday(){
+
+  const d = new Date();
+
+  return (
+    d.getDate() +
+    "/" +
+    (d.getMonth()+1) +
+    "/" +
+    d.getFullYear()
+  );
+
+}
+
+
+/* =========================
+   REVIEW
+========================= */
+
+function showReview(){
+
+  const review =
+    document.getElementById("review");
+
+  const list =
+    document.getElementById("reviewList");
+
+  review.style.display = "block";
+
+  list.innerHTML = "";
+
+
+  scannedData.forEach((item,index) => {
+
+    const row =
+      document.createElement("div");
+
+    row.className = "row";
+
+    row.innerHTML = `
+
+      <b>Transaksi ${index + 1}</b>
+
+      <div class="row-grid">
+
+        <div>
+          <label>Nominal</label>
+          <input
+            type="number"
+            value="${item.amount}"
+            id="amount_${index}"
+          >
+        </div>
+
+        <div>
+          <label>Jam</label>
+          <input
+            type="text"
+            value="${item.time}"
+            placeholder="12:20"
+            id="time_${index}"
+          >
+        </div>
+
+        <div>
+          <label>Jarak (km)</label>
+          <input
+            type="text"
+            value="${item.distance}"
+            placeholder="8.44"
+            id="distance_${index}"
+          >
+        </div>
+
+        <div>
+          <label>Pembayaran</label>
+          <select id="payment_${index}">
+
+            <option value=""
+              ${item.payment === "" ? "selected" : ""}>
+              -
+            </option>
+
+            <option value="GoPay"
+              ${item.payment === "GoPay" ? "selected" : ""}>
+              GoPay
+            </option>
+
+            <option value="Tunai"
+              ${item.payment === "Tunai" ? "selected" : ""}>
+              Tunai
+            </option>
+
+          </select>
+        </div>
+
+      </div>
+
+    `;
+
+    list.appendChild(row);
+
+  });
+
+
+  review.scrollIntoView({
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =========================
+   SIMPAN HASIL SCAN
+========================= */
+
+function saveScanned(){
+
+  if(scannedData.length === 0){
+
+    return;
+
+  }
+
+
+  let saved = 0;
+
+
+  scannedData.forEach((item,index) => {
+
+    const amount =
+      Number(
+        document.getElementById(
+          "amount_" + index
+        ).value
+      );
+
+    const time =
+      document.getElementById(
+        "time_" + index
+      ).value.trim();
+
+    const distance =
+      document.getElementById(
+        "distance_" + index
+      ).value.trim();
+
+    const payment =
+      document.getElementById(
+        "payment_" + index
+      ).value;
+
+
+    if(!amount){
+
+      return;
+
+    }
+
+
+    /*
+      DUPLICATE CHECK
+
+      Nominal yang sama TIDAK dianggap duplikat.
+
+      Yang dianggap duplikat adalah:
+      tanggal + jam + nominal
+
+      Jadi:
+
+      Rp14.400 · 13:12
+      Rp14.400 · 15:08
+
+      = DUA transaksi.
+    */
+
+    const duplicate =
+      transactions.some(t =>
+
+        t.source === "gojek" &&
+
+        t.date === item.date &&
+
+        t.time === time &&
+
+        Number(t.amount) === amount
+
+      );
+
+
+    if(duplicate){
+
+      return;
+
+    }
+
+
+    transactions.push({
+
+      id:Date.now() + Math.random(),
+
+      type:"income",
+
+      amount:amount,
+
+      source:"gojek",
+
+      time:time,
+
+      distance:distance,
+
+      payment:payment,
+
+      date:item.date
+
+    });
+
+
+    saved++;
+
+  });
+
+
+  saveData();
+
+  renderTransactions();
+
+  scannedData = [];
+
+  document.getElementById("review").style.display =
+    "none";
+
+
+  alert(
+    `✅ ${saved} transaksi berhasil disimpan!`
+  );
+
+}
+
+
+/* =========================
+   BATAL SCAN
+========================= */
+
+function cancelScan(){
+
+  scannedData = [];
+
+  document.getElementById("review").style.display =
+    "none";
+
+}
+
+
+/* =========================
+   MANUAL TRANSAKSI
+========================= */
 
 function addManual(){
 
-let amount=
-Number($("amount").value);
+  const type =
+    document.getElementById("manualType").value;
 
-if(!amount){
+  const amount =
+    Number(
+      document.getElementById("manualAmount").value
+    );
 
-alert("Isi nominal dulu.");
-
-return;
-
-}
-
-
-data.push({
-
-type:$("type").value,
-
-amount:amount,
-
-note:$("note").value,
-
-date:new Date().toISOString(),
-
-source:"manual"
-
-});
+  const note =
+    document.getElementById("manualNote").value.trim();
 
 
-$("amount").value="";
+  if(!amount){
 
-$("note").value="";
+    alert("Masukkan nominal.");
 
-save();
+    return;
 
-}
-
-
-function clearAll(){
-
-if(confirm("Hapus semua transaksi?")){
-
-data=[];
-
-save();
-
-}
-
-}
+  }
 
 
-let selectedFile=null;
+  transactions.push({
+
+    id:Date.now(),
+
+    type:type,
+
+    amount:amount,
+
+    note:note,
+
+    source:"manual",
+
+    date:getToday()
+
+  });
 
 
-$("photo").addEventListener(
-"change",
-function(e){
+  saveData();
 
-selectedFile=e.target.files[0];
-
-$("scan").disabled=
-!selectedFile;
-
-if(selectedFile){
-
-$("preview").src=
-URL.createObjectURL(selectedFile);
-
-$("preview").hidden=false;
-
-$("status").textContent=
-"Screenshot siap. Tekan Baca Screenshot.";
-
-}
-
-});
+  renderTransactions();
 
 
-function getMoney(text){
+  document.getElementById("manualAmount").value =
+    "";
 
-let m=text.match(
-/Rp\s*\.?\s*[\d.,]+/i
-);
-
-if(!m)return null;
-
-
-let raw=m[0]
-.replace(/Rp/i,"")
-.replace(/\s/g,"")
-.replace(/\./g,"")
-.replace(/,/g,"");
-
-
-let value=Number(raw);
-
-
-if(
-!Number.isFinite(value)||
-value<=0||
-value>10000000
-){
-
-return null;
+  document.getElementById("manualNote").value =
+    "";
 
 }
 
 
-return value;
+/* =========================
+   HAPUS SEMUA
+========================= */
+
+function deleteAll(){
+
+  if(
+    !confirm(
+      "Yakin mau menghapus SEMUA transaksi?"
+    )
+  ){
+
+    return;
+
+  }
+
+
+  transactions = [];
+
+  saveData();
+
+  renderTransactions();
 
 }
 
 
-function extractTransactions(text){
-
-let lines=
-text
-.split(/\n/)
-.map(x=>x.trim())
-.filter(Boolean);
-
-
-let result=[];
-
-
-for(
-let i=0;
-i<lines.length;
-i++
-){
-
-let amount=
-getMoney(lines[i]);
-
-
-if(!amount)continue;
-
-
-let context=
-lines
-.slice(
-Math.max(0,i-3),
-Math.min(lines.length,i+4)
-)
-.join(" ");
-
-
-let timeMatch=
-context.match(
-/\b(?:[01]?\d|2[0-3])[:.]\d{2}\b/
-);
-
-
-let kmMatch=
-context.match(
-/\b(\d+(?:[.,]\d+)?)\s*km\b/i
-);
-
-
-let pay="";
-
-
-if(
-/tunai|cash/i.test(context)
-){
-
-pay="Tunai";
-
-}
-
-else if(
-/gopay/i.test(context)
-){
-
-pay="GoPay";
-
-}
-
-
-let time=
-timeMatch?
-timeMatch[0].replace(".",":"):
-"";
-
-
-let km=
-kmMatch?
-Number(
-kmMatch[1].replace(",",".")
-):
-"";
-
-
-let duplicate=
-result.some(
-x=>
-x.amount===amount &&
-x.time===time &&
-x.km===km
-);
-
-
-if(!duplicate){
-
-result.push({
-
-amount:amount,
-
-time:time,
-
-km:km,
-
-pay:pay
-
-});
-
-}
-
-}
-
-
-return result;
-
-}
-
-
-$("scan").addEventListener(
-"click",
-async function(){
-
-if(!selectedFile)return;
-
-
-$("scan").disabled=true;
-
-$("review").hidden=true;
-
-$("status").textContent=
-"⏳ Memulai OCR...";
-
-
-try{
-
-let result=
-await Tesseract.recognize(
-selectedFile,
-"eng",
-{
-
-logger:function(m){
-
-if(m.status){
-
-let p=
-m.progress?
-" "+Math.round(
-m.progress*100
-)+"%":
-"";
-
-$("status").textContent=
-"⏳ "+m.status+p;
-
-}
-
-}
-
-}
-);
-
-
-let text=
-result.data.text;
-
-
-$("ocr").textContent=
-text;
-
-
-pending=
-extractTransactions(text);
-
-
-if(!pending.length){
-
-$("status").textContent=
-"⚠️ Nominal belum ditemukan. Coba screenshot yang lebih jelas.";
-
-}
-
-else{
-
-renderReview();
-
-$("review").hidden=false;
-
-$("status").textContent=
-"✅ Selesai. Periksa hasil scan sebelum menyimpan.";
-
-}
-
-}
-
-catch(error){
-
-console.error(error);
-
-$("status").textContent=
-"❌ OCR gagal. Pastikan internet aktif lalu coba lagi.";
-
-}
-
-$("scan").disabled=false;
-
-});
-
-
-function renderReview(){
-
-$("results").innerHTML=
-pending
-.map((r,i)=>`
-
-<div class="result">
-
-<div class="resultgrid">
-
-<div>
-
-<small>Nominal</small>
-
-<input
-class="amt"
-data-i="${i}"
-type="number"
-value="${r.amount}"
->
-
-</div>
-
-
-<div>
-
-<small>Waktu</small>
-
-<input
-class="tm"
-data-i="${i}"
-value="${escapeHtml(r.time)}"
-placeholder="15:08"
->
-
-</div>
-
-
-<div>
-
-<small>Jarak (km)</small>
-
-<input
-class="km"
-data-i="${i}"
-type="number"
-step="0.01"
-value="${r.km}"
->
-
-</div>
-
-
-<div>
-
-<small>Pembayaran</small>
-
-<select
-class="pay"
-data-i="${i}"
->
-
-<option
-${r.pay==="GoPay"?"selected":""}
->
-GoPay
-</option>
-
-<option
-${r.pay==="Tunai"?"selected":""}
->
-Tunai
-</option>
-
-<option
-${!r.pay?"selected":""}
->
-Tidak diketahui
-</option>
-
-</select>
-
-</div>
-
-</div>
-
-
-<br>
-
-<button
-class="danger"
-onclick="removePending(${i})"
->
-Hapus baris
-</button>
-
-</div>
-
-`)
-.join("");
-
-}
-
-
-function removePending(i){
-
-pending.splice(i,1);
-
-renderReview();
-
-if(!pending.length){
-
-$("review").hidden=true;
-
-}
-
-}
-
-
-$("saveScan").addEventListener(
-"click",
-function(){
-
-let boxes=
-document.querySelectorAll(
-".result"
-);
-
-
-boxes.forEach(
-(el,i)=>{
-
-if(!pending[i])return;
-
-
-pending[i].amount=
-Number(
-el.querySelector(".amt").value
-)||0;
-
-
-pending[i].time=
-el.querySelector(".tm").value.trim();
-
-
-pending[i].km=
-Number(
-el.querySelector(".km").value
-)||0;
-
-
-let pay=
-el.querySelector(".pay").value;
-
-
-pending[i].pay=
-pay==="Tidak diketahui"?
-"":
-pay;
-
-}
-);
-
-
-let added=0;
-
-
-pending.forEach(
-r=>{
-
-if(!r.amount)return;
-
-
-let duplicate=
-data.some(
-x=>
-x.type==="income" &&
-x.amount===r.amount &&
-x.time===r.time
-);
-
-
-if(!duplicate){
-
-data.push({
-
-type:"income",
-
-amount:r.amount,
-
-note:
-"Gojek"+
-(r.time?
-" · "+r.time:
-""),
-
-km:r.km,
-
-pay:r.pay,
-
-time:r.time,
-
-date:new Date().toISOString(),
-
-source:"scan"
-
-});
-
-added++;
-
-}
-
-}
-);
-
-
-pending=[];
-
-$("review").hidden=true;
-
-save();
-
-
-$("status").textContent=
-"💾 "+added+
-" transaksi berhasil disimpan.";
-
-});
-
-
-$("cancelScan").addEventListener(
-"click",
-function(){
-
-pending=[];
-
-$("review").hidden=true;
-
-$("status").textContent=
-"Hasil scan dibatalkan.";
-
-});
-
-
-render();
+/* =========================
+   START
+========================= */
+
+renderTransactions();
 
 </script>
 
