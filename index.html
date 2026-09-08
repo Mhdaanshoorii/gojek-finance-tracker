@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V20</title>
+<title>Gojek Finance Tracker V21</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -49,6 +49,37 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 
 
 
+
+
+<!-- V21_SMART_INSIGHT -->
+<section class="box" id="v21Insights">
+  <h2>🧠 Smart Insight</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Periode analisis</label>
+      <select id="v21Range">
+        <option value="7">7 hari terakhir</option>
+        <option value="30">30 hari terakhir</option>
+        <option value="all">Semua data</option>
+      </select>
+    </div>
+  </div>
+  <div class="v21-grid">
+    <div class="v21-card"><small>💰 Bersih/order</small><b id="v21NetOrder">Rp 0</b></div>
+    <div class="v21-card"><small>⏱️ Bersih/jam</small><b id="v21NetHour">Rp 0</b></div>
+    <div class="v21-card"><small>📍 Pendapatan/km</small><b id="v21IncomeKm">Rp 0</b></div>
+    <div class="v21-card"><small>💸 Biaya/km</small><b id="v21ExpenseKm">Rp 0</b></div>
+  </div>
+  <div class="v21-box">
+    <b>💡 Rekomendasi otomatis</b>
+    <ul class="v21-list" id="v21Advice"><li>Belum cukup data untuk membuat rekomendasi.</li></ul>
+  </div>
+  <div class="v21-box">
+    <b>🎯 Ringkasan performa</b>
+    <div id="v21Summary">Tambahkan transaksi untuk melihat analisis.</div>
+  </div>
+  <div class="v21-note">Insight menggunakan data transaksi yang tersimpan di HP. Ini adalah analisis sederhana untuk membantu mengambil keputusan, bukan prediksi pasti.</div>
+</section>
 
 <!-- V20_REPORTS -->
 <section class="box" id="v20Reports">
@@ -338,6 +369,18 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v20Reports .v20-card b{display:block;font-size:17px;margin-top:4px}
 #v20Reports .v20-note{font-size:12px;color:#6b7280;margin-top:8px}
 @media(max-width:700px){#v20Reports .v20-summary{grid-template-columns:1fr 1fr}}
+</style>
+
+
+<style id="V21_CSS">
+#v21Insights .v21-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v21Insights .v21-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
+#v21Insights .v21-card small{color:#6b7280}
+#v21Insights .v21-card b{display:block;font-size:18px;margin-top:4px}
+#v21Insights .v21-box{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;line-height:1.55}
+#v21Insights .v21-list{margin:8px 0 0 18px;padding:0}
+#v21Insights .v21-note{font-size:12px;color:#6b7280;margin-top:8px}
+@media(max-width:700px){#v21Insights .v21-grid{grid-template-columns:1fr 1fr}}
 </style>
 
 </head>
@@ -1269,6 +1312,71 @@ window.addEventListener("load",()=>{
     render();
   },1200));
   window.renderV20=render;
+})();
+</script>
+
+
+<script id="V21_SMART_INSIGHT">
+(function(){
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  const num=n=>Number(n||0);
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function dk(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
+  function mins(x){
+    const s=String(x.startTime||x.start||"");
+    const e=String(x.endTime||x.end||"");
+    const a=s.match(/(\d{1,2})[:.](\d{2})/),b=e.match(/(\d{1,2})[:.](\d{2})/);
+    if(!a||!b)return 0;
+    let m=(+b[1]*60+ +b[2])-(+a[1]*60+ +a[2]);
+    if(m<0)m+=1440;
+    return Math.min(m,720);
+  }
+  function validPeriod(x,mode){
+    if(mode==="all")return true;
+    const d=dk(x);if(!d)return false;
+    const base=new Date();base.setHours(0,0,0,0);
+    const dd=new Date(d+"T00:00:00");
+    return !Number.isNaN(dd.getTime()) && (base-dd)/86400000<Number(mode) && dd<=base;
+  }
+  function render(){
+    const mode=document.getElementById("v21Range")?.value||"7";
+    const list=txs().filter(x=>validPeriod(x,mode));
+    const income=list.filter(x=>x.type==="income");
+    const expense=list.filter(x=>x.type==="expense");
+    const inc=income.reduce((s,x)=>s+num(x.amount),0);
+    const exp=expense.reduce((s,x)=>s+num(x.amount),0);
+    const dist=income.reduce((s,x)=>s+num(x.distance),0);
+    const hours=income.reduce((s,x)=>s+mins(x)/60,0);
+    const net=inc-exp;
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v21NetOrder",money(income.length?net/income.length:0));
+    set("v21NetHour",money(hours?net/hours:0));
+    set("v21IncomeKm",money(dist?inc/dist:0));
+    set("v21ExpenseKm",money(dist?exp/dist:0));
+
+    const advice=[];
+    if(!income.length){
+      advice.push("Masukkan beberapa transaksi pemasukan agar pola kerja bisa dianalisis.");
+    }else{
+      if(hours && net/hours<30000) advice.push("⏱️ Bersih per jam masih rendah. Coba evaluasi jam narik dan pilih periode dengan performa lebih tinggi.");
+      else if(hours) advice.push("🔥 Bersih per jam cukup baik. Pertahankan pola jam kerja yang menghasilkan angka ini.");
+      if(dist && inc/dist<2000) advice.push("📍 Pendapatan per km relatif rendah. Pertimbangkan area/order dengan jarak dan bayaran yang lebih seimbang.");
+      else if(dist) advice.push("🛣️ Pendapatan per km terlihat cukup baik. Pantau terus supaya biaya perjalanan tidak menggerus margin.");
+      if(exp>0 && inc>0 && exp/inc>0.30) advice.push("💸 Pengeluaran sudah lebih dari 30% pemasukan. Cek bensin, makan, parkir, dan biaya lain yang paling besar.");
+      if(income.length>=5) advice.push("📊 Data sudah mulai berguna untuk membandingkan pola kerja. Lanjutkan pencatatan setiap narik.");
+    }
+    const ul=document.getElementById("v21Advice");
+    if(ul)ul.innerHTML=advice.map(x=>`<li>${x}</li>`).join("");
+
+    const margin=inc?net/inc*100:0;
+    const sum=document.getElementById("v21Summary");
+    if(sum)sum.innerHTML=`${income.length} order menghasilkan <b>${money(inc)}</b>, pengeluaran <b>${money(exp)}</b>, sehingga bersih <b>${money(net)}</b>. Margin bersih sekitar <b>${margin.toFixed(1)}%</b>${hours?` dengan sekitar <b>${hours.toFixed(1)} jam</b> waktu order.`:"."}`;
+  }
+  window.addEventListener("load",()=>setTimeout(()=>{
+    document.getElementById("v21Range")?.addEventListener("change",render);
+    render();
+  },1400));
+  window.renderV21=render;
 })();
 </script>
 
