@@ -2,308 +2,480 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gojek Finance Tracker V6</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111827">
+
+<title>Gojek Finance Tracker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
 <style>
-*{box-sizing:border-box}
+
+*{
+  box-sizing:border-box;
+}
 
 body{
   margin:0;
-  background:#f3f5f7;
+  background:#f4f5f7;
+  color:#222;
   font-family:Arial,sans-serif;
-  color:#222
-}
-
-header{
-  background:#008f5a;
-  color:#fff;
-  padding:22px 18px
-}
-
-header h1{
-  margin:0;
-  font-size:25px
-}
-
-header p{
-  margin:6px 0 0;
-  opacity:.9
 }
 
 .container{
-  max-width:700px;
+  max-width:760px;
   margin:auto;
-  padding:16px
+  padding:16px;
+}
+
+header{
+  background:#111827;
+  color:white;
+  border-radius:20px;
+  padding:22px;
+  margin-bottom:14px;
+}
+
+h1{
+  margin:0 0 6px;
+  font-size:25px;
+}
+
+.sub{
+  opacity:.75;
+  font-size:14px;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:14px;
 }
 
 .card{
-  background:#fff;
-  border-radius:18px;
+  background:white;
+  border-radius:16px;
+  padding:15px;
+  box-shadow:0 2px 10px #0000000b;
+}
+
+.card small{
+  display:block;
+  color:#777;
+  margin-bottom:6px;
+}
+
+.card strong{
+  font-size:18px;
+}
+
+.green{
+  color:#087f4e;
+}
+
+.red{
+  color:#d9363e;
+}
+
+.blue{
+  color:#2463eb;
+}
+
+.box{
+  background:white;
+  border-radius:20px;
   padding:18px;
-  margin-bottom:16px;
-  box-shadow:0 3px 12px rgba(0,0,0,.07)
+  margin-bottom:14px;
+  box-shadow:0 2px 10px #0000000b;
 }
 
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px
+h2{
+  margin:0 0 14px;
+  font-size:20px;
 }
 
-.stat{
-  background:#f7f7f7;
-  padding:13px 5px;
-  border-radius:12px;
-  text-align:center
+input,
+select,
+button{
+  font:inherit;
 }
 
-.stat small{
-  display:block;
-  color:#666;
-  font-size:12px
-}
-
-.stat strong{
-  display:block;
-  margin-top:6px;
-  font-size:14px
-}
-
-.income{color:#087f50}
-.expense{color:#d52d3d}
-
-input,select,button{
+input[type=file],
+input[type=number],
+input[type=text],
+select{
   width:100%;
-  padding:13px;
-  margin-top:8px;
-  border-radius:10px;
+  padding:11px;
   border:1px solid #ddd;
-  font-size:15px
+  border-radius:11px;
+  background:white;
 }
 
 button{
-  background:#008f5a;
-  color:white;
   border:0;
-  font-weight:bold
+  border-radius:12px;
+  padding:12px 15px;
+  font-weight:700;
+  cursor:pointer;
 }
 
-button.gray{background:#666}
-button.red{background:#dc3545}
-
-#progress{
-  margin-top:12px;
-  font-size:14px;
-  color:#555
-}
-
-#review{display:none}
-
-.scanrow{
-  border:1px solid #ddd;
-  border-radius:13px;
-  padding:12px;
+.primary{
+  background:#087f4e;
+  color:white;
+  width:100%;
   margin-top:10px;
-  background:#fafafa
 }
 
-.scanrow b{font-size:15px}
+.secondary{
+  background:#e5e7eb;
+  color:#222;
+  width:100%;
+}
+
+.danger{
+  background:#dc3545;
+  color:white;
+  width:100%;
+}
+
+.status{
+  margin-top:12px;
+  padding:12px;
+  border-radius:12px;
+  background:#f1f3f5;
+  display:none;
+  font-size:13px;
+}
+
+.progress{
+  height:8px;
+  background:#ddd;
+  border-radius:99px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progress div{
+  height:100%;
+  width:0;
+  background:#087f4e;
+  transition:.2s;
+}
+
+.review{
+  display:none;
+  margin-top:15px;
+}
+
+.scan-card{
+  border:1px solid #ddd;
+  border-radius:15px;
+  padding:12px;
+  margin-bottom:10px;
+  background:#fafafa;
+}
+
+.scan-title{
+  font-weight:700;
+  margin-bottom:9px;
+}
 
 .grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px
+  gap:8px;
 }
 
-label{
+.field label{
   display:block;
-  margin-top:9px;
-  font-size:12px;
-  color:#666
+  font-size:11px;
+  color:#777;
+  margin-bottom:4px;
 }
 
-.scanrow input,
-.scanrow select{
-  padding:9px
+.field input,
+.field select{
+  padding:9px;
+}
+
+.actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+.actions button{
+  flex:1;
+}
+
+.note{
+  font-size:12px;
+  color:#777;
+  line-height:1.5;
+  margin-top:10px;
 }
 
 .transaction{
   padding:13px 0;
-  border-bottom:1px solid #eee
+  border-bottom:1px solid #eee;
 }
 
 .transaction:last-child{
-  border-bottom:0
+  border-bottom:0;
 }
 
-.t-title{
-  font-size:16px;
-  font-weight:bold
+.tx-top{
+  font-size:15px;
+  line-height:1.5;
 }
 
-.t-info{
-  font-size:14px;
-  margin-top:4px;
-  color:#555
+.tx-meta{
+  color:#555;
+  font-size:13px;
+  margin-top:3px;
 }
 
-.t-date{
+.tx-date{
+  color:#888;
   font-size:12px;
-  margin-top:5px;
-  color:#888
+  margin-top:4px;
 }
 
 .empty{
-  text-align:center;
   color:#888;
-  padding:20px
-}
-
-.notice{
-  margin-top:10px;
-  background:#fff5d6;
-  border-radius:10px;
-  padding:10px;
-  font-size:13px
+  text-align:center;
+  padding:18px;
 }
 
 .debug{
-  margin-top:12px;
-  background:#f4f4f4;
-  padding:10px;
+  background:#f1f1f1;
   border-radius:10px;
+  padding:10px;
+  margin-top:10px;
   font-size:11px;
   white-space:pre-wrap;
-  max-height:180px;
+  max-height:250px;
   overflow:auto;
-  color:#555
+  display:none;
 }
+
+@media(max-width:600px){
+
+  .cards{
+    grid-template-columns:1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .actions{
+    flex-direction:column;
+  }
+
+}
+
 </style>
 </head>
 
-<body>
 
-<header>
-  <h1>🛵 Gojek Finance Tracker</h1>
-  <p>Catat pemasukan & pengeluaran driver</p>
-</header>
+<body>
 
 <div class="container">
 
-<div class="card">
-  <div class="stats">
+<header>
 
-    <div class="stat">
-      <small>Pemasukan</small>
-      <strong class="income" id="totalIncome">Rp0</strong>
-    </div>
+<h1>🛵 Gojek Finance Tracker</h1>
 
-    <div class="stat">
-      <small>Pengeluaran</small>
-      <strong class="expense" id="totalExpense">Rp0</strong>
-    </div>
-
-    <div class="stat">
-      <small>Bersih</small>
-      <strong id="totalNet">Rp0</strong>
-    </div>
-
-  </div>
+<div class="sub">
+Catat pemasukan & pengeluaran driver
 </div>
 
+</header>
+
+
+<!-- =====================
+     SUMMARY
+===================== -->
+
+<div class="cards">
 
 <div class="card">
+<small>📈 Pemasukan</small>
+<strong class="green" id="income">Rp0</strong>
+</div>
 
-  <h2>📸 Scan Screenshot Gojek</h2>
+<div class="card">
+<small>📉 Pengeluaran</small>
+<strong class="red" id="expense">Rp0</strong>
+</div>
 
-  <p>
-    Upload screenshot riwayat perjalanan Gojek.
-  </p>
-
-  <input
-    type="file"
-    id="imageInput"
-    accept="image/*"
-  >
-
-  <button onclick="scanImage()">
-    🔎 Baca Screenshot
-  </button>
-
-  <div id="progress"></div>
-
-  <div class="notice">
-    💡 Periksa hasil scan sebelum menyimpan.
-  </div>
+<div class="card">
+<small>💰 Bersih</small>
+<strong class="blue" id="net">Rp0</strong>
+</div>
 
 </div>
 
 
-<div class="card" id="review">
+<!-- =====================
+     SCAN
+===================== -->
 
-  <h2>🔍 Periksa Hasil Scan</h2>
+<div class="box">
 
-  <div id="reviewList"></div>
+<h2>📸 Scan Screenshot Gojek</h2>
 
-  <button onclick="saveScanned()">
-    💾 Simpan Semua
-  </button>
+<input
+  id="fileInput"
+  type="file"
+  accept="image/*"
+>
 
-  <button class="gray" onclick="cancelScan()">
-    Batal
-  </button>
+<button
+  class="primary"
+  id="scanBtn"
+  disabled
+>
+🔎 Baca Screenshot
+</button>
 
-  <div id="debugBox"></div>
+
+<div
+  class="status"
+  id="status"
+>
+
+<div id="statusText">
+Menyiapkan OCR...
+</div>
+
+<div class="progress">
+<div id="progressBar"></div>
+</div>
 
 </div>
 
 
-<div class="card">
+<!-- REVIEW -->
 
-  <h2>➕ Tambah Transaksi</h2>
+<div
+  class="review"
+  id="review"
+>
 
-  <label>Jenis</label>
+<h3>
+🔍 Periksa Hasil Scan
+</h3>
 
-  <select id="manualType">
-    <option value="income">Pemasukan</option>
-    <option value="expense">Pengeluaran</option>
-  </select>
+<div class="note">
 
-  <label>Nominal</label>
+Periksa semua transaksi sebelum disimpan.
+Kolom bisa diedit jika OCR salah.
 
-  <input
-    type="number"
-    id="manualAmount"
-    placeholder="Contoh: 15000"
-  >
+</div>
 
-  <label>Keterangan</label>
+<div id="reviewList"></div>
 
-  <input
-    type="text"
-    id="manualNote"
-    placeholder="Contoh: Bensin"
-  >
+<div class="actions">
 
-  <button onclick="addManual()">
-    Simpan Transaksi
-  </button>
+<button
+  class="secondary"
+  id="cancelReview"
+>
+Batal
+</button>
+
+<button
+  class="primary"
+  id="saveReview"
+>
+💾 Simpan Semua
+</button>
+
+</div>
 
 </div>
 
 
-<div class="card">
+<div class="note">
 
-  <h2>🧾 Transaksi</h2>
+💡 Tips: gunakan screenshot Gojek yang jelas dan seluruh bagian perjalanan terlihat.
 
-  <div id="transactions"></div>
+</div>
 
-  <button class="red" onclick="deleteAll()">
-    Hapus Semua Data
-  </button>
+<div
+  id="debug"
+  class="debug"
+></div>
+
+</div>
+
+
+<!-- =====================
+     MANUAL EXPENSE
+===================== -->
+
+<div class="box">
+
+<h2>💸 Tambah Pengeluaran</h2>
+
+<div class="grid">
+
+<div class="field">
+
+<label>Nominal</label>
+
+<input
+  id="expenseAmount"
+  type="number"
+  inputmode="numeric"
+  placeholder="Contoh: 10000"
+>
+
+</div>
+
+<div class="field">
+
+<label>Keterangan</label>
+
+<input
+  id="expenseNote"
+  type="text"
+  placeholder="Contoh: Bensin"
+>
+
+</div>
+
+</div>
+
+<button
+  class="primary"
+  id="addExpense"
+>
+➕ Tambah Pengeluaran
+</button>
+
+</div>
+
+
+<!-- =====================
+     TRANSACTIONS
+===================== -->
+
+<div class="box">
+
+<h2>🧾 Riwayat Transaksi</h2>
+
+<div id="transactions"></div>
+
+<button
+  class="danger"
+  id="clearAll"
+>
+🗑️ Hapus Semua Data
+</button>
 
 </div>
 
@@ -312,1086 +484,2048 @@ label{
 
 <script>
 
+/* =====================================================
+   STORAGE
+===================================================== */
+
+const STORAGE_KEY =
+  "gojekFinanceTransactionsV4";
+
 let transactions =
-  JSON.parse(
-    localStorage.getItem("gojekTransactions") || "[]"
-  );
+  loadData();
 
-let scannedData = [];
+let pending = [];
 
 
-/* =========================
-   RUPIAH
-========================= */
+/* =====================================================
+   BASIC FUNCTIONS
+===================================================== */
 
-function rupiah(n){
+function uid(){
 
-  return new Intl.NumberFormat(
-    "id-ID",
-    {
-      style:"currency",
-      currency:"IDR",
-      maximumFractionDigits:0
-    }
-  ).format(Number(n));
+  if(
+    window.crypto &&
+    crypto.randomUUID
+  ){
+
+    return crypto.randomUUID();
+
+  }
+
+  return Date.now() +
+    "_" +
+    Math.random()
+      .toString(36)
+      .slice(2);
 
 }
 
 
-/* =========================
-   STORAGE
-========================= */
+function today(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function rupiah(n){
+
+  return "Rp " +
+    Number(n || 0)
+      .toLocaleString("id-ID");
+
+}
+
+
+function escapeHtml(s){
+
+  return String(s ?? "")
+    .replace(
+      /[&<>"']/g,
+      m => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[m])
+    );
+
+}
+
+
+/* =====================================================
+   LOAD / SAVE
+===================================================== */
+
+function loadData(){
+
+  try{
+
+    const raw =
+      localStorage.getItem(
+        STORAGE_KEY
+      );
+
+    if(raw){
+
+      const data =
+        JSON.parse(raw);
+
+      if(Array.isArray(data)){
+
+        return data;
+
+      }
+
+    }
+
+  }catch(e){}
+
+
+  /*
+    Coba mengambil data dari
+    versi sebelumnya.
+  */
+
+  const oldKeys = [
+
+    "gojekFinanceTransactionsV3",
+    "gojekTransactions",
+    "transactions",
+    "gojekFinance",
+    "gojekFinanceData"
+
+  ];
+
+
+  for(const key of oldKeys){
+
+    try{
+
+      const raw =
+        localStorage.getItem(key);
+
+      if(!raw) continue;
+
+      const data =
+        JSON.parse(raw);
+
+      if(
+        Array.isArray(data) &&
+        data.length
+      ){
+
+        return data.map(normalizeOld);
+
+      }
+
+    }catch(e){}
+
+  }
+
+
+  return [];
+
+}
+
+
+function normalizeOld(x){
+
+  return {
+
+    id:x.id || uid(),
+
+    type:x.type || "income",
+
+    amount:Number(x.amount) || 0,
+
+    source:x.source || "Gojek",
+
+    time:x.time || "",
+
+    endTime:x.endTime || "",
+
+    distance:x.distance || "",
+
+    payment:x.payment || "",
+
+    date:x.date || today(),
+
+    createdAt:x.createdAt || Date.now()
+
+  };
+
+}
+
 
 function saveData(){
 
   localStorage.setItem(
-    "gojekTransactions",
+    STORAGE_KEY,
     JSON.stringify(transactions)
   );
 
-}
-
-
-/* =========================
-   TANGGAL
-========================= */
-
-function getToday(){
-
-  const d = new Date();
-
-  return (
-    String(d.getDate()).padStart(2,"0") +
-    "/" +
-    String(d.getMonth()+1).padStart(2,"0") +
-    "/" +
-    d.getFullYear()
-  );
+  render();
 
 }
 
 
-/* =========================
-   DASHBOARD
-========================= */
-
-function updateDashboard(){
-
-  let income=0;
-  let expense=0;
-
-  transactions.forEach(t=>{
-
-    if(t.type==="income")
-      income+=Number(t.amount);
-
-    if(t.type==="expense")
-      expense+=Number(t.amount);
-
-  });
-
-  document.getElementById("totalIncome")
-    .textContent=rupiah(income);
-
-  document.getElementById("totalExpense")
-    .textContent=rupiah(expense);
-
-  document.getElementById("totalNet")
-    .textContent=rupiah(income-expense);
-
-}
-
-
-/* =========================
+/* =====================================================
    RENDER
-========================= */
+===================================================== */
 
-function renderTransactions(){
+function render(){
 
-  const box=
-    document.getElementById("transactions");
+  const income =
+    transactions
+      .filter(x => x.type === "income")
+      .reduce(
+        (a,x) =>
+          a + Number(x.amount || 0),
+        0
+      );
+
+
+  const expense =
+    transactions
+      .filter(x => x.type === "expense")
+      .reduce(
+        (a,x) =>
+          a + Number(x.amount || 0),
+        0
+      );
+
+
+  document
+    .getElementById("income")
+    .textContent =
+    rupiah(income);
+
+
+  document
+    .getElementById("expense")
+    .textContent =
+    rupiah(expense);
+
+
+  document
+    .getElementById("net")
+    .textContent =
+    rupiah(income - expense);
+
+
+  const el =
+    document.getElementById(
+      "transactions"
+    );
+
 
   if(!transactions.length){
 
-    box.innerHTML=
-      '<div class="empty">Belum ada transaksi</div>';
+    el.innerHTML =
+      '<div class="empty">Belum ada transaksi.</div>';
 
-    updateDashboard();
     return;
 
   }
 
-  box.innerHTML="";
 
-  [...transactions].reverse().forEach(t=>{
+  const sorted =
+    [...transactions]
+      .sort(
+        (a,b) =>
+          (b.createdAt || 0) -
+          (a.createdAt || 0)
+      );
 
-    const div=
-      document.createElement("div");
 
-    div.className="transaction";
+  el.innerHTML =
+    sorted.map(x => {
 
-    const income=
-      t.type==="income";
+      if(x.type === "expense"){
 
-    const arrow=
-      income ? "⬆️" : "⬇️";
+        return `
 
-    let info="";
+        <div class="transaction">
 
-    if(t.source==="gojek"){
+          <div class="tx-top">
 
-      let jam=t.time || "-";
+            🔻
+            <b class="red">
+              ${rupiah(x.amount)}
+            </b>
 
-      if(t.endTime)
-        jam += "–"+t.endTime;
+            — Pengeluaran
 
-      info=
-        "Gojek · "+
-        jam+
-        " · "+
-        (t.distance||"-")+
-        " km · "+
-        (t.payment||"-");
+            ${escapeHtml(
+              x.source || ""
+            )}
 
-    }else{
+          </div>
 
-      info=t.note||"Manual";
+          <div class="tx-date">
+
+            ${escapeHtml(
+              formatDate(x.date)
+            )}
+
+          </div>
+
+        </div>
+
+        `;
+
+      }
+
+
+      let timeText = "";
+
+      if(x.time){
+
+        timeText = x.time;
+
+        if(x.endTime){
+
+          timeText +=
+            " - " +
+            x.endTime;
+
+        }
+
+      }
+
+
+      return `
+
+      <div class="transaction">
+
+        <div class="tx-top">
+
+          ⬆️
+          <b class="green">
+            ${rupiah(x.amount)}
+          </b>
+
+          — ${escapeHtml(
+            x.source || "Gojek"
+          )}
+
+        </div>
+
+        <div class="tx-meta">
+
+          ${timeText
+            ? "🕐 " +
+              escapeHtml(timeText)
+            : ""}
+
+          ${x.distance
+            ? " · 📏 " +
+              escapeHtml(x.distance) +
+              " km"
+            : ""}
+
+          ${x.payment
+            ? " · 💳 " +
+              escapeHtml(x.payment)
+            : ""}
+
+        </div>
+
+        <div class="tx-date">
+
+          ${escapeHtml(
+            formatDate(x.date)
+          )}
+
+        </div>
+
+      </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function formatDate(d){
+
+  if(!d) return "";
+
+  try{
+
+    return new Date(
+      d + "T00:00:00"
+    ).toLocaleDateString(
+      "id-ID",
+      {
+        day:"numeric",
+        month:"numeric",
+        year:"numeric"
+      }
+    );
+
+  }catch(e){
+
+    return d;
+
+  }
+
+}
+
+
+render();
+
+
+/* =====================================================
+   MANUAL EXPENSE
+===================================================== */
+
+document
+  .getElementById("addExpense")
+  .onclick = () => {
+
+    const amount =
+      Number(
+        document
+          .getElementById(
+            "expenseAmount"
+          )
+          .value
+      );
+
+
+    const note =
+      document
+        .getElementById(
+          "expenseNote"
+        )
+        .value
+        .trim()
+        || "Pengeluaran";
+
+
+    if(!amount){
+
+      alert(
+        "Masukkan nominal pengeluaran."
+      );
+
+      return;
 
     }
 
-    div.innerHTML=`
 
-      <div class="t-title ${income?"income":"expense"}">
-        ${arrow} ${rupiah(t.amount)}
-      </div>
+    transactions.push({
 
-      <div class="t-info">
-        ${info}
-      </div>
+      id:uid(),
 
-      <div class="t-date">
-        ${t.date||"-"}
+      type:"expense",
+
+      amount:amount,
+
+      source:note,
+
+      date:today(),
+
+      createdAt:Date.now()
+
+    });
+
+
+    document
+      .getElementById(
+        "expenseAmount"
+      )
+      .value = "";
+
+
+    document
+      .getElementById(
+        "expenseNote"
+      )
+      .value = "";
+
+
+    saveData();
+
+  };
+
+
+/* =====================================================
+   DELETE ALL
+===================================================== */
+
+document
+  .getElementById("clearAll")
+  .onclick = () => {
+
+    if(
+      confirm(
+        "Yakin ingin menghapus semua data?"
+      )
+    ){
+
+      transactions = [];
+
+      saveData();
+
+    }
+
+  };
+
+
+/* =====================================================
+   FILE SELECT
+===================================================== */
+
+document
+  .getElementById("fileInput")
+  .addEventListener(
+    "change",
+    function(){
+
+      const btn =
+        document.getElementById(
+          "scanBtn"
+        );
+
+
+      if(this.files && this.files[0]){
+
+        btn.disabled = false;
+
+      }else{
+
+        btn.disabled = true;
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   IMAGE PREPROCESS
+===================================================== */
+
+function preprocess(
+  img,
+  mode
+){
+
+  const max =
+    2600;
+
+
+  const scale =
+    Math.min(
+      3,
+      Math.max(
+        1,
+        max /
+        Math.max(
+          img.width,
+          img.height
+        )
+      )
+    );
+
+
+  const canvas =
+    document.createElement(
+      "canvas"
+    );
+
+
+  canvas.width =
+    Math.round(
+      img.width * scale
+    );
+
+
+  canvas.height =
+    Math.round(
+      img.height * scale
+    );
+
+
+  const ctx =
+    canvas.getContext("2d");
+
+
+  ctx.imageSmoothingEnabled =
+    true;
+
+
+  ctx.drawImage(
+    img,
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  const data =
+    ctx.getImageData(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+
+  for(
+    let i=0;
+    i<data.data.length;
+    i+=4
+  ){
+
+    const r =
+      data.data[i];
+
+    const g =
+      data.data[i+1];
+
+    const b =
+      data.data[i+2];
+
+
+    let gray =
+      .299*r +
+      .587*g +
+      .114*b;
+
+
+    if(
+      mode === "contrast"
+    ){
+
+      gray =
+        (gray - 128) *
+        1.55 +
+        128;
+
+    }
+
+
+    if(
+      mode === "bw"
+    ){
+
+      gray =
+        gray > 165
+          ? 255
+          : 0;
+
+    }
+
+
+    data.data[i] =
+      gray;
+
+    data.data[i+1] =
+      gray;
+
+    data.data[i+2] =
+      gray;
+
+  }
+
+
+  ctx.putImageData(
+    data,
+    0,
+    0
+  );
+
+
+  return canvas.toDataURL(
+    "image/png"
+  );
+
+}
+
+
+/* =====================================================
+   AMOUNT
+===================================================== */
+
+function extractAmountsFromText(
+  text
+){
+
+  const result = [];
+
+
+  const regex =
+    /(?:Rp|R p|R\.P\.?|Re)\s*([0-9][0-9.,\s]*)/gi;
+
+
+  let m;
+
+
+  while(
+    (m = regex.exec(text))
+    !== null
+  ){
+
+    let raw =
+      m[1]
+        .replace(/\s/g,"");
+
+
+    /*
+      Format Indonesia:
+
+      14.400
+      12.800
+      9.200
+
+      menjadi:
+
+      14400
+      12800
+      9200
+    */
+
+    raw =
+      raw.replace(/[.,]/g,"");
+
+
+    const amount =
+      parseInt(
+        raw,
+        10
+      );
+
+
+    if(
+      amount >= 1000 &&
+      amount <= 1000000
+    ){
+
+      result.push({
+
+        amount,
+
+        index:m.index
+
+      });
+
+    }
+
+  }
+
+
+  return result;
+
+}
+
+
+/* =====================================================
+   TIME PAIRS
+===================================================== */
+
+function extractTimePairs(
+  text
+){
+
+  const result = [];
+
+
+  const regex =
+    /\b([01]?\d|2[0-3])[\.:]([0-5]\d)\s*[-–—]\s*([01]?\d|2[0-3])[\.:]([0-5]\d)\b/g;
+
+
+  let m;
+
+
+  while(
+    (m = regex.exec(text))
+    !== null
+  ){
+
+    const start =
+      String(m[1])
+        .padStart(2,"0")
+      + ":" +
+      m[2];
+
+
+    const end =
+      String(m[3])
+        .padStart(2,"0")
+      + ":" +
+      m[4];
+
+
+    result.push({
+
+      start,
+
+      end,
+
+      index:m.index,
+
+      length:m[0].length
+
+    });
+
+  }
+
+
+  return result;
+
+}
+
+
+/* =====================================================
+   DISTANCE
+===================================================== */
+
+function extractDistance(
+  text
+){
+
+  /*
+    Menerima:
+
+    8,44 km
+    8.44 km
+    9,40 km
+    6,79 km
+  */
+
+  const regex =
+    /\b(\d{1,2})[.,](\d{1,2})\s*(?:km|k\s*m)\b/i;
+
+
+  const m =
+    text.match(regex);
+
+
+  if(!m){
+
+    return "";
+
+  }
+
+
+  const value =
+    Number(
+      m[1] +
+      "." +
+      m[2]
+    );
+
+
+  if(
+    value <= 0 ||
+    value >= 100
+  ){
+
+    return "";
+
+  }
+
+
+  return value.toFixed(2);
+
+}
+
+
+/* =====================================================
+   PAYMENT
+===================================================== */
+
+function extractPayment(
+  text
+){
+
+  if(
+    /gopay/i.test(text)
+  ){
+
+    return "GoPay";
+
+  }
+
+
+  if(
+    /tunai|cash/i.test(text)
+  ){
+
+    return "Tunai";
+
+  }
+
+
+  return "";
+
+}
+
+
+/* =====================================================
+   BUILD TRANSACTION BLOCKS
+===================================================== */
+
+function buildScannedTransactions(
+  rawText
+){
+
+  let text =
+    String(rawText || "")
+      .replace(/\r/g,"")
+      .replace(/[–—]/g,"-");
+
+
+  /*
+    Cari semua pasangan waktu:
+
+    15:08 - 15:32
+    14:08 - 14:29
+    dst.
+  */
+
+  const times =
+    extractTimePairs(text);
+
+
+  const amounts =
+    extractAmountsFromText(text);
+
+
+  const result = [];
+
+
+  /*
+    Kalau OCR tidak menemukan
+    pasangan waktu, gunakan
+    fallback nominal.
+  */
+
+  if(!times.length){
+
+    return amounts.map(x => ({
+
+      type:"income",
+
+      source:"Gojek",
+
+      amount:x.amount,
+
+      time:"",
+
+      endTime:"",
+
+      distance:"",
+
+      payment:"",
+
+      date:today(),
+
+      selected:true
+
+    }));
+
+  }
+
+
+  /*
+    SETIAP PASANGAN JAM = SATU PERJALANAN
+
+    Contoh:
+
+    Rp14.400 GoPay
+    15:08 - 15:32
+    6,79 km
+
+    Kita mengambil nominal yang
+    paling dekat SEBELUM pasangan
+    jam tersebut.
+  */
+
+  times.forEach(
+    (trip, tripIndex) => {
+
+      const tripStart =
+        trip.index;
+
+
+      const previousTimeEnd =
+        tripIndex > 0
+          ? times[
+              tripIndex - 1
+            ].index +
+            times[
+              tripIndex - 1
+            ].length
+          : 0;
+
+
+      const nextTimeStart =
+        tripIndex <
+        times.length - 1
+          ? times[
+              tripIndex + 1
+            ].index
+          : text.length;
+
+
+      /*
+        BLOK SEBELUM JAM
+
+        Biasanya:
+
+        alamat
+        +150
+        Rp14.400 @ GoPay
+        15:08 - 15:32
+      */
+
+      const before =
+        text.slice(
+          previousTimeEnd,
+          tripStart
+        );
+
+
+      /*
+        BLOK SETELAH JAM
+
+        Biasanya:
+
+        6,79 km
+        Selesai
+        ID transaksi
+        alamat berikutnya
+      */
+
+      const after =
+        text.slice(
+          trip.index +
+          trip.length,
+          nextTimeStart
+        );
+
+
+      /*
+        Cari SEMUA nominal
+        di blok sebelum jam.
+
+        Ambil yang TERAKHIR.
+      */
+
+      const blockAmounts =
+        extractAmountsFromText(
+          before
+        );
+
+
+      let amount = 0;
+
+
+      if(blockAmounts.length){
+
+        amount =
+          blockAmounts[
+            blockAmounts.length - 1
+          ].amount;
+
+      }else{
+
+        /*
+          Fallback:
+          cari nominal terdekat
+          secara global.
+        */
+
+        const nearby =
+          amounts.filter(
+            x =>
+              x.index <
+              tripStart
+          );
+
+
+        if(nearby.length){
+
+          amount =
+            nearby[
+              nearby.length - 1
+            ].amount;
+
+        }
+
+      }
+
+
+      /*
+        JARAK
+
+        Prioritas:
+        setelah jam dahulu.
+
+        Kalau tidak ada,
+        cari di blok gabungan.
+      */
+
+      let distance =
+        extractDistance(
+          after
+        );
+
+
+      if(!distance){
+
+        distance =
+          extractDistance(
+            before +
+            " " +
+            after
+          );
+
+      }
+
+
+      /*
+        PEMBAYARAN
+
+        Bisa berada sebelum
+        maupun sesudah jam.
+      */
+
+      let payment =
+        extractPayment(
+          before +
+          " " +
+          after
+        );
+
+
+      /*
+        HASIL TRANSAKSI
+      */
+
+      if(
+        amount >= 1000 &&
+        amount <= 1000000
+      ){
+
+        result.push({
+
+          type:"income",
+
+          source:"Gojek",
+
+          amount:amount,
+
+          time:trip.start,
+
+          endTime:trip.end,
+
+          distance:distance,
+
+          payment:payment,
+
+          date:today(),
+
+          selected:true
+
+        });
+
+      }
+
+    }
+  );
+
+
+  /*
+    =================================================
+    HAPUS DUPLIKAT HASIL OCR
+    =================================================
+  */
+
+  const unique = [];
+
+
+  result.forEach(
+    item => {
+
+      const key =
+        [
+          item.amount,
+          item.time,
+          item.endTime,
+          item.distance,
+          item.payment
+        ].join("|");
+
+
+      const exists =
+        unique.some(
+          x =>
+            [
+              x.amount,
+              x.time,
+              x.endTime,
+              x.distance,
+              x.payment
+            ].join("|")
+            === key
+        );
+
+
+      if(!exists){
+
+        unique.push(item);
+
+      }
+
+    }
+  );
+
+
+  return unique;
+
+}
+
+
+/* =====================================================
+   DUPLICATE CHECK
+===================================================== */
+
+function isDuplicate(
+  item
+){
+
+  return transactions.some(
+    existing => {
+
+      if(
+        existing.type !==
+        "income"
+      ){
+
+        return false;
+
+      }
+
+
+      const sameAmount =
+        Number(
+          existing.amount
+        ) ===
+        Number(
+          item.amount
+        );
+
+
+      const sameDate =
+        existing.date ===
+        item.date;
+
+
+      const sameStart =
+        existing.time &&
+        item.time &&
+        existing.time ===
+        item.time;
+
+
+      const sameEnd =
+        existing.endTime &&
+        item.endTime &&
+        existing.endTime ===
+        item.endTime;
+
+
+      /*
+        Untuk transaksi Gojek,
+        nominal + tanggal +
+        jam mulai sudah cukup kuat.
+      */
+
+      return (
+        sameAmount &&
+        sameDate &&
+        (
+          sameStart ||
+          sameEnd
+        )
+      );
+
+    }
+  );
+
+}
+
+
+/* =====================================================
+   SHOW REVIEW
+===================================================== */
+
+function showReview(
+  items
+){
+
+  pending =
+    items.map(
+      x => ({
+        ...x
+      })
+    );
+
+
+  const list =
+    document.getElementById(
+      "reviewList"
+    );
+
+
+  document
+    .getElementById(
+      "review"
+    )
+    .style.display =
+    "block";
+
+
+  if(!items.length){
+
+    list.innerHTML = `
+
+      <div class="empty">
+
+        ❌ Tidak ada transaksi
+        yang terbaca.
+
+        <br><br>
+
+        Coba gunakan screenshot
+        yang lebih jelas.
+
       </div>
 
     `;
 
-    box.appendChild(div);
-
-  });
-
-  updateDashboard();
-
-}
-
-
-/* =========================
-   PREPARE IMAGE
-========================= */
-
-function prepareImage(file){
-
-  return new Promise((resolve,reject)=>{
-
-    const img=new Image();
-
-    const url=
-      URL.createObjectURL(file);
-
-    img.onload=()=>{
-
-      const scale=2;
-
-      const canvas=
-        document.createElement("canvas");
-
-      canvas.width=
-        img.width*scale;
-
-      canvas.height=
-        img.height*scale;
-
-      const ctx=
-        canvas.getContext("2d");
-
-      ctx.drawImage(
-        img,
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      const data=
-        ctx.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
-
-      for(
-        let i=0;
-        i<data.data.length;
-        i+=4
-      ){
-
-        const r=data.data[i];
-        const g=data.data[i+1];
-        const b=data.data[i+2];
-
-        const gray=
-          .299*r+
-          .587*g+
-          .114*b;
-
-        data.data[i]=gray;
-        data.data[i+1]=gray;
-        data.data[i+2]=gray;
-
-      }
-
-      ctx.putImageData(data,0,0);
-
-      URL.revokeObjectURL(url);
-
-      resolve(canvas);
-
-    };
-
-    img.onerror=reject;
-
-    img.src=url;
-
-  });
-
-}
-
-
-/* =========================
-   NORMALIZE
-========================= */
-
-function cleanText(text){
-
-  return String(text||"")
-    .replace(/[“”"]/g,"")
-    .replace(/[|]/g,"")
-    .replace(/\r/g,"");
-
-}
-
-
-/* =========================
-   AMOUNT
-========================= */
-
-function extractAmounts(text){
-
-  const s=
-    cleanText(text)
-      .replace(/O/gi,"0")
-      .replace(/[Il]/g,"1");
-
-  const regex=
-    /R[Pp]\s*([0-9][0-9.,]*)/g;
-
-  const result=[];
-
-  let m;
-
-  while((m=regex.exec(s))!==null){
-
-    const digits=
-      m[1].replace(/[^\d]/g,"");
-
-    const n=Number(digits);
-
-    if(n>=1000 && n<=1000000){
-
-      result.push(n);
-
-    }
-
-  }
-
-  return result;
-
-}
-
-
-/* =========================
-   TIME
-========================= */
-
-function extractAllTimes(text){
-
-  const s=
-    cleanText(text)
-      .replace(/[Oo]/g,"0")
-      .replace(/[Il]/g,"1")
-      .replace(/;/g,":");
-
-  const regex=
-    /([01]?\d|2[0-3])\s*[:.]\s*([0-5]\d)/g;
-
-  const result=[];
-
-  let m;
-
-  while((m=regex.exec(s))!==null){
-
-    result.push({
-
-      hour:Number(m[1]),
-
-      minute:Number(m[2]),
-
-      value:
-        String(Number(m[1])).padStart(2,"0")+
-        ":"+
-        m[2],
-
-      index:m.index
-
-    });
-
-  }
-
-  return result;
-
-}
-
-
-/* =========================
-   TIME PAIRS
-========================= */
-
-function extractTimePairs(text){
-
-  const times=
-    extractAllTimes(text);
-
-  const pairs=[];
-
-  for(let i=0;i<times.length-1;i++){
-
-    const a=times[i];
-    const b=times[i+1];
-
-    const diff=
-      (b.hour*60+b.minute)-
-      (a.hour*60+a.minute);
-
-    /*
-      Perjalanan normal:
-      jam selesai harus setelah jam mulai
-      dan durasinya masuk akal.
-    */
-
-    if(diff>=1 && diff<=180){
-
-      pairs.push({
-
-        start:a.value,
-
-        end:b.value,
-
-        index:a.index
-
-      });
-
-      i++;
-
-    }
-
-  }
-
-  return pairs;
-
-}
-
-
-/* =========================
-   DISTANCE
-========================= */
-
-function extractDistances(text){
-
-  const s=
-    cleanText(text)
-      .replace(/,/g,".");
-
-  const regex=
-    /(\d{1,2}\.\d{1,2})\s*km/gi;
-
-  const result=[];
-
-  let m;
-
-  while((m=regex.exec(s))!==null){
-
-    const n=parseFloat(m[1]);
-
-    if(n>0 && n<100){
-
-      result.push(n.toFixed(2));
-
-    }
-
-  }
-
-  return result;
-
-}
-
-
-/* =========================
-   PAYMENT
-========================= */
-
-function extractPayments(text){
-
-  const s=
-    cleanText(text).toLowerCase();
-
-  const result=[];
-
-  /*
-    Ambil kemunculan GoPay/Tunai
-  */
-
-  const regex=
-    /gopay|tunai/gi;
-
-  let m;
-
-  while((m=regex.exec(s))!==null){
-
-    result.push(
-      m[0].toLowerCase()==="tunai"
-      ? "Tunai"
-      : "GoPay"
-    );
-
-  }
-
-  return result;
-
-}
-
-
-/* =========================
-   BUILD TRANSACTIONS
-========================= */
-
-function buildScannedTransactions(rawText){
-
-  const amounts=
-    extractAmounts(rawText);
-
-  const pairs=
-    extractTimePairs(rawText);
-
-  const distances=
-    extractDistances(rawText);
-
-  const payments=
-    extractPayments(rawText);
-
-
-  /*
-    Penting:
-
-    Screenshot Gojek dibaca
-    dari atas ke bawah.
-
-    Amounts juga urut
-    dari atas ke bawah.
-
-    Time pairs juga urut
-    dari atas ke bawah.
-
-    Jadi kita pasangkan
-    berdasarkan INDEX.
-  */
-
-
-  const result=[];
-
-
-  amounts.forEach((amount,i)=>{
-
-    const pair=
-      pairs[i] || null;
-
-    const distance=
-      distances[i] || "";
-
-    const payment=
-      payments[i] || "";
-
-
-    result.push({
-
-      type:"income",
-
-      source:"gojek",
-
-      amount:amount,
-
-      time:
-        pair ? pair.start : "",
-
-      endTime:
-        pair ? pair.end : "",
-
-      distance:distance,
-
-      payment:payment,
-
-      date:getToday()
-
-    });
-
-  });
-
-
-  return result;
-
-}
-
-
-/* =========================
-   SCAN IMAGE
-========================= */
-
-async function scanImage(){
-
-  const input=
-    document.getElementById("imageInput");
-
-  const progress=
-    document.getElementById("progress");
-
-  if(
-    !input.files ||
-    !input.files[0]
-  ){
-
-    alert(
-      "Pilih screenshot Gojek dulu."
-    );
-
     return;
 
   }
 
 
-  try{
+  list.innerHTML =
+    items.map(
+      (x,i) => `
 
-    progress.innerHTML=
-      "🖼️ Menyiapkan gambar...";
+      <div class="scan-card">
+
+        <div class="scan-title">
+
+          Transaksi ${i + 1}
+
+        </div>
 
 
-    const canvas=
-      await prepareImage(
-        input.files[0]
+        <div class="grid">
+
+
+          <div class="field">
+
+            <label>
+              Nominal
+            </label>
+
+            <input
+              type="number"
+              data-i="${i}"
+              data-field="amount"
+              value="${x.amount || ""}"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Jam mulai
+            </label>
+
+            <input
+              type="text"
+              data-i="${i}"
+              data-field="time"
+              value="${escapeHtml(
+                x.time
+              )}"
+              placeholder="12:20"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Jam selesai
+            </label>
+
+            <input
+              type="text"
+              data-i="${i}"
+              data-field="endTime"
+              value="${escapeHtml(
+                x.endTime
+              )}"
+              placeholder="12:53"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Jarak (km)
+            </label>
+
+            <input
+              type="text"
+              data-i="${i}"
+              data-field="distance"
+              value="${escapeHtml(
+                x.distance
+              )}"
+              placeholder="8.44"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Pembayaran
+            </label>
+
+            <select
+              data-i="${i}"
+              data-field="payment"
+            >
+
+              <option
+                value=""
+                ${!x.payment
+                  ? "selected"
+                  : ""}
+              >
+                -
+              </option>
+
+              <option
+                value="GoPay"
+                ${x.payment ===
+                  "GoPay"
+                  ? "selected"
+                  : ""}
+              >
+                GoPay
+              </option>
+
+              <option
+                value="Tunai"
+                ${x.payment ===
+                  "Tunai"
+                  ? "selected"
+                  : ""}
+              >
+                Tunai
+              </option>
+
+            </select>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Simpan?
+            </label>
+
+            <select
+              data-i="${i}"
+              data-field="selected"
+            >
+
+              <option
+                value="true"
+                ${x.selected
+                  ? "selected"
+                  : ""}
+              >
+                Ya
+              </option>
+
+              <option
+                value="false"
+                ${!x.selected
+                  ? "selected"
+                  : ""}
+              >
+                Tidak
+              </option>
+
+            </select>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+      `
+    ).join("");
+
+}
+
+
+/* =====================================================
+   REVIEW INPUT CHANGE
+===================================================== */
+
+document
+  .getElementById(
+    "reviewList"
+  )
+  .addEventListener(
+    "input",
+    function(e){
+
+      const i =
+        e.target.dataset.i;
+
+      const field =
+        e.target.dataset.field;
+
+
+      if(
+        i === undefined ||
+        !field
+      ){
+
+        return;
+
+      }
+
+
+      if(
+        field === "amount"
+      ){
+
+        pending[i][field] =
+          Number(
+            e.target.value
+          );
+
+      }else{
+
+        pending[i][field] =
+          e.target.value;
+
+      }
+
+    }
+  );
+
+
+document
+  .getElementById(
+    "reviewList"
+  )
+  .addEventListener(
+    "change",
+    function(e){
+
+      const i =
+        e.target.dataset.i;
+
+      const field =
+        e.target.dataset.field;
+
+
+      if(
+        i === undefined ||
+        !field
+      ){
+
+        return;
+
+      }
+
+
+      if(
+        field ===
+        "selected"
+      ){
+
+        pending[i].selected =
+          e.target.value ===
+          "true";
+
+      }else{
+
+        pending[i][field] =
+          field === "amount"
+            ? Number(
+                e.target.value
+              )
+            : e.target.value;
+
+      }
+
+    }
+  );
+
+
+/* =====================================================
+   CANCEL REVIEW
+===================================================== */
+
+document
+  .getElementById(
+    "cancelReview"
+  )
+  .onclick = () => {
+
+    pending = [];
+
+    document
+      .getElementById(
+        "review"
+      )
+      .style.display =
+      "none";
+
+  };
+
+
+/* =====================================================
+   SAVE REVIEW
+===================================================== */
+
+document
+  .getElementById(
+    "saveReview"
+  )
+  .onclick = () => {
+
+    let added = 0;
+
+    let skipped = 0;
+
+
+    for(
+      const x of pending
+    ){
+
+      if(
+        !x.selected ||
+        !x.amount
+      ){
+
+        continue;
+
+      }
+
+
+      const item = {
+
+        id:uid(),
+
+        type:"income",
+
+        source:"Gojek",
+
+        amount:
+          Number(x.amount),
+
+        time:
+          x.time || "",
+
+        endTime:
+          x.endTime || "",
+
+        distance:
+          x.distance || "",
+
+        payment:
+          x.payment || "",
+
+        date:
+          today(),
+
+        createdAt:
+          Date.now() + added
+
+      };
+
+
+      if(
+        isDuplicate(item)
+      ){
+
+        skipped++;
+
+        continue;
+
+      }
+
+
+      transactions.push(
+        item
       );
 
 
-    progress.innerHTML=
-      "⏳ OCR sedang membaca...";
+      added++;
+
+    }
 
 
-    const result=
-      await Tesseract.recognize(
-        canvas,
-        "eng",
-        {
+    saveData();
 
-          logger:m=>{
 
-            if(
-              m.status==="recognizing text"
-            ){
+    pending = [];
 
-              progress.innerHTML=
-                "⏳ Membaca "+
-                Math.round(
-                  m.progress*100
-                )+
-                "%...";
 
-            }
+    document
+      .getElementById(
+        "review"
+      )
+      .style.display =
+      "none";
 
-          }
+
+    let message =
+      "Selesai! " +
+      added +
+      " transaksi baru disimpan.";
+
+
+    if(skipped){
+
+      message +=
+        " " +
+        skipped +
+        " transaksi duplikat dilewati.";
+
+    }
+
+
+    alert(message);
+
+  };
+
+
+/* =====================================================
+   OCR SCAN
+===================================================== */
+
+document
+  .getElementById(
+    "scanBtn"
+  )
+  .onclick =
+  async function(){
+
+    const file =
+      document
+        .getElementById(
+          "fileInput"
+        )
+        .files[0];
+
+
+    if(!file){
+
+      alert(
+        "Pilih screenshot Gojek dulu."
+      );
+
+      return;
+
+    }
+
+
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+
+    const statusText =
+      document.getElementById(
+        "statusText"
+      );
+
+
+    const progressBar =
+      document.getElementById(
+        "progressBar"
+      );
+
+
+    const debug =
+      document.getElementById(
+        "debug"
+      );
+
+
+    status.style.display =
+      "block";
+
+
+    progressBar.style.width =
+      "0%";
+
+
+    document
+      .getElementById(
+        "review"
+      )
+      .style.display =
+      "none";
+
+
+    debug.style.display =
+      "none";
+
+
+    try{
+
+      statusText.textContent =
+        "🖼️ Memuat gambar...";
+
+
+      const img =
+        new Image();
+
+
+      img.src =
+        URL.createObjectURL(
+          file
+        );
+
+
+      await new Promise(
+        (resolve,reject) => {
+
+          img.onload =
+            resolve;
+
+          img.onerror =
+            reject;
 
         }
       );
 
 
-    const raw=
-      result.data.text || "";
+      /*
+        Jalankan OCR dengan
+        beberapa versi gambar.
+      */
+
+      const variants = [
+
+        preprocess(
+          img,
+          "normal"
+        ),
+
+        preprocess(
+          img,
+          "contrast"
+        ),
+
+        preprocess(
+          img,
+          "bw"
+        )
+
+      ];
 
 
-    console.log(
-      "OCR V6:",
-      raw
-    );
+      let best = null;
 
 
-    scannedData=
-      buildScannedTransactions(
-        raw
+      for(
+        let i=0;
+        i<variants.length;
+        i++
+      ){
+
+        statusText.textContent =
+          "🔎 Membaca screenshot " +
+          (i + 1) +
+          "/3...";
+
+
+        progressBar.style.width =
+          "0%";
+
+
+        const result =
+          await Tesseract.recognize(
+            variants[i],
+            "eng",
+            {
+
+              logger:
+                message => {
+
+                  if(
+                    message.status ===
+                    "recognizing text"
+                  ){
+
+                    const p =
+                      Math.round(
+                        (
+                          message.progress ||
+                          0
+                        ) * 100
+                      );
+
+
+                    progressBar.style.width =
+                      p + "%";
+
+                  }
+
+                }
+
+            }
+          );
+
+
+        const parsed =
+          buildScannedTransactions(
+            result.data.text
+          );
+
+
+        /*
+          Skor kualitas OCR.
+
+          Lebih banyak transaksi
+          = lebih bagus.
+
+          Data lengkap mendapat
+          nilai tambahan.
+        */
+
+        let score =
+          parsed.length * 100;
+
+
+        parsed.forEach(
+          x => {
+
+            if(x.time)
+              score += 10;
+
+            if(x.endTime)
+              score += 10;
+
+            if(x.distance)
+              score += 10;
+
+            if(x.payment)
+              score += 5;
+
+          }
+        );
+
+
+        if(
+          !best ||
+          score > best.score
+        ){
+
+          best = {
+
+            items:parsed,
+
+            score:score,
+
+            raw:result.data.text
+
+          };
+
+        }
+
+      }
+
+
+      progressBar.style.width =
+        "100%";
+
+
+      if(!best){
+
+        throw new Error(
+          "OCR tidak menghasilkan data"
+        );
+
+      }
+
+
+      statusText.textContent =
+        "✅ Ditemukan " +
+        best.items.length +
+        " transaksi. Periksa dulu.";
+
+
+      /*
+        Tampilkan OCR mentah
+        untuk debugging.
+      */
+
+      debug.textContent =
+        "OCR MENTAH:\\n\\n" +
+        best.raw;
+
+
+      showReview(
+        best.items
       );
 
 
-    /*
-      Jangan masukkan transaksi
-      yang tidak punya nominal.
-    */
+    }catch(err){
 
-    scannedData=
-      scannedData.filter(
-        x=>
-          x.amount>=1000 &&
-          x.amount<=1000000
-      );
+      console.error(err);
 
 
-    if(!scannedData.length){
+      statusText.textContent =
+        "❌ OCR gagal.";
 
-      progress.innerHTML=
-        "❌ Transaksi tidak ditemukan.";
 
       alert(
-        "Nominal Gojek tidak ditemukan."
+        "OCR gagal. Pastikan koneksi internet aktif lalu coba lagi."
       );
-
-      return;
 
     }
 
+  };
 
-    showReview(raw);
-
-
-    progress.innerHTML=
-      "✅ "+
-      scannedData.length+
-      " transaksi ditemukan.";
-
-  }
-  catch(err){
-
-    console.error(err);
-
-    progress.innerHTML=
-      "❌ OCR gagal.";
-
-    alert(
-      "OCR gagal membaca screenshot."
-    );
-
-  }
-
-}
-
-
-/* =========================
-   REVIEW
-========================= */
-
-function showReview(raw){
-
-  const review=
-    document.getElementById("review");
-
-  const list=
-    document.getElementById("reviewList");
-
-  const debug=
-    document.getElementById("debugBox");
-
-
-  review.style.display="block";
-
-  list.innerHTML="";
-
-
-  scannedData.forEach((item,index)=>{
-
-    const row=
-      document.createElement("div");
-
-    row.className="scanrow";
-
-
-    row.innerHTML=`
-
-      <b>Transaksi ${index+1}</b>
-
-      <div class="grid">
-
-        <div>
-
-          <label>Nominal</label>
-
-          <input
-            type="number"
-            id="amount_${index}"
-            value="${item.amount}"
-          >
-
-        </div>
-
-
-        <div>
-
-          <label>Jam mulai</label>
-
-          <input
-            type="text"
-            id="time_${index}"
-            value="${item.time}"
-            placeholder="12:20"
-          >
-
-        </div>
-
-
-        <div>
-
-          <label>Jam selesai</label>
-
-          <input
-            type="text"
-            id="end_${index}"
-            value="${item.endTime}"
-            placeholder="12:53"
-          >
-
-        </div>
-
-
-        <div>
-
-          <label>Jarak (km)</label>
-
-          <input
-            type="text"
-            id="distance_${index}"
-            value="${item.distance}"
-            placeholder="8.44"
-          >
-
-        </div>
-
-
-        <div>
-
-          <label>Pembayaran</label>
-
-          <select id="payment_${index}">
-
-            <option
-              value=""
-              ${!item.payment?"selected":""}
-            >
-              -
-            </option>
-
-            <option
-              value="GoPay"
-              ${item.payment==="GoPay"?"selected":""}
-            >
-              GoPay
-            </option>
-
-            <option
-              value="Tunai"
-              ${item.payment==="Tunai"?"selected":""}
-            >
-              Tunai
-            </option>
-
-          </select>
-
-        </div>
-
-      </div>
-    `;
-
-
-    list.appendChild(row);
-
-  });
-
-
-  /*
-    OCR mentah tetap ditampilkan
-    untuk debugging.
-  */
-
-  debug.innerHTML=
-    "<b>OCR mentah:</b><div class='debug'>"+
-    escapeHtml(raw)+
-    "</div>";
-
-
-  review.scrollIntoView({
-    behavior:"smooth"
-  });
-
-}
-
-
-/* =========================
-   ESCAPE HTML
-========================= */
-
-function escapeHtml(text){
-
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;");
-
-}
-
-
-/* =========================
-   SAVE SCANNED
-========================= */
-
-function saveScanned(){
-
-  let saved=0;
-
-
-  scannedData.forEach((item,index)=>{
-
-    const amount=
-      Number(
-        document.getElementById(
-          "amount_"+index
-        ).value
-      );
-
-
-    const time=
-      document.getElementById(
-        "time_"+index
-      ).value.trim();
-
-
-    const endTime=
-      document.getElementById(
-        "end_"+index
-      ).value.trim();
-
-
-    const distance=
-      document.getElementById(
-        "distance_"+index
-      ).value.trim();
-
-
-    const payment=
-      document.getElementById(
-        "payment_"+index
-      ).value;
-
-
-    if(!amount)
-      return;
-
-
-    /*
-      Anti duplikat:
-
-      tanggal
-      + jam mulai
-      + nominal
-    */
-
-    const duplicate=
-      transactions.some(t=>
-        t.source==="gojek" &&
-        t.date===item.date &&
-        t.time===time &&
-        Number(t.amount)===amount
-      );
-
-
-    if(duplicate)
-      return;
-
-
-    transactions.push({
-
-      id:
-        Date.now()+
-        Math.random(),
-
-      type:"income",
-
-      source:"gojek",
-
-      amount:amount,
-
-      time:time,
-
-      endTime:endTime,
-
-      distance:distance,
-
-      payment:payment,
-
-      date:item.date
-
-    });
-
-
-    saved++;
-
-  });
-
-
-  saveData();
-
-  renderTransactions();
-
-
-  scannedData=[];
-
-
-  document.getElementById(
-    "review"
-  ).style.display="none";
-
-
-  alert(
-    "✅ "+
-    saved+
-    " transaksi berhasil disimpan!"
-  );
-
-}
-
-
-/* =========================
-   CANCEL
-========================= */
-
-function cancelScan(){
-
-  scannedData=[];
-
-  document.getElementById(
-    "review"
-  ).style.display="none";
-
-}
-
-
-/* =========================
-   MANUAL
-========================= */
-
-function addManual(){
-
-  const type=
-    document.getElementById(
-      "manualType"
-    ).value;
-
-  const amount=
-    Number(
-      document.getElementById(
-        "manualAmount"
-      ).value
-    );
-
-  const note=
-    document.getElementById(
-      "manualNote"
-    ).value.trim();
-
-
-  if(!amount){
-
-    alert(
-      "Masukkan nominal."
-    );
-
-    return;
-
-  }
-
-
-  transactions.push({
-
-    id:Date.now(),
-
-    type:type,
-
-    amount:amount,
-
-    note:note,
-
-    source:"manual",
-
-    date:getToday()
-
-  });
-
-
-  saveData();
-
-  renderTransactions();
-
-
-  document.getElementById(
-    "manualAmount"
-  ).value="";
-
-
-  document.getElementById(
-    "manualNote"
-  ).value="";
-
-}
-
-
-/* =========================
-   DELETE ALL
-========================= */
-
-function deleteAll(){
-
-  if(
-    !confirm(
-      "Yakin mau menghapus SEMUA transaksi?"
-    )
-  )
-    return;
-
-
-  transactions=[];
-
-  saveData();
-
-  renderTransactions();
-
-}
-
-
-/* =========================
-   START
-========================= */
-
-renderTransactions();
 
 </script>
 
