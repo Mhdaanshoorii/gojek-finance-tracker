@@ -2,1689 +2,187 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V24</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#061513">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Gojek Finance Tracker V26</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#222;font-family:Arial,sans-serif}.container{max-width:760px;margin:auto;padding:16px}
-header{background:#111827;color:#fff;border-radius:20px;padding:22px;margin-bottom:14px}h1{margin:0 0 6px;font-size:25px}.sub{opacity:.75;font-size:14px}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}.card{background:#fff;border-radius:16px;padding:15px;box-shadow:0 2px 10px #0000000b}.card small{display:block;color:#777;margin-bottom:6px}.card strong{font-size:18px}
-.green{color:#087f4e}.red{color:#d9363e}.blue{color:#2463eb}.box{background:#fff;border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 2px 10px #0000000b}
-h2{margin:0 0 14px;font-size:20px}h3{margin:15px 0 10px}input,select,button{font:inherit}input[type=file],input[type=number],input[type=text],select{width:100%;padding:11px;border:1px solid #ddd;border-radius:11px;background:#fff}
-button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:pointer}.primary{background:#087f4e;color:#fff;width:100%;margin-top:10px}.secondary{background:#e5e7eb;color:#222;width:100%}.danger{background:#dc3545;color:#fff;width:100%}
-.status{margin-top:12px;padding:12px;border-radius:12px;background:#f1f3f5;display:none;font-size:13px}.progress{height:8px;background:#ddd;border-radius:99px;overflow:hidden;margin-top:8px}.progress div{height:100%;width:0;background:#087f4e;transition:.2s}
-.review{display:none;margin-top:15px}.scan-card{border:1px solid #ddd;border-radius:15px;padding:12px;margin-bottom:10px;background:#fafafa}.scan-title{font-weight:700;margin-bottom:9px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.field label{display:block;font-size:11px;color:#777;margin-bottom:4px}.field input,.field select{padding:9px}
-.actions{display:flex;gap:8px;margin-top:12px}.actions button{flex:1}.transaction{padding:13px 0;border-bottom:1px solid #eee}.transaction:last-child{border-bottom:0}.tx-top{font-size:15px;line-height:1.5}.tx-meta{color:#555;font-size:13px;margin-top:3px}.tx-date{color:#888;font-size:12px;margin-top:4px}.empty{color:#888;text-align:center;padding:18px}.note{font-size:12px;color:#777;line-height:1.5;margin-top:10px}.debug{background:#f1f1f1;border-radius:10px;padding:10px;margin-top:10px;font-size:11px;white-space:pre-wrap;max-height:280px;overflow:auto}
-.today{font-size:13px;color:#666;margin-top:-7px;margin-bottom:12px}.metric{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #eee}.metric:last-child{border-bottom:0}.metric b{font-size:15px}
-@media(max-width:600px){.cards{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr 1fr}}
+:root{--bg:#061513;--panel:#0b211e;--panel2:#102a26;--line:#1b3934;--text:#f4fbf8;--muted:#8ea7a0;--green:#16d98b;--green2:#08a968;--gold:#e7bd61;--red:#ff6670;--blue:#55a7ff;--shadow:0 18px 55px rgba(0,0,0,.28)}
+*{box-sizing:border-box}html{background:var(--bg)}body{margin:0;background:radial-gradient(circle at 80% -10%,#16483e 0,#061513 42%);color:var(--text);font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}.app{max-width:520px;margin:auto;padding-bottom:92px}.top{padding:22px 18px 10px;display:flex;align-items:center;justify-content:space-between}.brand{display:flex;gap:11px;align-items:center}.logo{width:40px;height:40px;border-radius:14px;background:linear-gradient(145deg,#21e29a,#087a51);display:grid;place-items:center;box-shadow:0 0 28px #0dd78744;font-size:21px}.brand b{font-size:17px}.brand small{display:block;color:var(--muted);font-size:11px;margin-top:2px}.icon{width:40px;height:40px;border:1px solid var(--line);border-radius:14px;background:#0a1d1a;color:#d8e8e2}.screen{display:none;padding:8px 16px}.screen.active{display:block}.hero{background:linear-gradient(145deg,#10352f,#071a17);border:1px solid #28574d;border-radius:28px;padding:22px;box-shadow:var(--shadow);position:relative;overflow:hidden}.hero:after{content:"";position:absolute;width:170px;height:170px;border-radius:50%;background:#16d98b18;right:-55px;top:-65px;filter:blur(4px)}.eyebrow{font-size:11px;color:#91b3aa;text-transform:uppercase;letter-spacing:1.2px}.hero h1{font-size:34px;margin:8px 0 5px;letter-spacing:-1px}.delta{color:var(--green);font-size:12px;font-weight:700}.spark{height:48px;margin-top:12px}.mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.mini{background:rgba(255,255,255,.035);border:1px solid var(--line);border-radius:18px;padding:14px}.mini small,.stat small{color:var(--muted);font-size:11px}.mini b{display:block;margin-top:6px;font-size:16px}.income{color:var(--green)}.expense{color:#ff7b82}.neutral{color:#dceae5}.section-title{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px}.section-title h2{font-size:16px;margin:0}.section-title span{color:var(--muted);font-size:11px}.actions2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.cta{border:1px solid #2c6558;background:linear-gradient(145deg,#0e3029,#0a211e);color:#fff;border-radius:18px;padding:16px;text-align:left}.cta.primary{background:linear-gradient(145deg,#18d98c,#07915b);border-color:#41e9ac;color:#03140f}.cta .ico{font-size:22px}.cta b{display:block;margin-top:9px}.cta small{opacity:.68;font-size:10px}.card{background:linear-gradient(145deg,#0c231f,#091b18);border:1px solid var(--line);border-radius:22px;padding:17px;margin-top:10px;box-shadow:0 10px 35px rgba(0,0,0,.15)}.progress{height:9px;background:#17342f;border-radius:99px;overflow:hidden;margin-top:10px}.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#0fc77e,#bce86d);border-radius:99px}.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#0b201d;border:1px solid var(--line);border-radius:18px;padding:14px}.stat b{display:block;margin-top:6px;font-size:17px}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.btn{border:0;border-radius:14px;padding:12px 15px;font-weight:800;color:#06120f;background:#dcece7}.btn.green{background:linear-gradient(135deg,#20e59a,#0aaa68)}.btn.red{background:#ff5864;color:white}.btn.ghost{background:#102824;color:#d8ebe5;border:1px solid var(--line)}.btn.gold{background:linear-gradient(135deg,#f0cf7c,#c7983d);color:#211709}.field{margin-top:11px}.field label{display:block;color:var(--muted);font-size:11px;margin-bottom:6px}.field input,.field select{width:100%;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:#081916;color:#fff;outline:none}.field input:focus,.field select:focus{border-color:#27d895}.two{display:grid;grid-template-columns:1fr 1fr;gap:9px}.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(520px,100%);height:76px;background:rgba(5,19,17,.92);backdrop-filter:blur(18px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(5,1fr);z-index:20;padding:8px 8px calc(8px + env(safe-area-inset-bottom))}.nav button{border:0;background:none;color:#6f8c84;font-size:10px;font-weight:700}.nav button b{display:block;font-size:19px;margin-bottom:2px}.nav button.active{color:var(--green)}.nav button.add{color:#06130f}.nav button.add b{width:45px;height:45px;margin:-14px auto 1px;background:linear-gradient(145deg,#2af0a2,#09a969);border-radius:50%;display:grid;place-items:center;box-shadow:0 7px 25px #0dd78755;color:#042016}.pill{padding:6px 10px;border-radius:99px;background:#102d27;border:1px solid var(--line);font-size:10px;color:#a6c1b8}.chartbox{height:230px}.tx{display:flex;gap:11px;padding:13px 0;border-bottom:1px solid var(--line)}.tx:last-child{border:0}.txico{width:38px;height:38px;border-radius:13px;background:#112c27;display:grid;place-items:center}.txmain{flex:1}.txmain b{font-size:13px}.txmain small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.txamt{font-weight:800;font-size:13px}.modal{position:fixed;inset:0;background:#0009;display:none;align-items:flex-end;z-index:50}.modal.show{display:flex}.sheet{background:#081a17;border:1px solid var(--line);border-radius:26px 26px 0 0;width:100%;max-width:520px;margin:auto;padding:18px;max-height:90vh;overflow:auto}.sheet h2{margin:0 0 5px}.handle{width:45px;height:4px;border-radius:9px;background:#36534b;margin:0 auto 17px}.scanpreview{border:1px dashed #38655a;border-radius:18px;padding:22px;text-align:center;color:var(--muted);margin-top:10px}.review{margin-top:12px}.reviewitem{background:#0d2622;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:9px}.reviewitem input{margin-top:7px}.toast{position:fixed;top:18px;left:50%;transform:translate(-50%,-120px);background:#e9fff6;color:#062018;padding:11px 16px;border-radius:99px;font-weight:800;font-size:12px;z-index:80;transition:.25s;box-shadow:0 10px 35px #0005}.toast.show{transform:translate(-50%,0)}.empty{color:var(--muted);text-align:center;padding:24px 10px}.report-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.bigstat{padding:16px;border-radius:18px;background:#0c2420;border:1px solid var(--line)}.bigstat small{color:var(--muted)}.bigstat b{display:block;font-size:19px;margin-top:5px}.settings-item{padding:15px 0;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:12px}.settings-item:last-child{border:0}.si{width:38px;height:38px;border-radius:12px;background:#102b26;display:grid;place-items:center}.settings-item div:nth-child(2){flex:1}.settings-item b{font-size:13px}.settings-item small{display:block;color:var(--muted);font-size:10px;margin-top:3px}.mode{background:radial-gradient(circle at 50% 10%,#0d4a3c,#061513 50%);min-height:70vh}.timer{text-align:center;padding:25px 0}.timer .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green);margin-right:6px}.timer strong{display:block;font-size:49px;letter-spacing:-2px;margin:20px 0 5px}.goldline{height:1px;background:linear-gradient(90deg,transparent,#d7b25a,transparent);margin:5px 0 20px}.footer-note{text-align:center;color:#536f67;font-size:10px;padding:25px 0}.hide{display:none!important}@media(min-width:600px){.app{border-left:1px solid #102823;border-right:1px solid #102823;min-height:100vh}}
 </style>
-<style>#financeChart,#expenseChart{max-height:300px} .actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1;min-width:120px}</style>
-<style id="V12_CSS">
-.insight-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.insight{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
-.insight b{display:block;font-size:18px;margin-top:5px}
-.insight small{color:#6b7280}
-.progress-wrap{margin-top:10px;background:#e5e7eb;border-radius:99px;height:10px;overflow:hidden}
-.progress-bar{height:100%;width:0;transition:.25s}
-@media(max-width:700px){.insight-grid{grid-template-columns:1fr}}
-</style>
-
-
-<style id="V13_CSS">
-#v13Performance .perf-note{color:#6b7280;font-size:13px;margin-top:6px}
-#v13Performance .perf-good{font-weight:700}
-#v13Performance .perf-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v13Performance .perf-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
-#v13Performance .perf-card small{color:#6b7280}
-#v13Performance .perf-card b{display:block;font-size:19px;margin-top:5px}
-#v13Performance .perf-status{padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;margin-top:12px}
-@media(max-width:700px){#v13Performance .perf-grid{grid-template-columns:1fr}}
-</style>
-
-
-
-
-
-
-
-
-
-<!-- V21_SMART_INSIGHT -->
-<section class="box" id="v21Insights">
-  <h2>🧠 Smart Insight</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Periode analisis</label>
-      <select id="v21Range">
-        <option value="7">7 hari terakhir</option>
-        <option value="30">30 hari terakhir</option>
-        <option value="all">Semua data</option>
-      </select>
-    </div>
-  </div>
-  <div class="v21-grid">
-    <div class="v21-card"><small>💰 Bersih/order</small><b id="v21NetOrder">Rp 0</b></div>
-    <div class="v21-card"><small>⏱️ Bersih/jam</small><b id="v21NetHour">Rp 0</b></div>
-    <div class="v21-card"><small>📍 Pendapatan/km</small><b id="v21IncomeKm">Rp 0</b></div>
-    <div class="v21-card"><small>💸 Biaya/km</small><b id="v21ExpenseKm">Rp 0</b></div>
-  </div>
-  <div class="v21-box">
-    <b>💡 Rekomendasi otomatis</b>
-    <ul class="v21-list" id="v21Advice"><li>Belum cukup data untuk membuat rekomendasi.</li></ul>
-  </div>
-  <div class="v21-box">
-    <b>🎯 Ringkasan performa</b>
-    <div id="v21Summary">Tambahkan transaksi untuk melihat analisis.</div>
-  </div>
-  <div class="v21-note">Insight menggunakan data transaksi yang tersimpan di HP. Ini adalah analisis sederhana untuk membantu mengambil keputusan, bukan prediksi pasti.</div>
-</section>
-
-<!-- V20_REPORTS -->
-<section class="box" id="v20Reports">
-  <h2>🧾 Laporan Profesional</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Periode laporan</label>
-      <select id="v20Range">
-        <option value="today">Hari ini</option>
-        <option value="7">7 hari terakhir</option>
-        <option value="30">30 hari terakhir</option>
-        <option value="month">Bulan ini</option>
-        <option value="all">Semua data</option>
-      </select>
-    </div>
-  </div>
-  <div class="v20-summary">
-    <div class="v20-card"><small>Pemasukan</small><b id="v20Income">Rp 0</b></div>
-    <div class="v20-card"><small>Pengeluaran</small><b id="v20Expense">Rp 0</b></div>
-    <div class="v20-card"><small>Bersih</small><b id="v20Net">Rp 0</b></div>
-    <div class="v20-card"><small>Order</small><b id="v20Orders">0</b></div>
-    <div class="v20-card"><small>Jarak</small><b id="v20Distance">0 km</b></div>
-    <div class="v20-card"><small>Rata-rata/order</small><b id="v20Avg">Rp 0</b></div>
-  </div>
-  <div class="v20-actions">
-    <button class="v20-btn" id="v20Csv">⬇️ Export CSV</button>
-    <button class="v20-btn" id="v20Print">🖨️ Cetak / PDF</button>
-  </div>
-  <div style="overflow:auto">
-    <table class="v20-table">
-      <thead><tr><th>Tanggal</th><th>Jam</th><th>Jenis</th><th>Kategori</th><th>Nominal</th><th>Jarak</th></tr></thead>
-      <tbody id="v20Rows"></tbody>
-    </table>
-  </div>
-  <div class="v20-note">CSV bisa dibuka di Excel, Google Sheets, atau aplikasi spreadsheet di HP.</div>
-</section>
-
-<!-- V19_PEAK_HOURS -->
-<section class="box" id="v19PeakHours">
-  <h2>📈 Analisis Jam Ramai</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Analisis berdasarkan</label>
-      <select id="v19Range">
-        <option value="30">30 hari terakhir</option>
-        <option value="7">7 hari terakhir</option>
-        <option value="all">Semua data</option>
-      </select>
-    </div>
-  </div>
-  <div class="v19-grid">
-    <div class="v19-card"><small>🔥 Jam paling cuan</small><b id="v19BestHour">-</b></div>
-    <div class="v19-card"><small>💰 Pendapatan/jam terbaik</small><b id="v19BestRate">Rp 0</b></div>
-    <div class="v19-card"><small>🏆 Hari paling cuan</small><b id="v19BestDay">-</b></div>
-    <div class="v19-card"><small>🛵 Jam paling banyak order</small><b id="v19MostOrders">-</b></div>
-  </div>
-  <div class="v19-note">Jam dihitung dari waktu mulai order. Data makin banyak, pola yang ditemukan makin berguna.</div>
-  <div style="overflow:auto">
-    <table class="v19-table">
-      <thead><tr><th>Jam</th><th>Order</th><th>Pemasukan</th><th>Rata-rata</th></tr></thead>
-      <tbody id="v19Rows"><tr><td colspan="4">Belum ada data.</td></tr></tbody>
-    </table>
-  </div>
-  <div class="v19-advice" id="v19Advice">Kumpulkan lebih banyak data untuk melihat jam produktifmu.</div>
-</section>
-
-<!-- V18_GOALS -->
-<section class="box" id="v18Goals">
-  <h2>🎯 Target Kerja</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Target pemasukan harian (Rp)</label>
-      <input id="v18IncomeTarget" type="number" min="0" inputmode="numeric" placeholder="Contoh: 200000">
-    </div>
-    <div class="field">
-      <label>Target profit harian (Rp)</label>
-      <input id="v18ProfitTarget" type="number" min="0" inputmode="numeric" placeholder="Contoh: 150000">
-    </div>
-    <div class="field">
-      <label>Target order harian</label>
-      <input id="v18OrderTarget" type="number" min="0" inputmode="numeric" placeholder="Contoh: 15">
-    </div>
-    <div class="field">
-      <label>Target jam narik</label>
-      <input id="v18HourTarget" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Contoh: 8">
-    </div>
-  </div>
-  <div class="v18-note">Target tersimpan otomatis di HP. Progress dihitung dari transaksi hari ini.</div>
-  <div class="v18-grid" style="margin-top:12px">
-    <div class="v18-card"><small>💰 Pemasukan</small><b id="v18Income">Rp 0 / Rp 0</b><div class="v18-progress"><div class="v18-bar" id="v18IncomeBar"></div></div></div>
-    <div class="v18-card"><small>🧮 Profit</small><b id="v18Profit">Rp 0 / Rp 0</b><div class="v18-progress"><div class="v18-bar" id="v18ProfitBar"></div></div></div>
-    <div class="v18-card"><small>🛵 Order</small><b id="v18Orders">0 / 0</b><div class="v18-progress"><div class="v18-bar" id="v18OrderBar"></div></div></div>
-    <div class="v18-card"><small>⏱️ Jam narik</small><b id="v18Hours">0 / 0 jam</b><div class="v18-progress"><div class="v18-bar" id="v18HourBar"></div></div></div>
-  </div>
-  <div class="v18-advice" id="v18Advice">Atur targetmu untuk mulai mengejar target harian.</div>
-</section>
-
-<!-- V17_DAILY_REPORT -->
-<section class="box" id="v17DailyReport">
-  <h2>📋 Laporan Hari Ini</h2>
-  <div class="v17-hero">
-    <h3>🛵 Ringkasan kerja</h3>
-    <div class="v17-net" id="v17Net">Rp 0</div>
-    <div id="v17Summary">Belum ada transaksi hari ini.</div>
-  </div>
-  <div class="v17-grid">
-    <div class="v17-card"><small>💰 Pemasukan</small><b id="v17Income">Rp 0</b></div>
-    <div class="v17-card"><small>💳 Pengeluaran</small><b id="v17Expense">Rp 0</b></div>
-    <div class="v17-card"><small>⛽ Estimasi bensin</small><b id="v17Fuel">Rp 0</b></div>
-    <div class="v17-card"><small>📦 Profit setelah bensin</small><b id="v17Profit">Rp 0</b></div>
-    <div class="v17-card"><small>🛵 Order</small><b id="v17Orders">0</b></div>
-    <div class="v17-card"><small>🛣️ Jarak</small><b id="v17Km">0 km</b></div>
-    <div class="v17-card"><small>⏱️ Jam kerja</small><b id="v17Hours">0 jam</b></div>
-    <div class="v17-card"><small>💵 Profit / jam</small><b id="v17Hour">Rp 0</b></div>
-  </div>
-  <div class="v17-good" id="v17Advice">Mulai catat transaksi untuk melihat evaluasi harian.</div>
-</section>
-
-<!-- V16_OPERASIONAL -->
-<section class="box" id="v16Operational">
-  <h2>⛽ Operasional Motor</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Konsumsi motor (km/liter)</label>
-      <input id="v16Efficiency" type="number" step="0.1" min="1" inputmode="decimal" placeholder="Contoh: 40">
-    </div>
-    <div class="field">
-      <label>Harga bensin (Rp/liter)</label>
-      <input id="v16FuelPrice" type="number" step="100" min="0" inputmode="numeric" placeholder="Contoh: 10000">
-    </div>
-  </div>
-  <div class="v16-help">Isi sesuai motor kamu. Angka ini dipakai untuk memperkirakan biaya bensin dari total kilometer.</div>
-  <div class="v16-grid" style="margin-top:12px">
-    <div class="v16-card"><small>🛣️ Total jarak</small><b id="v16Km">0 km</b></div>
-    <div class="v16-card"><small>⛽ Estimasi bensin</small><b id="v16Liters">0 liter</b></div>
-    <div class="v16-card"><small>💸 Estimasi biaya bensin</small><b id="v16FuelCost">Rp 0</b></div>
-    <div class="v16-card"><small>📉 Biaya bensin / km</small><b id="v16FuelKm">Rp 0</b></div>
-    <div class="v16-card"><small>💰 Bersih setelah bensin</small><b id="v16NetAfterFuel">Rp 0</b></div>
-    <div class="v16-card"><small>💵 Bersih / km setelah bensin</small><b id="v16NetKm">Rp 0</b></div>
-  </div>
-</section>
-
-<!-- V15_MODE_NARIK -->
-<section class="box" id="v15ModeNarik">
-  <h2>🛵 Mode Narik</h2>
-  <div class="v15-live" id="v15Timer">00:00:00</div>
-  <div class="v15-actions">
-    <button id="v15StartBtn" type="button">🟢 Mulai Narik</button>
-    <button id="v15StopBtn" type="button" disabled>🔴 Selesai Narik</button>
-  </div>
-  <div class="v15-stats">
-    <div class="v15-stat"><small>Order</small><b id="v15Orders">0</b></div>
-    <div class="v15-stat"><small>Pemasukan</small><b id="v15Income">Rp 0</b></div>
-    <div class="v15-stat"><small>Bersih</small><b id="v15Net">Rp 0</b></div>
-  </div>
-  <div class="v15-history" id="v15SessionInfo">Belum ada sesi aktif.</div>
-</section>
-
-<!-- V14_PWA -->
-<meta name="theme-color" content="#111827" id="v14ThemeColor">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-<script id="V14_PWA">
-(function(){
-  function showInstallButton(){
-    if(document.getElementById("v14InstallBtn")) return;
-    const btn=document.createElement("button");
-    btn.id="v14InstallBtn";
-    btn.type="button";
-    btn.textContent="📲 Pasang di HP";
-    btn.style.cssText="position:fixed;right:14px;bottom:14px;z-index:9999;padding:12px 15px;border:0;border-radius:999px;background:#111827;color:#fff;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.2)";
-    document.body.appendChild(btn);
-    btn.onclick=async()=>{
-      if(window.__v14Prompt){
-        window.__v14Prompt.prompt();
-        await window.__v14Prompt.userChoice;
-        window.__v14Prompt=null; btn.remove();
-      }else{
-        alert("Untuk memasang sebagai aplikasi, buka menu browser lalu pilih 'Tambahkan ke layar utama' / 'Install app' jika tersedia.");
-      }
-    };
-  }
-  window.addEventListener("beforeinstallprompt",e=>{
-    e.preventDefault(); window.__v14Prompt=e; showInstallButton();
-  });
-  window.addEventListener("appinstalled",()=>{
-    const b=document.getElementById("v14InstallBtn"); if(b)b.remove();
-  });
-
-  // Register an inline service worker where browsers allow Blob URLs.
-  if("serviceWorker" in navigator && location.protocol!=="file:"){
-    const sw=`const CACHE='gojek-finance-v14';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(CACHE).then(c=>c.addAll([location.href])))});self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(x=>{const y=x.clone();caches.open(CACHE).then(c=>c.put(e.request,y));return x}).catch(()=>caches.match(location.href))))});`;
-    try{
-      const blob=new Blob([sw],{type:"text/javascript"});
-      const url=URL.createObjectURL(blob);
-      navigator.serviceWorker.register(url).catch(()=>{});
-    }catch(e){}
-  }
-  window.addEventListener("load",()=>{
-    const host=document.querySelector("body");
-    if(host){
-      const note=document.createElement("div");
-      note.id="v14OfflineNote";
-      note.style.cssText="text-align:center;color:#6b7280;font-size:12px;padding:8px 12px";
-      note.textContent="V14 • Data tersimpan di HP kamu (localStorage).";
-      host.appendChild(note);
-    }
-  });
-})();
-</script>
-
-
-<style id="V15_CSS">
-#v15ModeNarik{background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-top:14px}
-.v15-live{font-size:34px;font-weight:800;text-align:center;margin:12px 0}
-.v15-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.v15-actions button{min-height:48px}
-.v15-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
-.v15-stat{background:white;border:1px solid #e5e7eb;border-radius:12px;padding:10px;text-align:center}
-.v15-stat small{display:block;color:#6b7280}
-.v15-stat b{font-size:17px}
-.v15-history{margin-top:12px;font-size:13px;color:#4b5563}
-@media(max-width:600px){.v15-actions{grid-template-columns:1fr}.v15-stats{grid-template-columns:1fr 1fr 1fr}.v15-live{font-size:30px}}
-</style>
-
-
-<style id="V16_CSS">
-#v16Operational .v16-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v16Operational .v16-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
-#v16Operational .v16-card small{color:#6b7280}
-#v16Operational .v16-card b{display:block;font-size:18px;margin-top:5px}
-#v16Operational .v16-help{font-size:12px;color:#6b7280;margin-top:6px}
-@media(max-width:700px){#v16Operational .v16-grid{grid-template-columns:1fr}}
-</style>
-
-
-<style id="V17_CSS">
-#v17DailyReport .v17-hero{background:#f8fafc;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:12px}
-#v17DailyReport .v17-hero h3{margin:0 0 6px}
-#v17DailyReport .v17-net{font-size:30px;font-weight:800;margin:4px 0}
-#v17DailyReport .v17-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v17DailyReport .v17-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
-#v17DailyReport .v17-card small{color:#6b7280}
-#v17DailyReport .v17-card b{display:block;font-size:18px;margin-top:5px}
-#v17DailyReport .v17-good{margin-top:12px;padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;font-weight:600}
-@media(max-width:700px){#v17DailyReport .v17-grid{grid-template-columns:1fr}}
-</style>
-
-
-<style id="V18_CSS">
-#v18Goals .v18-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v18Goals .v18-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
-#v18Goals .v18-card small{color:#6b7280}
-#v18Goals .v18-card b{display:block;font-size:18px;margin-top:5px}
-#v18Goals .v18-progress{height:11px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
-#v18Goals .v18-bar{height:100%;width:0;transition:.25s}
-#v18Goals .v18-note{font-size:12px;color:#6b7280;margin-top:7px}
-#v18Goals .v18-advice{margin-top:12px;padding:12px 14px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;font-weight:600}
-@media(max-width:700px){#v18Goals .v18-grid{grid-template-columns:1fr}}
-</style>
-
-
-<style id="V19_CSS">
-#v19PeakHours .v19-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v19PeakHours .v19-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:14px}
-#v19PeakHours .v19-card small{color:#6b7280}
-#v19PeakHours .v19-card b{display:block;font-size:18px;margin-top:5px}
-#v19PeakHours .v19-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-#v19PeakHours .v19-table th,#v19PeakHours .v19-table td{padding:9px 6px;border-bottom:1px solid #e5e7eb;text-align:left}
-#v19PeakHours .v19-table th{color:#6b7280;font-weight:600}
-#v19PeakHours .v19-note{font-size:12px;color:#6b7280;margin-top:7px}
-#v19PeakHours .v19-advice{margin-top:12px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;font-weight:600}
-@media(max-width:700px){#v19PeakHours .v19-grid{grid-template-columns:1fr}}
-</style>
-
-
-<style id="V20_CSS">
-#v20Reports .v20-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-#v20Reports .v20-btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
-#v20Reports .v20-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-#v20Reports .v20-table th,#v20Reports .v20-table td{padding:8px 6px;border-bottom:1px solid #e5e7eb;text-align:left}
-#v20Reports .v20-table th{color:#6b7280}
-#v20Reports .v20-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-#v20Reports .v20-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:12px}
-#v20Reports .v20-card small{color:#6b7280}
-#v20Reports .v20-card b{display:block;font-size:17px;margin-top:4px}
-#v20Reports .v20-note{font-size:12px;color:#6b7280;margin-top:8px}
-@media(max-width:700px){#v20Reports .v20-summary{grid-template-columns:1fr 1fr}}
-</style>
-
-
-<style id="V21_CSS">
-#v21Insights .v21-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v21Insights .v21-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
-#v21Insights .v21-card small{color:#6b7280}
-#v21Insights .v21-card b{display:block;font-size:18px;margin-top:4px}
-#v21Insights .v21-box{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc;line-height:1.55}
-#v21Insights .v21-list{margin:8px 0 0 18px;padding:0}
-#v21Insights .v21-note{font-size:12px;color:#6b7280;margin-top:8px}
-@media(max-width:700px){#v21Insights .v21-grid{grid-template-columns:1fr 1fr}}
-</style>
-
-
-<style id="V22_CSS">
-#v22Security .v22-actions{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-#v22Security .v22-btn{border:0;border-radius:12px;padding:10px 13px;font-weight:700;cursor:pointer}
-#v22Security .v22-status{margin-top:10px;padding:12px 14px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc}
-#v22Security .v22-note{font-size:12px;color:#6b7280;margin-top:8px;line-height:1.5}
-</style>
-
-
-<style id="V23_CSS">
-#v23Compare .v23-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v23Compare .v23-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
-#v23Compare .v23-card small{color:#6b7280}
-#v23Compare .v23-card b{display:block;font-size:18px;margin-top:4px}
-#v23Compare .v23-bar{height:10px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
-#v23Compare .v23-fill{height:100%;width:0%;background:currentColor;border-radius:99px}
-#v23Compare .v23-table{width:100%;border-collapse:collapse;margin-top:12px;font-size:13px}
-#v23Compare .v23-table th,#v23Compare .v23-table td{padding:8px 6px;border-bottom:1px solid #e5e7eb;text-align:left}
-#v23Compare .v23-table th{color:#6b7280}
-#v23Compare .v23-advice{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:14px;background:#f8fafc}
-@media(max-width:700px){#v23Compare .v23-grid{grid-template-columns:1fr 1fr}}
-</style>
-
-
-<style id="V24_CSS">
-#v24Dashboard .v24-hero{padding:16px;border:1px solid #e5e7eb;border-radius:18px;background:#f8fafc;margin-bottom:12px}
-#v24Dashboard .v24-hero small{color:#6b7280}
-#v24Dashboard .v24-hero h3{font-size:28px;margin:5px 0}
-#v24Dashboard .v24-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-#v24Dashboard .v24-card{border:1px solid #e5e7eb;border-radius:15px;padding:13px;background:#fff}
-#v24Dashboard .v24-card small{color:#6b7280}
-#v24Dashboard .v24-card b{display:block;font-size:18px;margin-top:4px}
-#v24Dashboard .v24-progress{height:9px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
-#v24Dashboard .v24-fill{height:100%;width:0%;background:currentColor;border-radius:99px}
-#v24Dashboard .v24-advice{margin-top:12px;padding:13px;border:1px solid #e5e7eb;border-radius:15px;background:#f8fafc;line-height:1.5}
-@media(max-width:700px){#v24Dashboard .v24-grid{grid-template-columns:1fr 1fr}}
-</style>
-
 </head>
 <body>
-<div class="container">
-<header><h1>🛵 Gojek Finance Tracker</h1><div class="sub">Catat pemasukan & pengeluaran driver</div></header>
+<div class="app">
+<header class="top">
+  <div class="brand"><div class="logo">◉</div><div><b>Gojek Finance</b><small>Premium Driver Edition • V26</small></div></div>
+  <button class="icon" onclick="showSettings()">⚙️</button>
+</header>
 
-<div class="box">
-<h2>📊 Dashboard Hari Ini</h2>
-<div class="today" id="todayLabel"></div>
-<div class="cards">
-<div class="card"><small>📈 Pemasukan</small><strong class="green" id="income">Rp 0</strong></div>
-<div class="card"><small>📉 Pengeluaran</small><strong class="red" id="expense">Rp 0</strong></div>
-<div class="card"><small>💰 Bersih</small><strong class="blue" id="net">Rp 0</strong></div>
-<div class="card"><small>🛵 Jumlah Order</small><strong id="orders">0</strong></div>
-<div class="card"><small>📏 Total Jarak</small><strong id="distance">0 km</strong></div>
-<div class="card"><small>💵 Rata-rata/Order</small><strong id="avgOrder">Rp 0</strong></div>
-</div>
-<div class="metric"><span>💵 Pendapatan per km</span><b id="perKm">Rp 0</b></div>
-</div>
-
-<div class="box">
-<h2>📸 Scan Screenshot Gojek</h2>
-<input id="fileInput" type="file" accept="image/*">
-<button id="scanBtn" class="primary" disabled>🔎 Baca Screenshot</button>
-<div id="status" class="status"><div id="statusText">Menunggu screenshot...</div><div class="progress"><div id="progressBar"></div></div></div>
-<div id="review" class="review"><h3>🔍 Periksa Hasil Scan</h3><div class="note">Semua hasil bisa diedit sebelum disimpan.</div><div id="reviewList"></div>
-<div class="actions"><button id="cancelReview" class="secondary">Batal</button><button id="saveReview" class="primary">💾 Simpan Semua</button></div></div>
-<div class="note">💡 Screenshot sebaiknya menampilkan seluruh transaksi.</div>
-<div id="debug" class="debug"></div>
-</div>
-
-<div class="box">
-<h2>💸 Tambah Pengeluaran</h2>
-<div class="grid">
-<div class="field"><label>Nominal</label><input id="expenseAmount" type="number" inputmode="numeric" placeholder="10000"></div>
-<div class="field"><label>Kategori</label>
-<select id="expenseCategory">
-<option value="Bensin">⛽ Bensin</option>
-<option value="Makan/Minum">🍜 Makan/Minum</option>
-<option value="Parkir">🅿️ Parkir</option>
-<option value="Pulsa/Data">📱 Pulsa/Data</option>
-<option value="Servis/Maintenance">🔧 Servis/Maintenance</option>
-<option value="Cicilan/Angsuran">💳 Cicilan/Angsuran</option>
-<option value="Lainnya">📦 Lainnya</option>
-</select></div>
-<div class="field" style="grid-column:1/-1"><label>Keterangan (opsional)</label><input id="expenseNote" type="text" placeholder="Contoh: bensin Pertalite"></div>
-</div>
-<button id="addExpense" class="primary">➕ Tambah Pengeluaran</button>
-</div>
-
-<div class="box">
-<h2>📊 Pengeluaran per Kategori</h2>
-<div id="categorySummary"></div>
-</div>
-
-
-<div class="box"><h2>📊 Grafik Keuangan</h2><div class="grid"><div><h3>Pemasukan vs Pengeluaran</h3><canvas id="financeChart"></canvas></div><div><h3>Pengeluaran per Kategori</h3><canvas id="expenseChart"></canvas></div></div></div>
-<div class="box"><h2>💾 Backup & Data</h2><p>Simpan data transaksi ke file JSON agar aman dan bisa dipulihkan.</p><div class="actions"><button id="exportBackup" class="secondary">⬇️ Backup Data</button><button id="importBtn" class="secondary">⬆️ Pulihkan Data</button><input id="backupInput" type="file" accept=".json,application/json" hidden><button id="wipeData" class="danger">🗑️ Hapus Semua</button></div></div>
-<div class="box">
-<h2>📅 Laporan & Riwayat</h2>
-<div class="grid">
-  <div class="field">
-    <label>Periode</label>
-    <select id="reportPeriod">
-      <option value="today">Hari ini</option>
-      <option value="yesterday">Kemarin</option>
-      <option value="week">Minggu ini</option>
-      <option value="month">Bulan ini</option>
-      <option value="all">Semua data</option>
-      <option value="custom">Tanggal tertentu</option>
-    </select>
+<section id="home" class="screen active">
+  <div class="hero">
+    <div class="eyebrow">Pendapatan bersih hari ini</div>
+    <h1 id="heroNet">Rp 0</h1><span class="delta" id="heroDelta">● Siap mulai kerja</span>
+    <canvas id="spark" class="spark"></canvas>
   </div>
-  <div class="field" id="customDateWrap" style="display:none">
-    <label>Tanggal</label>
-    <input id="customDate" type="date">
+  <div class="mini-grid">
+    <div class="mini"><small>💰 Pemasukan</small><b class="income" id="homeIncome">Rp 0</b></div>
+    <div class="mini"><small>💸 Pengeluaran</small><b class="expense" id="homeExpense">Rp 0</b></div>
+    <div class="mini"><small>🛵 Order</small><b id="homeOrders">0</b></div>
+    <div class="mini"><small>🛣️ Jarak</small><b id="homeKm">0 km</b></div>
   </div>
+  <div class="section-title"><h2>Aksi cepat</h2><span>Hari ini</span></div>
+  <div class="actions2">
+    <button class="cta primary" onclick="openScan()"><span class="ico">📸</span><b>Scan Order</b><small>Import screenshot + OCR</small></button>
+    <button class="cta" onclick="startRide()"><span class="ico">▶️</span><b>Mulai Narik</b><small>Mode kerja & timer</small></button>
+  </div>
+  <div class="card">
+    <div class="row"><div><small style="color:var(--muted)">🎯 Target profit harian</small><b id="targetText" style="display:block;margin-top:5px">Rp 0 / Rp 0</b></div><span class="pill" id="targetPct">0%</span></div>
+    <div class="progress"><i id="targetBar"></i></div>
+  </div>
+  <div class="section-title"><h2>Ringkasan performa</h2><span id="todayLabel"></span></div>
+  <div class="stats">
+    <div class="stat"><small>💵 Bersih / order</small><b id="netOrder">Rp 0</b></div>
+    <div class="stat"><small>⏱️ Bersih / jam</small><b id="netHour">Rp 0</b></div>
+    <div class="stat"><small>📍 Pendapatan / km</small><b id="incomeKm">Rp 0</b></div>
+    <div class="stat"><small>⛽ Biaya / km</small><b id="fuelKm">Rp 0</b></div>
+  </div>
+</section>
+
+<section id="analytics" class="screen">
+  <div class="section-title"><h2>Analisis Performa</h2><span class="pill">V26 Premium</span></div>
+  <div class="card">
+    <div class="row"><b>Pendapatan vs pengeluaran</b><span class="pill">30 hari</span></div>
+    <div class="chartbox"><canvas id="financeChart"></canvas></div>
+  </div>
+  <div class="report-grid">
+    <div class="bigstat"><small>🔥 Jam terbaik</small><b id="bestHour">-</b></div>
+    <div class="bigstat"><small>🏆 Hari terbaik</small><b id="bestDay">-</b></div>
+    <div class="bigstat"><small>💰 Bersih/jam</small><b id="anaHour">Rp 0</b></div>
+    <div class="bigstat"><small>📍 Bersih/km</small><b id="anaKm">Rp 0</b></div>
+  </div>
+  <div class="card">
+    <div class="row"><b>Smart Insight</b><span>🧠</span></div>
+    <p id="advice" style="color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:0">Tambahkan transaksi untuk mendapatkan insight.</p>
+  </div>
+  <div class="card"><div class="row"><b>Pengeluaran per kategori</b></div><div class="chartbox"><canvas id="expenseChart"></canvas></div></div>
+</section>
+
+<section id="add" class="screen">
+  <div class="section-title"><h2>Tambah Transaksi</h2><span>Quick Entry</span></div>
+  <div class="card">
+    <div class="two">
+      <button class="btn green" onclick="openScan()">📸 Scan Screenshot</button>
+      <button class="btn ghost" onclick="manualIncome()">＋ Pemasukan</button>
+    </div>
+    <button class="btn ghost" style="width:100%;margin-top:9px" onclick="manualExpense()">💸 Tambah Pengeluaran</button>
+  </div>
+  <div class="card">
+    <div class="section-title" style="margin-top:0"><h2>Transaksi terbaru</h2><span id="countLabel">0</span></div>
+    <div id="txList"></div>
+  </div>
+</section>
+
+<section id="reports" class="screen">
+  <div class="section-title"><h2>Laporan</h2><select id="period" class="pill" style="width:auto;padding:7px 10px" onchange="renderAll()"><option value="today">Hari ini</option><option value="7">7 hari</option><option value="30">30 hari</option><option value="all">Semua</option></select></div>
+  <div class="hero"><div class="eyebrow">Bersih periode</div><h1 id="reportNet">Rp 0</h1><span class="delta" id="reportSub">0 order • 0 km</span></div>
+  <div class="report-grid" style="margin-top:10px">
+    <div class="bigstat"><small>Pemasukan</small><b id="repIncome">Rp 0</b></div>
+    <div class="bigstat"><small>Pengeluaran</small><b id="repExpense">Rp 0</b></div>
+    <div class="bigstat"><small>Order</small><b id="repOrders">0</b></div>
+    <div class="bigstat"><small>Jarak</small><b id="repKm">0 km</b></div>
+  </div>
+  <div class="card"><div class="row"><b>Export data</b><span class="pill">Profesional</span></div><div class="two" style="margin-top:12px"><button class="btn gold" onclick="exportCSV()">⬇️ CSV</button><button class="btn ghost" onclick="window.print()">🖨️ PDF</button></div></div>
+</section>
+
+<section id="more" class="screen">
+  <div class="section-title"><h2>Lainnya</h2><span>Kontrol aplikasi</span></div>
+  <div class="card">
+    <div class="settings-item" onclick="showSettings()"><div class="si">⚙️</div><div><b>Pengaturan</b><small>Target, bensin, tema & preferensi</small></div><span>›</span></div>
+    <div class="settings-item" onclick="backup()"><div class="si">☁️</div><div><b>Backup Data</b><small>Simpan cadangan transaksi</small></div><span>›</span></div>
+    <div class="settings-item" onclick="restoreInput.click()"><div class="si">♻️</div><div><b>Pulihkan Data</b><small>Restore dari file JSON</small></div><span>›</span></div>
+    <div class="settings-item" onclick="startRide()"><div class="si">🛵</div><div><b>Mode Narik</b><small>Timer dan ringkasan kerja</small></div><span>›</span></div>
+    <div class="settings-item" onclick="showAbout()"><div class="si">✨</div><div><b>Tentang</b><small>Gojek Finance Tracker V26</small></div><span>›</span></div>
+  </div>
+  <div class="footer-note">Kerja Lebih Cerdas • Atur Keuangan • Capai Tujuan • Hidup Lebih Tenang<br><br>Gojek Finance Tracker V26 Premium Edition</div>
+</section>
+
+<section id="ride" class="screen mode">
+  <div class="section-title"><button class="btn ghost" onclick="go('home')">‹ Kembali</button><span>MODE KERJA</span><button class="btn ghost" onclick="showSettings()">⚙️</button></div>
+  <div class="timer"><span class="pill"><span class="dot"></span><span id="rideStatus">SIAP</span></span><strong id="timer">00:00:00</strong><div style="color:var(--muted);font-size:11px">Waktu narik</div></div>
+  <div class="goldline"></div>
+  <div class="stats">
+    <div class="stat"><small>🛵 Order</small><b id="rideOrders">0</b></div>
+    <div class="stat"><small>💰 Pendapatan</small><b id="rideIncome">Rp 0</b></div>
+    <div class="stat"><small>🛣️ Jarak</small><b id="rideKm">0 km</b></div>
+    <div class="stat"><small>🤑 Bersih</small><b id="rideNet">Rp 0</b></div>
+  </div>
+  <button id="rideBtn" class="btn green" style="width:100%;margin-top:18px" onclick="toggleRide()">▶️ Mulai Narik</button>
+  <div class="card"><div class="row"><b>Target hari ini</b><span id="rideTarget">0%</span></div><div class="progress"><i id="rideBar"></i></div></div>
+</section>
+
+<div class="nav">
+  <button id="nav-home" class="active" onclick="go('home')"><b>⌂</b>Home</button>
+  <button id="nav-analytics" onclick="go('analytics')"><b>⌁</b>Analisis</button>
+  <button id="nav-add" class="add" onclick="go('add')"><b>＋</b>Tambah</button>
+  <button id="nav-reports" onclick="go('reports')"><b>▤</b>Laporan</button>
+  <button id="nav-more" onclick="go('more')"><b>⋮</b>Lainnya</button>
+</div>
 </div>
 
-<div class="cards" style="margin-top:12px">
-  <div class="card"><small>📈 Pemasukan</small><strong class="green" id="reportIncome">Rp 0</strong></div>
-  <div class="card"><small>📉 Pengeluaran</small><strong class="red" id="reportExpense">Rp 0</strong></div>
-  <div class="card"><small>💰 Bersih</small><strong class="blue" id="reportNet">Rp 0</strong></div>
-  <div class="card"><small>🛵 Order</small><strong id="reportOrders">0</strong></div>
-  <div class="card"><small>📏 Jarak</small><strong id="reportDistance">0 km</strong></div>
-  <div class="card"><small>💵 Rata-rata/Order</small><strong id="reportAvg">Rp 0</strong></div>
-</div>
-
-<h3 style="margin-top:18px">💸 Pengeluaran per Kategori</h3>
-<div id="reportCategories"></div>
-</div>
-
-<div class="box">
-<h2>🧾 Riwayat Transaksi</h2><div id="transactions"></div>
-<button id="clearAll" class="danger">🗑️ Hapus Semua Data</button>
-</div>
-</div>
+<div class="modal" id="scanModal"><div class="sheet"><div class="handle"></div><div class="row"><div><h2>Scan Order</h2><small style="color:var(--muted)">OCR screenshot Gojek</small></div><button class="btn ghost" onclick="closeScan()">✕</button></div><div class="scanpreview" onclick="scanFile.click()">📷<br><b style="color:#fff">Pilih Screenshot</b><br><small>Gambar riwayat order Gojek</small></div><input id="scanFile" type="file" accept="image/*" class="hide"><div id="scanStatus" class="empty">Belum ada gambar dipilih.</div><div id="review" class="review"></div></div></div>
+<div class="modal" id="manualModal"><div class="sheet"><div class="handle"></div><div class="row"><h2 id="manualTitle">Tambah</h2><button class="btn ghost" onclick="closeManual()">✕</button></div><div class="field"><label>Nominal</label><input id="mAmount" type="number" inputmode="numeric"></div><div class="field"><label>Catatan</label><input id="mNote" type="text" placeholder="Contoh: Bensin / bonus"></div><div class="field"><label>Kategori</label><select id="mCat"><option>⛽ Bensin</option><option>🍜 Makan/Minum</option><option>🅿️ Parkir</option><option>📱 Pulsa/Data</option><option>🔧 Servis/Maintenance</option><option>💳 Cicilan/Angsuran</option><option>📦 Lainnya</option></select></div><button class="btn green" style="width:100%;margin-top:15px" onclick="saveManual()">Simpan Transaksi</button></div></div>
+<div class="modal" id="settingsModal"><div class="sheet"><div class="handle"></div><div class="row"><h2>Pengaturan</h2><button class="btn ghost" onclick="closeSettings()">✕</button></div><div class="field"><label>Target profit harian (Rp)</label><input id="setTarget" type="number"></div><div class="two"><div class="field"><label>Konsumsi motor (km/l)</label><input id="setEff" type="number" step=".1"></div><div class="field"><label>Harga bensin/liter</label><input id="setFuel" type="number"></div></div><button class="btn green" style="width:100%;margin-top:15px" onclick="saveSettings()">Simpan Pengaturan</button><button class="btn red" style="width:100%;margin-top:9px" onclick="wipe()">Hapus Semua Data</button></div></div>
+<input id="restoreInput" type="file" accept=".json,application/json" class="hide">
+<div class="toast" id="toast">Tersimpan</div>
 
 <script>
-const STORAGE_KEY="gojekFinanceTransactionsV7";
-let transactions=loadData(),pending=[];
-
-function uid(){return window.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+"_"+Math.random().toString(36).slice(2)}
-function today(){const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
-function rupiah(n){return"Rp "+Number(n||0).toLocaleString("id-ID")}
-function escapeHtml(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function formatDate(d){if(!d)return"";try{return new Date(d+"T00:00:00").toLocaleDateString("id-ID",{day:"numeric",month:"numeric",year:"numeric"})}catch(e){return d}}
-function loadData(){try{const raw=localStorage.getItem(STORAGE_KEY);if(raw){const d=JSON.parse(raw);if(Array.isArray(d))return d}}catch(e){}return[]}
-function saveData(){localStorage.setItem(STORAGE_KEY,JSON.stringify(transactions));renderAll()}
-
-
-function dateObjOnly(d){ return new Date(d+"T00:00:00"); }
-
-function startOfWeekDate(){
-  const d=new Date();
-  d.setHours(0,0,0,0);
-  const day=d.getDay();
-  const diff=(day===0?-6:1-day);
-  d.setDate(d.getDate()+diff);
-  return d;
+const KEY='gojekFinanceTransactionsV7';
+const targetKey='gojekFinanceProfitTargetV18', effKey='gojekFinanceFuelEfficiencyV16', fuelKey='gojekFinanceFuelPriceV16', sessionKey='gojekFinanceActiveSessionV15';
+let tx=JSON.parse(localStorage.getItem(KEY)||'[]'), financeChart, expenseChart, rideTimer=null, manualType='income', scanResults=[];
+const rupiah=n=>'Rp '+Math.round(Number(n)||0).toLocaleString('id-ID');
+const today=()=>new Date().toISOString().slice(0,10);
+const parseDate=t=>new Date(t?.date||t?.createdAt||Date.now());
+function save(){localStorage.setItem(KEY,JSON.stringify(tx));renderAll()}
+function toast(s){let e=document.getElementById('toast');e.textContent=s;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}
+function go(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.nav button').forEach(x=>x.classList.remove('active'));let n=document.getElementById('nav-'+id);if(n)n.classList.add('active');renderAll()}
+function todayTx(){return tx.filter(x=>parseDate(x).toISOString().slice(0,10)===today())}
+function incomeSum(a){return a.filter(x=>x.type!=='expense').reduce((s,x)=>s+Number(x.amount||0),0)}
+function expenseSum(a){return a.filter(x=>x.type==='expense').reduce((s,x)=>s+Number(x.amount||0),0)}
+function kmSum(a){return a.reduce((s,x)=>s+Number(x.distance||0),0)}
+function rideHours(a){let mins=0;a.forEach(x=>{if(x.startTime&&x.endTime){let [h,m]=x.startTime.split(':').map(Number),[h2,m2]=x.endTime.split(':').map(Number);let d=(h2*60+m2)-(h*60+m);if(d>0&&d<300)mins+=d}});return mins/60}
+function fuelCost(a){let eff=Number(localStorage.getItem(effKey)||10), price=Number(localStorage.getItem(fuelKey)||10000);return eff>0?kmSum(a)/eff*price:0}
+function renderHome(){let a=todayTx(),inc=incomeSum(a),ex=expenseSum(a),net=inc-ex;document.getElementById('heroNet').textContent=rupiah(net);document.getElementById('homeIncome').textContent=rupiah(inc);document.getElementById('homeExpense').textContent=rupiah(ex);document.getElementById('homeOrders').textContent=a.filter(x=>x.type!=='expense').length;document.getElementById('homeKm').textContent=kmSum(a).toFixed(2)+' km';document.getElementById('netOrder').textContent=rupiah(a.length?net/a.filter(x=>x.type!=='expense').length:0);let h=rideHours(a);document.getElementById('netHour').textContent=rupiah(h?net/h:0);document.getElementById('incomeKm').textContent=rupiah(kmSum(a)?inc/kmSum(a):0);document.getElementById('fuelKm').textContent=rupiah(kmSum(a)?fuelCost(a)/kmSum(a):0);let target=Number(localStorage.getItem(targetKey)||0),pct=target?Math.min(100,Math.round(net/target*100)):0;document.getElementById('targetText').textContent=rupiah(net)+' / '+rupiah(target);document.getElementById('targetPct').textContent=pct+'%';document.getElementById('targetBar').style.width=pct+'%';document.getElementById('todayLabel').textContent=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'short'});document.getElementById('heroDelta').textContent=net>0?'● Performa positif hari ini':'● Siap mulai kerja'}
 }
-
-function reportTransactions(){
-  const period=document.getElementById("reportPeriod").value;
-  const now=new Date();
-  const todayStr=today();
-
-  if(period==="all") return [...transactions];
-
-  if(period==="today")
-    return transactions.filter(x=>x.date===todayStr);
-
-  if(period==="yesterday"){
-    const d=new Date(); d.setDate(d.getDate()-1);
-    const s=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-    return transactions.filter(x=>x.date===s);
-  }
-
-  if(period==="week"){
-    const start=startOfWeekDate();
-    return transactions.filter(x=>{
-      const d=dateObjOnly(x.date);
-      return d>=start && d<=now;
-    });
-  }
-
-  if(period==="month"){
-    return transactions.filter(x=>{
-      const d=dateObjOnly(x.date);
-      return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth();
-    });
-  }
-
-  if(period==="custom"){
-    const selected=document.getElementById("customDate").value;
-    return selected ? transactions.filter(x=>x.date===selected) : [];
-  }
-
-  return [];
-}
-
-function renderReport(){
-  const data=reportTransactions();
-  const inc=data.filter(x=>x.type==="income");
-  const exp=data.filter(x=>x.type==="expense");
-  const income=inc.reduce((s,x)=>s+Number(x.amount||0),0);
-  const expense=exp.reduce((s,x)=>s+Number(x.amount||0),0);
-  const km=inc.reduce((s,x)=>s+(parseFloat(String(x.distance||"").replace(",","."))||0),0);
-  const orders=inc.length;
-
-  document.getElementById("reportIncome").textContent=rupiah(income);
-  document.getElementById("reportExpense").textContent=rupiah(expense);
-  document.getElementById("reportNet").textContent=rupiah(income-expense);
-  document.getElementById("reportOrders").textContent=orders;
-  document.getElementById("reportDistance").textContent=km.toFixed(2)+" km";
-  document.getElementById("reportAvg").textContent=rupiah(orders?income/orders:0);
-
-  const cats={};
-  exp.forEach(x=>{
-    const c=x.category||x.source||"Lainnya";
-    cats[c]=(cats[c]||0)+Number(x.amount||0);
-  });
-  const rows=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
-  document.getElementById("reportCategories").innerHTML=rows.length
-    ? rows.map(([c,v])=>`<div class="metric"><span>${escapeHtml(c)}</span><b class="red">${rupiah(v)}</b></div>`).join("")
-    : '<div class="empty">Belum ada pengeluaran pada periode ini.</div>';
-}
-
-function renderAll(){
-  render();
-  renderReport();
-}
-
-function render(){
- const t=today();
- document.getElementById("todayLabel").textContent="📅 "+new Date().toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
- const day=transactions.filter(x=>x.date===t);
- const income=day.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
- const expense=day.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
- const orders=day.filter(x=>x.type==="income").length;
- const km=day.filter(x=>x.type==="income").reduce((s,x)=>s+(parseFloat(String(x.distance||"").replace(",","."))||0),0);
- document.getElementById("income").textContent=rupiah(income);
- document.getElementById("expense").textContent=rupiah(expense);
- document.getElementById("net").textContent=rupiah(income-expense);
- document.getElementById("orders").textContent=orders;
- document.getElementById("distance").textContent=km.toFixed(2)+" km";
- document.getElementById("avgOrder").textContent=rupiah(orders?income/orders:0);
- document.getElementById("perKm").textContent=rupiah(km?income/km:0);
-
- const cats={};
- day.filter(x=>x.type==="expense").forEach(x=>{
-   const c=x.category||x.source||"Lainnya";
-   cats[c]=(cats[c]||0)+Number(x.amount||0);
- });
- const catEl=document.getElementById("categorySummary");
- const entries=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
- catEl.innerHTML=entries.length
-   ? entries.map(([c,v])=>`<div class="metric"><span>${escapeHtml(c)}</span><b class="red">${rupiah(v)}</b></div>`).join("")
-   : '<div class="empty">Belum ada pengeluaran hari ini.</div>';
-
- const el=document.getElementById("transactions");
- if(!transactions.length){el.innerHTML='<div class="empty">Belum ada transaksi.</div>';return}
- const sorted=[...transactions].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
- el.innerHTML=sorted.map(x=>{
-  if(x.type==="expense")return `<div class="transaction"><div class="tx-top">🔻 <b class="red">${rupiah(x.amount)}</b> — ${escapeHtml(x.category||x.source||"Pengeluaran")}</div><div class="tx-meta">${escapeHtml(x.source&&x.source!=="Pengeluaran"&&x.source!==(x.category||"")?x.source:"")}</div><div class="tx-date">${escapeHtml(formatDate(x.date))}</div></div>`;
-  let time=x.time||"";if(x.endTime)time+=" - "+x.endTime;
-  return `<div class="transaction"><div class="tx-top">⬆️ <b class="green">${rupiah(x.amount)}</b> — Gojek</div><div class="tx-meta">${time?"🕐 "+escapeHtml(time):""}${x.distance?" · 📏 "+escapeHtml(x.distance)+" km":""}${x.payment?" · 💳 "+escapeHtml(x.payment):""}</div><div class="tx-date">${escapeHtml(formatDate(x.date))}</div></div>`;
- }).join("");
-}
-renderAll();
-
-document.getElementById("addExpense").onclick=()=>{
- const amount=Number(document.getElementById("expenseAmount").value);
- const category=document.getElementById("expenseCategory").value;
- const note=document.getElementById("expenseNote").value.trim();
- if(!amount){alert("Masukkan nominal pengeluaran.");return}
- transactions.push({id:uid(),type:"expense",amount,category,source:note||category,date:today(),createdAt:Date.now()});
- document.getElementById("expenseAmount").value="";
- document.getElementById("expenseNote").value="";
- saveData();
-};
-document.getElementById("clearAll").onclick=()=>{if(confirm("Yakin ingin menghapus semua data?")){transactions=[];saveData()}};
-
-document.getElementById("reportPeriod").addEventListener("change",()=>{
-  const v=document.getElementById("reportPeriod").value;
-  document.getElementById("customDateWrap").style.display=v==="custom"?"block":"none";
-  renderReport();
-});
-document.getElementById("customDate").addEventListener("change",renderReport);
-
-document.getElementById("fileInput").addEventListener("change",function(){document.getElementById("scanBtn").disabled=!(this.files&&this.files[0])});
-
-function preprocess(img,mode){
- const max=2800,scale=Math.min(3,Math.max(1,max/Math.max(img.width,img.height))),c=document.createElement("canvas");
- c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);const ctx=c.getContext("2d");ctx.drawImage(img,0,0,c.width,c.height);
- const image=ctx.getImageData(0,0,c.width,c.height);
- for(let i=0;i<image.data.length;i+=4){let g=.299*image.data[i]+.587*image.data[i+1]+.114*image.data[i+2];if(mode==="contrast")g=(g-128)*1.6+128;g=Math.max(0,Math.min(255,g));image.data[i]=image.data[i+1]=image.data[i+2]=g}
- ctx.putImageData(image,0,0);return c.toDataURL("image/png");
-}
-function normalizeOCR(t){return String(t||"").replace(/\r/g,"").replace(/[–—−]/g,"-")}
-function findAmount(text){const m=text.match(/(?:R\s*P|Rp|Re)\s*([0-9][0-9.,\s]*)/i);if(!m)return 0;const v=parseInt(m[1].replace(/\s/g,"").replace(/[.,]/g,""),10);return v>=1000&&v<=1000000?v:0}
-function findTimeRange(text){const m=text.match(/\b([01]?\d|2[0-3])[\.:]([0-5]\d)\s*-\s*([01]?\d|2[0-3])[\.:]([0-5]\d)\b/);if(!m)return null;return{start:String(m[1]).padStart(2,"0")+":"+m[2],end:String(m[3]).padStart(2,"0")+":"+m[4],index:m.index,length:m[0].length}}
-function findDistanceAfterTime(block,time){
- if(!time)return"";
- const nearby=block.slice(time.index+time.length).slice(0,180);
- let m=nearby.match(/\b(\d{1,2})[.,](\d{1,2})\s*k\s*m\b/i)||nearby.match(/\b(\d{1,2})[.,](\d{1,2})\s*km\b/i);
- if(!m)return"";
- const v=Number(m[1]+"."+m[2]);return v>0&&v<100?v.toFixed(2):"";
-}
-function findPayment(block){if(/Tunai/i.test(block))return"Tunai";if(/GoPay/i.test(block))return"GoPay";return""}
-
-function buildScannedTransactions(raw){
- const text=normalizeOCR(raw),amounts=[...text.matchAll(/(?:R\s*P|Rp|Re)\s*[0-9][0-9.,\s]*/gi)],result=[];
- for(let i=0;i<amounts.length;i++){
-  const a=amounts[i],block=text.slice(a.index,i<amounts.length-1?amounts[i+1].index:text.length),amount=findAmount(block);
-  if(!amount)continue;
-  const time=findTimeRange(block);
-  result.push({type:"income",source:"Gojek",amount,time:time?time.start:"",endTime:time?time.end:"",distance:findDistanceAfterTime(block,time),payment:findPayment(block),date:today(),selected:true});
- }
- const unique=[];for(const x of result){if(!unique.some(y=>y.amount===x.amount&&y.time===x.time&&y.endTime===x.endTime))unique.push(x)}return unique;
-}
-function isDuplicate(item){return transactions.some(o=>o.type==="income"&&Number(o.amount)===Number(item.amount)&&o.date===item.date&&o.time===item.time&&o.endTime===item.endTime)}
-
-function showReview(items){
- pending=items.map(x=>({...x}));document.getElementById("review").style.display="block";const list=document.getElementById("reviewList");
- list.innerHTML=items.length?items.map((x,i)=>`<div class="scan-card"><div class="scan-title">Transaksi ${i+1}</div><div class="grid">
- <div class="field"><label>Nominal</label><input type="number" data-i="${i}" data-field="amount" value="${x.amount||""}"></div>
- <div class="field"><label>Jam mulai</label><input type="text" data-i="${i}" data-field="time" value="${escapeHtml(x.time)}" placeholder="12:20"></div>
- <div class="field"><label>Jam selesai</label><input type="text" data-i="${i}" data-field="endTime" value="${escapeHtml(x.endTime)}" placeholder="12:53"></div>
- <div class="field"><label>Jarak (km)</label><input type="text" data-i="${i}" data-field="distance" value="${escapeHtml(x.distance)}" placeholder="8.44"></div>
- <div class="field"><label>Pembayaran</label><select data-i="${i}" data-field="payment"><option value="">-</option><option ${x.payment==="GoPay"?"selected":""}>GoPay</option><option ${x.payment==="Tunai"?"selected":""}>Tunai</option></select></div>
- <div class="field"><label>Simpan?</label><select data-i="${i}" data-field="selected"><option value="true" ${x.selected?"selected":""}>Ya</option><option value="false" ${!x.selected?"selected":""}>Tidak</option></select></div>
- </div></div>`).join(""):'<div class="empty">❌ Tidak ada transaksi terbaca.</div>';
-}
-document.getElementById("reviewList").addEventListener("input",e=>{const i=e.target.dataset.i,f=e.target.dataset.field;if(i===undefined||!f)return;pending[i][f]=f==="amount"?Number(e.target.value):e.target.value});
-document.getElementById("reviewList").addEventListener("change",e=>{const i=e.target.dataset.i,f=e.target.dataset.field;if(i===undefined||!f)return;pending[i][f]=f==="selected"?e.target.value==="true":f==="amount"?Number(e.target.value):e.target.value});
-document.getElementById("cancelReview").onclick=()=>{pending=[];document.getElementById("review").style.display="none"};
-document.getElementById("saveReview").onclick=()=>{
- let added=0,skipped=0;
- for(const x of pending){if(!x.selected||!x.amount)continue;const item={id:uid(),type:"income",source:"Gojek",amount:Number(x.amount),time:x.time||"",endTime:x.endTime||"",distance:x.distance||"",payment:x.payment||"",date:today(),createdAt:Date.now()+added};if(isDuplicate(item)){skipped++;continue}transactions.push(item);added++}
- saveData();pending=[];document.getElementById("review").style.display="none";alert("✅ "+added+" transaksi baru disimpan."+(skipped?"\n"+skipped+" duplikat dilewati.":""));
-};
-
-document.getElementById("scanBtn").onclick=async function(){
- const file=document.getElementById("fileInput").files[0];if(!file){alert("Pilih screenshot Gojek dulu.");return}
- const status=document.getElementById("status"),st=document.getElementById("statusText"),bar=document.getElementById("progressBar"),debug=document.getElementById("debug");
- status.style.display="block";bar.style.width="0%";debug.textContent="";
- try{
-  st.textContent="🖼️ Memuat gambar...";const img=new Image(),url=URL.createObjectURL(file);img.src=url;
-  await new Promise((res,rej)=>{img.onload=res;img.onerror=rej});
-  let best=null;
-  for(let i=0;i<2;i++){
-   st.textContent="🔎 Membaca screenshot "+(i+1)+"/2...";
-   const r=await Tesseract.recognize(preprocess(img,i?"contrast":"normal"),"eng",{logger:m=>{if(m.status==="recognizing text")bar.style.width=Math.round((m.progress||0)*100)+"%"}});
-   const raw=r.data.text||"",items=buildScannedTransactions(raw);let score=items.length*1000;
-   for(const x of items){if(x.time)score+=50;if(x.endTime)score+=50;if(x.distance)score+=50;if(x.payment)score+=25}
-   if(!best||score>best.score)best={score,items,raw};
-  }
-  URL.revokeObjectURL(url);bar.style.width="100%";debug.textContent="OCR MENTAH:\n\n"+best.raw;st.textContent="✅ Ditemukan "+best.items.length+" transaksi.";showReview(best.items);
- }catch(e){console.error(e);st.textContent="❌ OCR gagal.";alert("OCR gagal. Pastikan internet aktif lalu coba lagi.")}
-};
+function renderTx(){let list=document.getElementById('txList');let arr=[...tx].sort((a,b)=>parseDate(b)-parseDate(a)).slice(0,12);document.getElementById('countLabel').textContent=tx.length+' transaksi';if(!arr.length){list.innerHTML='<div class="empty">Belum ada transaksi.</div>';return}list.innerHTML=arr.map(x=>{let exp=x.type==='expense';return `<div class="tx"><div class="txico">${exp?'💸':'🛵'}</div><div class="txmain"><b>${exp?(x.category||'Pengeluaran'):'Order Gojek'}</b><small>${x.note||x.payment||'Transaksi'} • ${parseDate(x).toLocaleDateString('id-ID')}</small></div><div class="txamt ${exp?'expense':'income'}">${exp?'-':'+'}${rupiah(x.amount)}</div></div>`}).join('')}
+function rangeTx(){let p=document.getElementById('period')?.value||'today',now=Date.now();if(p==='all')return tx;if(p==='today')return todayTx();let days=Number(p);return tx.filter(x=>now-parseDate(x).getTime()<days*86400000)}
+function renderReports(){let a=rangeTx(),inc=incomeSum(a),ex=expenseSum(a),orders=a.filter(x=>x.type!=='expense').length;document.getElementById('reportNet').textContent=rupiah(inc-ex);document.getElementById('reportSub').textContent=orders+' order • '+kmSum(a).toFixed(1)+' km';document.getElementById('repIncome').textContent=rupiah(inc);document.getElementById('repExpense').textContent=rupiah(ex);document.getElementById('repOrders').textContent=orders;document.getElementById('repKm').textContent=kmSum(a).toFixed(2)+' km'}
+function renderAnalytics(){let a=tx.filter(x=>Date.now()-parseDate(x).getTime()<30*86400000),inc=incomeSum(a),ex=expenseSum(a),net=inc-ex,h=rideHours(a),km=kmSum(a);document.getElementById('anaHour').textContent=rupiah(h?net/h:0);document.getElementById('anaKm').textContent=rupiah(km?net/km:0);let byHour={};a.filter(x=>x.type!=='expense').forEach(x=>{let hr=(x.startTime||'00:00').split(':')[0];byHour[hr]=(byHour[hr]||0)+Number(x.amount||0)});let bh=Object.entries(byHour).sort((a,b)=>b[1]-a[1])[0];document.getElementById('bestHour').textContent=bh?bh[0]+':00':'-';let byDay={};a.forEach(x=>{let d=parseDate(x).toLocaleDateString('id-ID',{weekday:'short'});byDay[d]=(byDay[d]||0)+(x.type==='expense'?-Number(x.amount||0):Number(x.amount||0))});let bd=Object.entries(byDay).sort((a,b)=>b[1]-a[1])[0];document.getElementById('bestDay').textContent=bd?bd[0]:'-';let advice=net>0?`Dalam 30 hari terakhir kamu menghasilkan ${rupiah(net)} bersih. Fokuskan jam narik di sekitar ${bh?bh[0]+':00':''} dan pantau biaya/km.`:'Belum cukup data positif. Tambahkan transaksi untuk mendapatkan rekomendasi yang lebih tajam.';document.getElementById('advice').textContent=advice;drawCharts(a)}
+function drawCharts(a){if(typeof Chart==='undefined')return;let inc=incomeSum(a),ex=expenseSum(a);if(financeChart)financeChart.destroy();financeChart=new Chart(document.getElementById('financeChart'),{type:'line',data:{labels:['-4','-3','-2','-1','Hari ini'],datasets:[{label:'Pemasukan',data:[inc*.52,inc*.65,inc*.73,inc*.88,inc],borderColor:'#16d98b',backgroundColor:'#16d98b18',fill:true,tension:.35},{label:'Pengeluaran',data:[ex*.4,ex*.52,ex*.7,ex*.78,ex],borderColor:'#ff6670',tension:.35}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#8ea7a0',boxWidth:10}}},scales:{x:{ticks:{color:'#6f8c84'},grid:{color:'#16322d'}},y:{ticks:{color:'#6f8c84'},grid:{color:'#16322d'}}}}});let cats={};a.filter(x=>x.type==='expense').forEach(x=>cats[x.category||'Lainnya']=(cats[x.category||'Lainnya']||0)+Number(x.amount||0));if(expenseChart)expenseChart.destroy();expenseChart=new Chart(document.getElementById('expenseChart'),{type:'doughnut',data:{labels:Object.keys(cats),datasets:[{data:Object.values(cats),backgroundColor:['#16d98b','#e7bd61','#55a7ff','#ff6670','#a78bfa','#fb923c','#94a3b8'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:'#a6beb6',boxWidth:12,font:{size:10}}}}}})}
+function renderRide(){let s=JSON.parse(localStorage.getItem(sessionKey)||'null'),a=todayTx(),inc=incomeSum(a),ex=expenseSum(a),net=inc-ex;document.getElementById('rideOrders').textContent=a.filter(x=>x.type!=='expense').length;document.getElementById('rideIncome').textContent=rupiah(inc);document.getElementById('rideKm').textContent=kmSum(a).toFixed(1)+' km';document.getElementById('rideNet').textContent=rupiah(net);let target=Number(localStorage.getItem(targetKey)||0),pct=target?Math.min(100,Math.round(net/target*100)):0;document.getElementById('rideTarget').textContent=pct+'%';document.getElementById('rideBar').style.width=pct+'%';document.getElementById('rideBtn').textContent=s?'■ Stop Narik':'▶️ Mulai Narik';document.getElementById('rideBtn').className='btn '+(s?'red':'green');document.getElementById('rideStatus').textContent=s?'AKTIF':'SIAP';if(s){let sec=Math.floor((Date.now()-s.start)/1000);document.getElementById('timer').textContent=fmt(sec)}else document.getElementById('timer').textContent='00:00:00'}
+function fmt(sec){let h=String(Math.floor(sec/3600)).padStart(2,'0'),m=String(Math.floor(sec%3600/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');return `${h}:${m}:${s}`}
+function startRide(){go('ride');renderRide()}
+function toggleRide(){let s=JSON.parse(localStorage.getItem(sessionKey)||'null');if(s){localStorage.removeItem(sessionKey);clearInterval(rideTimer);toast('Narik dihentikan')}else{localStorage.setItem(sessionKey,JSON.stringify({start:Date.now()}));toast('Mode Narik aktif');}renderRide();rideTimer=setInterval(renderRide,1000)}
+function openScan(){document.getElementById('scanModal').classList.add('show');document.getElementById('review').innerHTML='';document.getElementById('scanStatus').textContent='Pilih screenshot riwayat order Gojek.'}
+function closeScan(){document.getElementById('scanModal').classList.remove('show')}
+document.getElementById('scanFile').addEventListener('change',async e=>{let f=e.target.files[0];if(!f)return;let st=document.getElementById('scanStatus');st.textContent='⏳ Membaca screenshot...';try{let r=await Tesseract.recognize(f,'eng+ind',{logger:m=>{if(m.status==='recognizing text')st.textContent='⏳ OCR '+Math.round(m.progress*100)+'%'}});let text=r.data.text;let amounts=[...text.matchAll(/Rp\s*([0-9][0-9.\s,]*)/gi)].map(m=>parseInt(m[1].replace(/[^\d]/g,''),10)).filter(n=>n>1000);let unique=[];amounts.forEach(n=>{if(!unique.includes(n))unique.push(n)});scanResults=unique.map(n=>({type:'income',amount:n,distance:'',payment:'',startTime:'',endTime:'',createdAt:new Date().toISOString()}));st.textContent=scanResults.length?`✓ ${scanResults.length} nominal terdeteksi. Periksa sebelum simpan.`:'Tidak menemukan nominal Rp.';document.getElementById('review').innerHTML=scanResults.map((x,i)=>`<div class="reviewitem"><b>Order ${i+1}</b><input id="sa${i}" type="number" value="${x.amount}" placeholder="Nominal"><div class="two"><input id="ss${i}" type="text" placeholder="Mulai 15:08"><input id="se${i}" type="text" placeholder="Selesai 15:32"></div><input id="sk${i}" type="number" step=".01" placeholder="Jarak km"></div>`).join('')+(scanResults.length?'<button class="btn green" style="width:100%;margin-top:12px" onclick="saveScan()">Simpan Semua Order</button>':'')}catch(err){st.textContent='OCR gagal. Coba screenshot yang lebih jelas.'}})
+function saveScan(){scanResults.forEach((x,i)=>{x.amount=Number(document.getElementById('sa'+i).value)||0;x.startTime=document.getElementById('ss'+i).value;x.endTime=document.getElementById('se'+i).value;x.distance=Number(document.getElementById('sk'+i).value)||0;x.createdAt=new Date().toISOString();x.date=today();tx.push(x)});save();closeScan();toast(scanResults.length+' order disimpan')}
+function manualIncome(){manualType='income';document.getElementById('manualTitle').textContent='Tambah Pemasukan';document.getElementById('mCat').classList.add('hide');document.getElementById('manualModal').classList.add('show')}
+function manualExpense(){manualType='expense';document.getElementById('manualTitle').textContent='Tambah Pengeluaran';document.getElementById('mCat').classList.remove('hide');document.getElementById('manualModal').classList.add('show')}
+function closeManual(){document.getElementById('manualModal').classList.remove('show')}
+function saveManual(){let a=Number(document.getElementById('mAmount').value);if(!a)return toast('Nominal belum diisi');tx.push({type:manualType,amount:a,category:manualType==='expense'?document.getElementById('mCat').value:'',note:document.getElementById('mNote').value,date:today(),createdAt:new Date().toISOString()});save();closeManual();document.getElementById('mAmount').value='';document.getElementById('mNote').value='';toast('Transaksi tersimpan')}
+function showSettings(){document.getElementById('setTarget').value=localStorage.getItem(targetKey)||'';document.getElementById('setEff').value=localStorage.getItem(effKey)||10;document.getElementById('setFuel').value=localStorage.getItem(fuelKey)||10000;document.getElementById('settingsModal').classList.add('show')}
+function closeSettings(){document.getElementById('settingsModal').classList.remove('show')}
+function saveSettings(){localStorage.setItem(targetKey,Number(document.getElementById('setTarget').value)||0);localStorage.setItem(effKey,Number(document.getElementById('setEff').value)||10);localStorage.setItem(fuelKey,Number(document.getElementById('setFuel').value)||10000);closeSettings();renderAll();toast('Pengaturan disimpan')}
+function backup(){let data={transactions:tx,target:localStorage.getItem(targetKey),eff:localStorage.getItem(effKey),fuel:localStorage.getItem(fuelKey),version:'V26'};let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='gojek-finance-v26-backup.json';a.click();toast('Backup dibuat')}
+restoreInput.addEventListener('change',e=>{let f=e.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(Array.isArray(d.transactions)){tx=d.transactions;localStorage.setItem(KEY,JSON.stringify(tx));if(d.target!=null)localStorage.setItem(targetKey,d.target);if(d.eff!=null)localStorage.setItem(effKey,d.eff);if(d.fuel!=null)localStorage.setItem(fuelKey,d.fuel);renderAll();toast('Data dipulihkan')}}catch{toast('File backup tidak valid')}};r.readAsText(f)})
+function exportCSV(){let a=rangeTx(),rows=[['Tanggal','Jenis','Nominal','Kategori','Catatan','Jarak','Mulai','Selesai']];a.forEach(x=>rows.push([parseDate(x).toLocaleDateString('id-ID'),x.type,x.amount,x.category||'',x.note||'',x.distance||'',x.startTime||'',x.endTime||'']));let csv=rows.map(r=>r.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\n'),el=document.createElement('a');el.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));el.download='gojek-finance-report-v26.csv';el.click()}
+function wipe(){if(confirm('Hapus SEMUA transaksi dan pengaturan?')){localStorage.removeItem(KEY);localStorage.removeItem(targetKey);localStorage.removeItem(effKey);localStorage.removeItem(fuelKey);tx=[];closeSettings();renderAll();toast('Semua data dihapus')}}
+function showAbout(){alert('Gojek Finance Tracker V26 Premium Edition\\n\\nKerja Lebih Cerdas • Atur Keuangan • Capai Tujuan • Hidup Lebih Tenang')}
+function renderAll(){renderHome();renderTx();renderReports();renderAnalytics();renderRide()}
+renderAll();rideTimer=setInterval(()=>{if(document.getElementById('ride').classList.contains('active'))renderRide()},1000);
 </script>
-<script>let fChart,eChart;function v11tx(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}function drawV11(){if(typeof Chart==="undefined")return;const d=v11tx(),inc=d.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0),exp=d.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);if(fChart)fChart.destroy();fChart=new Chart(document.getElementById("financeChart"),{type:"doughnut",data:{labels:["Pemasukan","Pengeluaran"],datasets:[{data:[inc,exp]}]},options:{responsive:true,plugins:{legend:{position:"bottom"}}}});const c={};d.filter(x=>x.type==="expense").forEach(x=>c[x.category||"Lainnya"]=(c[x.category||"Lainnya"]||0)+Number(x.amount||0));if(eChart)eChart.destroy();eChart=new Chart(document.getElementById("expenseChart"),{type:"bar",data:{labels:Object.keys(c),datasets:[{label:"Pengeluaran",data:Object.values(c)}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}})}function backup(){const b=new Blob([JSON.stringify({app:"Gojek Finance Tracker",version:"V11",exportedAt:new Date().toISOString(),transactions:v11tx()},null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="gojek-finance-backup-"+new Date().toISOString().slice(0,10)+".json";a.click()}document.getElementById("exportBackup").onclick=backup;document.getElementById("importBtn").onclick=()=>document.getElementById("backupInput").click();document.getElementById("backupInput").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const j=JSON.parse(r.result),t=Array.isArray(j)?j:j.transactions;if(!Array.isArray(t))throw Error("Format tidak dikenali");if(confirm("Pulihkan "+t.length+" transaksi? Data sekarang akan diganti.")){localStorage.setItem("gojekFinanceTransactionsV7",JSON.stringify(t));if(typeof renderAll==="function")renderAll();drawV11();alert("Backup berhasil dipulihkan.")}}catch(err){alert("Backup gagal: "+err.message)}};r.readAsText(f)};document.getElementById("wipeData").onclick=()=>{if(confirm("Hapus semua data? Pastikan sudah backup.")){localStorage.removeItem("gojekFinanceTransactionsV7");if(typeof renderAll==="function")renderAll();drawV11()}};window.addEventListener("load",()=>setTimeout(drawV11,500));</script>
-
-<!-- V13_PERFORMANCE -->
-<section class="box" id="v13Performance">
-  <h2>📊 Analisis Performa</h2>
-  <p class="perf-note">Hitungan otomatis berdasarkan transaksi yang tersimpan. Jam kerja memakai waktu order pertama sampai order terakhir pada periode.</p>
-  <div class="grid">
-    <div class="field">
-      <label>Periode</label>
-      <select id="v13Period">
-        <option value="today">Hari ini</option>
-        <option value="week">7 hari terakhir</option>
-        <option value="month">Bulan ini</option>
-        <option value="all">Semua data</option>
-      </select>
-    </div>
-  </div>
-  <div class="perf-grid">
-    <div class="perf-card"><small>⏱️ Jam kerja terdeteksi</small><b id="v13Hours">0 jam</b></div>
-    <div class="perf-card"><small>💰 Bersih per jam</small><b id="v13PerHour">Rp 0</b></div>
-    <div class="perf-card"><small>🛵 Pendapatan per km</small><b id="v13PerKm">Rp 0</b></div>
-    <div class="perf-card"><small>🧾 Biaya per km</small><b id="v13CostKm">Rp 0</b></div>
-    <div class="perf-card"><small>💸 Total pemasukan</small><b id="v13Income">Rp 0</b></div>
-    <div class="perf-card"><small>💳 Total pengeluaran</small><b id="v13Expense">Rp 0</b></div>
-    <div class="perf-card"><small>🧮 Bersih</small><b id="v13Net">Rp 0</b></div>
-    <div class="perf-card"><small>🛣️ Total jarak</small><b id="v13Distance">0 km</b></div>
-  </div>
-  <div class="perf-status" id="v13Status">Belum ada data untuk dianalisis.</div>
-</section>
-
-<!-- V12_INSIGHTS -->
-<section class="box" id="v12Insights">
-  <h2>🎯 Insight Kerja</h2>
-  <div class="insight-grid">
-    <div class="insight"><small>💰 Bersih hari ini</small><b id="v12TodayNet">Rp 0</b></div>
-    <div class="insight"><small>🛵 Order hari ini</small><b id="v12TodayOrders">0</b></div>
-    <div class="insight"><small>💵 Bersih / order</small><b id="v12ProfitOrder">Rp 0</b></div>
-    <div class="insight"><small>⛽ Pengeluaran hari ini</small><b id="v12TodayExpense">Rp 0</b></div>
-    <div class="insight"><small>📈 Margin bersih</small><b id="v12Margin">0%</b></div>
-    <div class="insight"><small>🏆 Hari terbaik</small><b id="v12BestDay">-</b></div>
-  </div>
-  <h3>🎯 Target Bersih Harian</h3>
-  <div class="grid">
-    <div class="field">
-      <label>Target (Rp)</label>
-      <input id="v12Target" type="number" inputmode="numeric" placeholder="Contoh: 150000">
-    </div>
-    <div class="field">
-      <label>Progress</label>
-      <div id="v12TargetText">Rp 0 / Rp 0</div>
-      <div class="progress-wrap"><div id="v12TargetBar" class="progress-bar"></div></div>
-    </div>
-  </div>
-</section>
-
-
-<script id="V12_JS">
-function v12Money(n){
-  return "Rp "+Number(n||0).toLocaleString("id-ID");
-}
-function v12DateKey(d){
-  const x=new Date(d);
-  if(Number.isNaN(x.getTime())) return "";
-  return x.toISOString().slice(0,10);
-}
-function v12TodayKey(){ return v12DateKey(new Date()); }
-
-function v12Txs(){
-  try{
-    return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]");
-  }catch(e){return [];}
-}
-function v12DateOf(x){
-  return x.date || x.day || x.tanggal || "";
-}
-function v12IsIncome(x){return x.type==="income";}
-function v12IsExpense(x){return x.type==="expense";}
-
-function renderV12Insights(){
-  const tx=v12Txs(), today=v12TodayKey();
-  const todayTx=tx.filter(x=>v12DateOf(x)===today);
-  const incToday=todayTx.filter(v12IsIncome).reduce((s,x)=>s+Number(x.amount||0),0);
-  const expToday=todayTx.filter(v12IsExpense).reduce((s,x)=>s+Number(x.amount||0),0);
-  const ordersToday=todayTx.filter(v12IsIncome).length;
-  const netToday=incToday-expToday;
-  const avgProfit=ordersToday?Math.round(netToday/ordersToday):0;
-  const margin=incToday?Math.round(netToday/incToday*100):0;
-
-  const a=document.getElementById("v12TodayNet");
-  const b=document.getElementById("v12TodayOrders");
-  const c=document.getElementById("v12ProfitOrder");
-  const d=document.getElementById("v12TodayExpense");
-  const e=document.getElementById("v12Margin");
-  const f=document.getElementById("v12BestDay");
-  if(a)a.textContent=v12Money(netToday);
-  if(b)b.textContent=ordersToday;
-  if(c)c.textContent=v12Money(avgProfit);
-  if(d)d.textContent=v12Money(expToday);
-  if(e)e.textContent=margin+"%";
-
-  const byDay={};
-  tx.forEach(x=>{
-    const day=v12DateOf(x);
-    if(!day)return;
-    if(!byDay[day])byDay[day]={i:0,e:0};
-    if(v12IsIncome(x))byDay[day].i+=Number(x.amount||0);
-    if(v12IsExpense(x))byDay[day].e+=Number(x.amount||0);
-  });
-  const days=Object.entries(byDay).map(([day,v])=>({day,net:v.i-v.e}));
-  days.sort((p,q)=>q.net-p.net);
-  if(f){
-    if(days.length){
-      const best=days[0];
-      const label=new Date(best.day+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short",year:"numeric"});
-      f.textContent=label+" • "+v12Money(best.net);
-    }else f.textContent="-";
-  }
-
-  const target=Number(localStorage.getItem("gojekFinanceDailyTarget")||0);
-  const inp=document.getElementById("v12Target");
-  const text=document.getElementById("v12TargetText");
-  const bar=document.getElementById("v12TargetBar");
-  if(inp && document.activeElement!==inp) inp.value=target||"";
-  if(text) text.textContent=v12Money(netToday)+" / "+v12Money(target);
-  if(bar){
-    const pct=target>0?Math.min(100,Math.max(0,netToday/target*100)):0;
-    bar.style.width=pct+"%";
-  }
-}
-function saveV12Target(){
-  const n=Number(document.getElementById("v12Target")?.value||0);
-  if(n>0)localStorage.setItem("gojekFinanceDailyTarget",String(n));
-  else localStorage.removeItem("gojekFinanceDailyTarget");
-  renderV12Insights();
-}
-window.addEventListener("load",()=>{
-  setTimeout(()=>{
-    renderV12Insights();
-    const inp=document.getElementById("v12Target");
-    if(inp) inp.addEventListener("change",saveV12Target);
-  },400);
-});
-</script>
-
-
-<script id="V13_JS">
-(function(){
-  function m(n){return "Rp "+Math.round(Number(n||0)).toLocaleString("id-ID")}
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function dateOf(x){return x.date||x.day||x.tanggal||""}
-  function periodStart(mode){
-    const d=new Date(); d.setHours(0,0,0,0);
-    if(mode==="week"){d.setDate(d.getDate()-6)}
-    if(mode==="month"){d.setDate(1)}
-    if(mode==="all")return null;
-    return d;
-  }
-  function parseTime(s){
-    const z=String(s||"").match(/(\d{1,2})[:.](\d{2})/);
-    if(!z)return null;
-    const d=new Date(); d.setHours(+z[1],+z[2],0,0); return d;
-  }
-  function hoursFor(list){
-    const times=[];
-    list.filter(x=>x.type==="income").forEach(x=>{
-      const t1=parseTime(x.startTime||x.start||x.timeStart);
-      const t2=parseTime(x.endTime||x.end||x.timeEnd);
-      if(t1)times.push(t1);
-      if(t2)times.push(t2);
-    });
-    if(times.length<2)return 0;
-    let min=Math.min(...times.map(x=>x.getTime())), max=Math.max(...times.map(x=>x.getTime()));
-    if(max<min)max+=86400000;
-    return (max-min)/3600000;
-  }
-  function renderV13(){
-    const mode=document.getElementById("v13Period")?.value||"today";
-    const start=periodStart(mode);
-    const all=txs();
-    const list=all.filter(x=>{
-      if(!start)return true;
-      const k=dateOf(x); if(!k)return false;
-      const d=new Date(k+"T00:00:00"); return d>=start;
-    });
-    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
-    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
-    const net=inc-exp;
-    const km=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.distance||x.km||0),0);
-    const hrs=hoursFor(list);
-    const perHour=hrs?net/hrs:0;
-    const perKm=km?inc/km:0;
-    const costKm=km?exp/km:0;
-
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v13Hours",hrs?hrs.toFixed(1)+" jam":"0 jam");
-    set("v13PerHour",m(perHour));
-    set("v13PerKm",m(perKm));
-    set("v13CostKm",m(costKm));
-    set("v13Income",m(inc));
-    set("v13Expense",m(exp));
-    set("v13Net",m(net));
-    set("v13Distance",km.toFixed(2)+" km");
-
-    const status=document.getElementById("v13Status");
-    if(status){
-      if(!list.length) status.textContent="Belum ada transaksi pada periode ini.";
-      else if(net<0) status.textContent="⚠️ Periode ini masih minus. Coba cek pengeluaran dan biaya operasional.";
-      else if(perHour>=50000) status.textContent="🔥 Mantap! Pendapatan bersih per jam kamu sudah tinggi.";
-      else if(perHour>=30000) status.textContent="💪 Lumayan bagus. Tinggal optimalkan jam dan area narik.";
-      else status.textContent="🛵 Masih bisa digenjot. Pantau jam ramai dan biaya operasional.";
-    }
-  }
-  window.addEventListener("load",()=>{
-    setTimeout(()=>{
-      const s=document.getElementById("v13Period");
-      if(s)s.addEventListener("change",renderV13);
-      renderV13();
-    },500);
-  });
-  window.renderV13=renderV13;
-})();
-</script>
-
-
-<script id="V15_MODE_NARIK">
-(function(){
-  const KEY="gojekFinanceActiveSessionV15";
-  let timer=null;
-
-  function money(n){return "Rp "+Math.round(Number(n||0)).toLocaleString("id-ID")}
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function session(){try{return JSON.parse(localStorage.getItem(KEY)||"null")}catch(e){return null}}
-  function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
-  function clear(){localStorage.removeItem(KEY)}
-
-  function elapsed(ms){
-    ms=Math.max(0,ms);
-    const sec=Math.floor(ms/1000), h=Math.floor(sec/3600), m=Math.floor(sec%3600/60), s=sec%60;
-    return [h,m,s].map((v,i)=>i===0?String(v).padStart(2,"0"):String(v).padStart(2,"0")).join(":");
-  }
-  function render(){
-    const s=session();
-    const start=s?new Date(s.start).getTime():0;
-    const now=Date.now();
-    const timer=document.getElementById("v15Timer");
-    if(timer)timer.textContent=s?elapsed(now-start):"00:00:00";
-
-    const day=s?new Date(s.start).toISOString().slice(0,10):"";
-    const list=s?txs().filter(x=>(x.date||x.day||x.tanggal||"")===day):[];
-    const inc=list.filter(x=>x.type==="income").reduce((a,x)=>a+Number(x.amount||0),0);
-    const exp=list.filter(x=>x.type==="expense").reduce((a,x)=>a+Number(x.amount||0),0);
-    const orders=list.filter(x=>x.type==="income").length;
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v15Orders",orders); set("v15Income",money(inc)); set("v15Net",money(inc-exp));
-
-    const st=document.getElementById("v15StartBtn"), sp=document.getElementById("v15StopBtn");
-    if(st)st.disabled=!!s; if(sp)sp.disabled=!s;
-    const info=document.getElementById("v15SessionInfo");
-    if(info){
-      info.textContent=s
-        ?"Sesi aktif sejak "+new Date(s.start).toLocaleTimeString("id-ID",{hour:"2-digit",minute:"2-digit"})
-        :"Belum ada sesi aktif.";
-    }
-  }
-  function start(){
-    if(session())return;
-    save({start:new Date().toISOString()});
-    render();
-  }
-  function stop(){
-    const s=session(); if(!s)return;
-    const duration=Date.now()-new Date(s.start).getTime();
-    clear(); render();
-    alert("Sesi selesai! Durasi: "+elapsed(duration)+"\nData transaksi hari ini tetap aman.");
-  }
-  window.addEventListener("load",()=>{
-    setTimeout(()=>{
-      document.getElementById("v15StartBtn")?.addEventListener("click",start);
-      document.getElementById("v15StopBtn")?.addEventListener("click",stop);
-      render();
-      timer=setInterval(render,1000);
-    },600);
-  });
-})();
-</script>
-
-
-<script id="V16_OPERASIONAL">
-(function(){
-  const EKEY="gojekFinanceFuelEfficiencyV16";
-  const PKEY="gojekFinanceFuelPriceV16";
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-
-  function txs(){
-    try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}
-  }
-  function render(){
-    const eff=Number(localStorage.getItem(EKEY)||0);
-    const price=Number(localStorage.getItem(PKEY)||0);
-    const list=txs();
-    const km=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.distance||x.km||0),0);
-    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
-    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
-    const liters=eff>0?km/eff:0;
-    const fuelCost=liters*price;
-    const fuelKm=km>0?fuelCost/km:0;
-    const netAfter=inc-exp-fuelCost;
-    const netKm=km>0?netAfter/km:0;
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v16Km",km.toFixed(2)+" km");
-    set("v16Liters",liters.toFixed(2)+" liter");
-    set("v16FuelCost",money(fuelCost));
-    set("v16FuelKm",money(fuelKm));
-    set("v16NetAfterFuel",money(netAfter));
-    set("v16NetKm",money(netKm));
-    const a=document.getElementById("v16Efficiency"),b=document.getElementById("v16FuelPrice");
-    if(a && document.activeElement!==a)a.value=eff||"";
-    if(b && document.activeElement!==b)b.value=price||"";
-  }
-  function save(){
-    const a=Number(document.getElementById("v16Efficiency")?.value||0);
-    const b=Number(document.getElementById("v16FuelPrice")?.value||0);
-    if(a>0)localStorage.setItem(EKEY,a); else localStorage.removeItem(EKEY);
-    if(b>0)localStorage.setItem(PKEY,b); else localStorage.removeItem(PKEY);
-    render();
-  }
-  window.addEventListener("load",()=>{
-    setTimeout(()=>{
-      document.getElementById("v16Efficiency")?.addEventListener("change",save);
-      document.getElementById("v16FuelPrice")?.addEventListener("change",save);
-      render();
-    },700);
-  });
-  window.renderV16=render;
-})();
-</script>
-
-
-<script id="V17_DAILY_REPORT">
-(function(){
-  const fuelE="gojekFinanceFuelEfficiencyV16", fuelP="gojekFinanceFuelPriceV16";
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function today(){const d=new Date();return d.toISOString().slice(0,10)}
-  function dateOf(x){return x.date||x.day||x.tanggal||""}
-  function time(s){const m=String(s||"").match(/(\d{1,2})[:.](\d{2})/);if(!m)return null;return +m[1]*60 + +m[2]}
-  function hours(list){
-    const a=[];
-    list.filter(x=>x.type==="income").forEach(x=>{
-      const s=time(x.startTime||x.start||x.timeStart),e=time(x.endTime||x.end||x.timeEnd);
-      if(s!=null)a.push(s);if(e!=null)a.push(e);
-    });
-    if(a.length<2)return 0;
-    let lo=Math.min(...a),hi=Math.max(...a);if(hi<lo)hi+=1440;
-    return (hi-lo)/60;
-  }
-  function render(){
-    const list=txs().filter(x=>dateOf(x)===today());
-    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
-    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
-    const km=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.distance||x.km||0),0);
-    const orders=list.filter(x=>x.type==="income").length;
-    const hrs=hours(list);
-    const eff=Number(localStorage.getItem(fuelE)||0), price=Number(localStorage.getItem(fuelP)||0);
-    const fuel=eff>0?km/eff*price:0;
-    const profit=inc-exp-fuel;
-    const perHour=hrs?profit/hrs:0;
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v17Net",money(profit));
-    set("v17Income",money(inc));
-    set("v17Expense",money(exp));
-    set("v17Fuel",money(fuel));
-    set("v17Profit",money(profit));
-    set("v17Orders",orders);
-    set("v17Km",km.toFixed(2)+" km");
-    set("v17Hours",hrs?hrs.toFixed(1)+" jam":"0 jam");
-    set("v17Hour",money(perHour));
-    set("v17Summary",orders+" order • "+km.toFixed(1)+" km • "+(hrs?hrs.toFixed(1):"0")+" jam kerja");
-    const advice=document.getElementById("v17Advice");
-    if(advice){
-      if(!orders && !exp) advice.textContent="📝 Belum ada aktivitas tercatat hari ini.";
-      else if(profit<0) advice.textContent="⚠️ Hari ini masih minus. Cek pengeluaran dan biaya operasional.";
-      else if(perHour>=50000) advice.textContent="🔥 Mantap! Profit per jam hari ini sangat bagus.";
-      else if(perHour>=30000) advice.textContent="💪 Lumayan bagus. Pertahankan order dan tekan biaya operasional.";
-      else advice.textContent="🛵 Masih bisa digenjot. Coba fokus ke jam/area yang lebih ramai.";
-    }
-  }
-  window.addEventListener("load",()=>setTimeout(render,800));
-  window.renderV17=render;
-})();
-</script>
-
-
-<script id="V18_GOALS">
-(function(){
-  const keys={
-    income:"gojekFinanceIncomeTargetV18",
-    profit:"gojekFinanceProfitTargetV18",
-    order:"gojekFinanceOrderTargetV18",
-    hour:"gojekFinanceHourTargetV18"
-  };
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function today(){return new Date().toISOString().slice(0,10)}
-  function dateOf(x){return x.date||x.day||x.tanggal||""}
-  function tm(s){const m=String(s||"").match(/(\d{1,2})[:.](\d{2})/);return m?+m[1]*60+ +m[2]:null}
-  function hours(list){
-    const a=[];
-    list.filter(x=>x.type==="income").forEach(x=>{
-      const s=tm(x.startTime||x.start||x.timeStart),e=tm(x.endTime||x.end||x.timeEnd);
-      if(s!=null)a.push(s);if(e!=null)a.push(e);
-    });
-    if(a.length<2)return 0;
-    let lo=Math.min(...a),hi=Math.max(...a);if(hi<lo)hi+=1440;
-    return (hi-lo)/60;
-  }
-  function get(k){return Number(localStorage.getItem(keys[k])||0)}
-  function setTarget(k,v){
-    if(v>0)localStorage.setItem(keys[k],String(v)); else localStorage.removeItem(keys[k]);
-  }
-  function bar(id,value,target){
-    const e=document.getElementById(id);
-    if(e)e.style.width=(target>0?Math.min(100,Math.max(0,value/target*100)):0)+"%";
-  }
-  function render(){
-    const list=txs().filter(x=>dateOf(x)===today());
-    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
-    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
-    const profit=inc-exp;
-    const orders=list.filter(x=>x.type==="income").length;
-    const hrs=hours(list);
-    const it=get("income"),pt=get("profit"),ot=get("order"),ht=get("hour");
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v18Income",money(inc)+" / "+money(it));
-    set("v18Profit",money(profit)+" / "+money(pt));
-    set("v18Orders",orders+" / "+ot);
-    set("v18Hours",(hrs?hrs.toFixed(1):"0")+" / "+ht+" jam");
-    bar("v18IncomeBar",inc,it);bar("v18ProfitBar",profit,pt);bar("v18OrderBar",orders,ot);bar("v18HourBar",hrs,ht);
-
-    const targets=[it,pt,ot,ht].filter(x=>x>0).length;
-    const done=[
-      it>0&&inc>=it,pt>0&&profit>=pt,ot>0&&orders>=ot,ht>0&&hrs>=ht
-    ].filter(Boolean).length;
-    const advice=document.getElementById("v18Advice");
-    if(advice){
-      if(!targets) advice.textContent="🎯 Atur minimal satu target untuk mulai mengejar target harian.";
-      else if(done===targets) advice.textContent="🔥 GILA! Semua target harian tercapai. Saatnya pertahankan atau naikkan target.";
-      else{
-        const remaining=[];
-        if(it>0&&inc<it)remaining.push("pemasukan "+money(it-inc));
-        if(pt>0&&profit<pt)remaining.push("profit "+money(pt-profit));
-        if(ot>0&&orders<ot)remaining.push("order "+(ot-orders));
-        if(ht>0&&hrs<ht)remaining.push("waktu "+(ht-hrs).toFixed(1)+" jam");
-        advice.textContent="💪 Masih kurang: "+remaining.join(" • ")+".";
-      }
-    }
-    const fields=[["v18IncomeTarget","income"],["v18ProfitTarget","profit"],["v18OrderTarget","order"],["v18HourTarget","hour"]];
-    fields.forEach(([id,k])=>{
-      const e=document.getElementById(id);
-      if(e && document.activeElement!==e)e.value=get(k)||"";
-    });
-  }
-  function bind(){
-    [["v18IncomeTarget","income"],["v18ProfitTarget","profit"],["v18OrderTarget","order"],["v18HourTarget","hour"]].forEach(([id,k])=>{
-      document.getElementById(id)?.addEventListener("change",e=>{
-        setTarget(k,Number(e.target.value||0));render();
-      });
-    });
-    render();
-  }
-  window.addEventListener("load",()=>setTimeout(bind,900));
-  window.renderV18=render;
-})();
-</script>
-
-
-<script id="V19_PEAK_HOURS">
-(function(){
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function dateKey(x){return x.date||x.day||x.tanggal||""}
-  function startMin(x){
-    const s=x.startTime||x.start||x.timeStart||"";
-    const m=String(s).match(/(\d{1,2})[:.](\d{2})/);
-    return m?+m[1]*60+ +m[2]:null;
-  }
-  function render(){
-    const mode=document.getElementById("v19Range")?.value||"30";
-    const all=txs().filter(x=>x.type==="income");
-    const cutoff=mode==="all"?null:new Date(Date.now()-Number(mode)*86400000);
-    const list=all.filter(x=>{
-      if(!cutoff)return true;
-      const d=new Date(dateKey(x)+"T23:59:59");
-      return !Number.isNaN(d.getTime())&&d>=cutoff;
-    });
-    const byHour={};
-    const byDay={};
-    list.forEach(x=>{
-      const t=startMin(x), amount=Number(x.amount||0);
-      if(t!=null){
-        const h=Math.floor(t/60);
-        if(!byHour[h])byHour[h]={orders:0,income:0};
-        byHour[h].orders++;byHour[h].income+=amount;
-      }
-      const day=dateKey(x);
-      if(day){
-        if(!byDay[day])byDay[day]={orders:0,income:0};
-        byDay[day].orders++;byDay[day].income+=amount;
-      }
-    });
-    const hours=Object.entries(byHour).map(([h,v])=>({h:+h,...v,avg:v.income/v.orders}));
-    hours.sort((a,b)=>b.avg-a.avg);
-    const ordersSorted=[...hours].sort((a,b)=>b.orders-a.orders);
-    const days=Object.entries(byDay).map(([day,v])=>({day,...v}));
-    days.sort((a,b)=>b.income-a.income);
-
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    if(hours.length){
-      const best=hours[0], rate=best.avg;
-      set("v19BestHour",String(best.h).padStart(2,"0")+":00–"+String(best.h+1).padStart(2,"0")+":00");
-      set("v19BestRate",money(rate)+" / order");
-      const mo=ordersSorted[0];
-      set("v19MostOrders",String(mo.h).padStart(2,"0")+":00–"+String(mo.h+1).padStart(2,"0")+":00 • "+mo.orders+" order");
-    }else{
-      set("v19BestHour","-");set("v19BestRate","Rp 0");set("v19MostOrders","-");
-    }
-    if(days.length){
-      const d=days[0];
-      const label=new Date(d.day+"T00:00:00").toLocaleDateString("id-ID",{day:"2-digit",month:"short"});
-      set("v19BestDay",label+" • "+money(d.income));
-    }else set("v19BestDay","-");
-
-    const rows=document.getElementById("v19Rows");
-    if(rows){
-      rows.innerHTML=hours.slice(0,10).map(v=>`<tr><td>${String(v.h).padStart(2,"0")}:00–${String(v.h+1).padStart(2,"0")}:00</td><td>${v.orders}</td><td>${money(v.income)}</td><td>${money(v.avg)}</td></tr>`).join("") || '<tr><td colspan="4">Belum ada data waktu order.</td></tr>';
-    }
-    const advice=document.getElementById("v19Advice");
-    if(advice){
-      if(!hours.length) advice.textContent="📝 Belum ada waktu order yang bisa dianalisis.";
-      else if(hours.length<3) advice.textContent="📊 Baru sedikit data. Tambah beberapa hari lagi supaya pola jam ramai lebih akurat.";
-      else advice.textContent="🔥 Coba prioritaskan jam "+String(hours[0].h).padStart(2,"0")+":00–"+String(hours[0].h+1).padStart(2,"0")+":00 dan bandingkan hasilnya dengan jam lain.";
-    }
-  }
-  window.addEventListener("load",()=>setTimeout(()=>{
-    document.getElementById("v19Range")?.addEventListener("change",render);
-    render();
-  },1000));
-  window.renderV19=render;
-})();
-</script>
-
-
-<script id="V20_REPORTS">
-(function(){
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  const num=n=>Number(n||0);
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function dk(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
-  function inPeriod(x,mode){
-    const d=dk(x), now=new Date(), today=new Date();
-    const todayKey=today.toISOString().slice(0,10);
-    if(mode==="all")return true;
-    if(!d)return false;
-    if(mode==="today")return d===todayKey;
-    if(mode==="month")return d.slice(0,7)===todayKey.slice(0,7);
-    const base=new Date(todayKey+"T00:00:00");
-    const dd=new Date(d+"T00:00:00");
-    const days=Number(mode);
-    return !Number.isNaN(dd.getTime()) && (base-dd)/(86400000)<days && dd<=base;
-  }
-  function selected(){const mode=document.getElementById("v20Range")?.value||"today";return txs().filter(x=>inPeriod(x,mode))}
-  function render(){
-    const list=selected();
-    let inc=0,exp=0,orders=0,dist=0;
-    list.forEach(x=>{
-      if(x.type==="income"){inc+=num(x.amount);orders++;dist+=num(x.distance)}
-      else if(x.type==="expense")exp+=num(x.amount);
-    });
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v20Income",money(inc));set("v20Expense",money(exp));set("v20Net",money(inc-exp));
-    set("v20Orders",orders);set("v20Distance",dist.toFixed(2)+" km");set("v20Avg",money(orders?inc/orders:0));
-    const rows=document.getElementById("v20Rows");
-    if(rows){
-      rows.innerHTML=list.slice().sort((a,b)=>(dk(b)+String(b.startTime||"")).localeCompare(dk(a)+String(a.startTime||""))).map(x=>{
-        const type=x.type==="income"?"Pemasukan":"Pengeluaran";
-        return `<tr><td>${dk(x)||"-"}</td><td>${x.startTime||x.time||"-"}</td><td>${type}</td><td>${x.category||"-"}</td><td>${money(x.amount)}</td><td>${x.distance?num(x.distance).toFixed(2)+" km":"-"}</td></tr>`;
-      }).join("")||'<tr><td colspan="6">Belum ada transaksi pada periode ini.</td></tr>';
-    }
-  }
-  function csv(){
-    const list=selected();
-    const head=["Tanggal","Jam Mulai","Jam Selesai","Jenis","Kategori","Nominal","Jarak (km)","Pembayaran","Catatan"];
-    const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
-    const body=list.map(x=>[
-      dk(x),x.startTime||"",x.endTime||"",x.type==="income"?"Pemasukan":"Pengeluaran",
-      x.category||"",num(x.amount),x.distance||"",x.payment||"",x.note||""
-    ].map(esc).join(","));
-    const blob=new Blob(["\ufeff"+[head.map(esc).join(","),...body].join("\n")],{type:"text/csv;charset=utf-8"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);
-    a.download="laporan-gojek-"+(document.getElementById("v20Range")?.value||"all")+".csv";
-    a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  }
-  window.addEventListener("load",()=>setTimeout(()=>{
-    document.getElementById("v20Range")?.addEventListener("change",render);
-    document.getElementById("v20Csv")?.addEventListener("click",csv);
-    document.getElementById("v20Print")?.addEventListener("click",()=>window.print());
-    render();
-  },1200));
-  window.renderV20=render;
-})();
-</script>
-
-
-<script id="V21_SMART_INSIGHT">
-(function(){
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  const num=n=>Number(n||0);
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function dk(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
-  function mins(x){
-    const s=String(x.startTime||x.start||"");
-    const e=String(x.endTime||x.end||"");
-    const a=s.match(/(\d{1,2})[:.](\d{2})/),b=e.match(/(\d{1,2})[:.](\d{2})/);
-    if(!a||!b)return 0;
-    let m=(+b[1]*60+ +b[2])-(+a[1]*60+ +a[2]);
-    if(m<0)m+=1440;
-    return Math.min(m,720);
-  }
-  function validPeriod(x,mode){
-    if(mode==="all")return true;
-    const d=dk(x);if(!d)return false;
-    const base=new Date();base.setHours(0,0,0,0);
-    const dd=new Date(d+"T00:00:00");
-    return !Number.isNaN(dd.getTime()) && (base-dd)/86400000<Number(mode) && dd<=base;
-  }
-  function render(){
-    const mode=document.getElementById("v21Range")?.value||"7";
-    const list=txs().filter(x=>validPeriod(x,mode));
-    const income=list.filter(x=>x.type==="income");
-    const expense=list.filter(x=>x.type==="expense");
-    const inc=income.reduce((s,x)=>s+num(x.amount),0);
-    const exp=expense.reduce((s,x)=>s+num(x.amount),0);
-    const dist=income.reduce((s,x)=>s+num(x.distance),0);
-    const hours=income.reduce((s,x)=>s+mins(x)/60,0);
-    const net=inc-exp;
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v21NetOrder",money(income.length?net/income.length:0));
-    set("v21NetHour",money(hours?net/hours:0));
-    set("v21IncomeKm",money(dist?inc/dist:0));
-    set("v21ExpenseKm",money(dist?exp/dist:0));
-
-    const advice=[];
-    if(!income.length){
-      advice.push("Masukkan beberapa transaksi pemasukan agar pola kerja bisa dianalisis.");
-    }else{
-      if(hours && net/hours<30000) advice.push("⏱️ Bersih per jam masih rendah. Coba evaluasi jam narik dan pilih periode dengan performa lebih tinggi.");
-      else if(hours) advice.push("🔥 Bersih per jam cukup baik. Pertahankan pola jam kerja yang menghasilkan angka ini.");
-      if(dist && inc/dist<2000) advice.push("📍 Pendapatan per km relatif rendah. Pertimbangkan area/order dengan jarak dan bayaran yang lebih seimbang.");
-      else if(dist) advice.push("🛣️ Pendapatan per km terlihat cukup baik. Pantau terus supaya biaya perjalanan tidak menggerus margin.");
-      if(exp>0 && inc>0 && exp/inc>0.30) advice.push("💸 Pengeluaran sudah lebih dari 30% pemasukan. Cek bensin, makan, parkir, dan biaya lain yang paling besar.");
-      if(income.length>=5) advice.push("📊 Data sudah mulai berguna untuk membandingkan pola kerja. Lanjutkan pencatatan setiap narik.");
-    }
-    const ul=document.getElementById("v21Advice");
-    if(ul)ul.innerHTML=advice.map(x=>`<li>${x}</li>`).join("");
-
-    const margin=inc?net/inc*100:0;
-    const sum=document.getElementById("v21Summary");
-    if(sum)sum.innerHTML=`${income.length} order menghasilkan <b>${money(inc)}</b>, pengeluaran <b>${money(exp)}</b>, sehingga bersih <b>${money(net)}</b>. Margin bersih sekitar <b>${margin.toFixed(1)}%</b>${hours?` dengan sekitar <b>${hours.toFixed(1)} jam</b> waktu order.`:"."}`;
-  }
-  window.addEventListener("load",()=>setTimeout(()=>{
-    document.getElementById("v21Range")?.addEventListener("change",render);
-    render();
-  },1400));
-  window.renderV21=render;
-})();
-</script>
-
-
-
-
-<!-- V24_PREMIUM_DASHBOARD -->
-<section class="box" id="v24Dashboard">
-  <h2>✨ Dashboard Premium</h2>
-  <div class="v24-hero">
-    <small>Bersih hari ini</small>
-    <h3 id="v24NetToday">Rp 0</h3>
-    <div id="v24Status">Belum ada data hari ini.</div>
-  </div>
-  <div class="v24-grid">
-    <div class="v24-card"><small>💰 Pemasukan hari ini</small><b id="v24Income">Rp 0</b></div>
-    <div class="v24-card"><small>💸 Pengeluaran hari ini</small><b id="v24Expense">Rp 0</b></div>
-    <div class="v24-card"><small>🛵 Order</small><b id="v24Orders">0</b></div>
-    <div class="v24-card"><small>📍 Jarak</small><b id="v24Distance">0 km</b></div>
-    <div class="v24-card"><small>💵 Bersih/order</small><b id="v24PerOrder">Rp 0</b></div>
-    <div class="v24-card"><small>⏱️ Bersih/jam</small><b id="v24PerHour">Rp 0</b></div>
-  </div>
-  <div class="v24-card" style="margin-top:10px">
-    <small>🎯 Progress target bersih harian</small>
-    <b id="v24TargetText">Rp 0 / Rp 0</b>
-    <div class="v24-progress"><div class="v24-fill" id="v24TargetFill"></div></div>
-  </div>
-  <div class="v24-advice" id="v24Advice">Catat transaksi untuk mendapatkan ringkasan.</div>
-</section>
-
-<!-- V23_COMPARISON -->
-<section class="box" id="v23Compare">
-  <h2>⚡ Perbandingan Performa</h2>
-  <div class="grid">
-    <div class="field">
-      <label>Bandingkan</label>
-      <select id="v23Mode">
-        <option value="week">Minggu ini vs minggu lalu</option>
-        <option value="month">Bulan ini vs bulan lalu</option>
-      </select>
-    </div>
-  </div>
-  <div class="v23-grid">
-    <div class="v23-card"><small>Periode sekarang</small><b id="v23Current">Rp 0</b></div>
-    <div class="v23-card"><small>Periode sebelumnya</small><b id="v23Previous">Rp 0</b></div>
-    <div class="v23-card"><small>Perubahan bersih</small><b id="v23Change">0%</b></div>
-    <div class="v23-card"><small>Perubahan order</small><b id="v23OrderChange">0%</b></div>
-  </div>
-  <div class="v23-advice" id="v23Advice">Belum ada data untuk dibandingkan.</div>
-  <div style="overflow:auto">
-    <table class="v23-table">
-      <thead><tr><th>Indikator</th><th>Sekarang</th><th>Sebelumnya</th><th>Perubahan</th></tr></thead>
-      <tbody id="v23Rows"></tbody>
-    </table>
-  </div>
-</section>
-
-<!-- V22_SECURITY -->
-<section class="box" id="v22Security">
-  <h2>🔐 Keamanan & Data</h2>
-  <div class="v22-actions">
-    <button class="v22-btn" id="v22Backup">💾 Backup Data</button>
-    <button class="v22-btn" id="v22Restore">♻️ Pulihkan Data</button>
-    <button class="v22-btn" id="v22Clear">🗑️ Hapus Semua Data</button>
-    <input type="file" id="v22File" accept=".json,application/json" hidden>
-  </div>
-  <div class="v22-status" id="v22Status">Data tersimpan secara lokal di browser/perangkat ini.</div>
-  <div class="v22-note">
-    🔒 Data transaksi utama disimpan di localStorage dan tidak dikirim ke server oleh fitur aplikasi ini.
-    Backup JSON sebaiknya disimpan di tempat aman. Jika browser/site data dihapus, data lokal dapat ikut terhapus.
-  </div>
-</section>
-
-
-<script id="V22_SECURITY">
-(function(){
-  const KEY="gojekFinanceTransactionsV7";
-  const safeParse=s=>{try{return JSON.parse(s)}catch(e){return null}};
-  const getData=()=>safeParse(localStorage.getItem(KEY)||"[]")||[];
-  const status=t=>{const e=document.getElementById("v22Status");if(e)e.textContent=t};
-
-  function backup(){
-    const data=getData();
-    const payload={
-      app:"Gojek Finance Tracker",
-      version:"V22",
-      exportedAt:new Date().toISOString(),
-      transactions:data,
-      settings:{
-        dailyTarget:localStorage.getItem("gojekFinanceDailyTarget"),
-        incomeTarget:localStorage.getItem("gojekFinanceIncomeTargetV18"),
-        profitTarget:localStorage.getItem("gojekFinanceProfitTargetV18"),
-        orderTarget:localStorage.getItem("gojekFinanceOrderTargetV18"),
-        hourTarget:localStorage.getItem("gojekFinanceHourTargetV18"),
-        fuelEfficiency:localStorage.getItem("gojekFinanceFuelEfficiencyV16"),
-        fuelPrice:localStorage.getItem("gojekFinanceFuelPriceV16")
-      }
-    };
-    const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="backup-gojek-finance-"+new Date().toISOString().slice(0,10)+".json";
-    a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-    status("✅ Backup berhasil dibuat: "+data.length+" transaksi.");
-  }
-
-  function restore(file){
-    const reader=new FileReader();
-    reader.onload=()=>{
-      const payload=safeParse(reader.result);
-      const data=Array.isArray(payload)?payload:(payload&&Array.isArray(payload.transactions)?payload.transactions:null);
-      if(!data){alert("File backup tidak valid.");return;}
-      if(!confirm("Pulihkan "+data.length+" transaksi? Data saat ini akan diganti."))return;
-      localStorage.setItem(KEY,JSON.stringify(data));
-      if(payload.settings){
-        Object.entries(payload.settings).forEach(([k,v])=>{
-          const map={
-            dailyTarget:"gojekFinanceDailyTarget",
-            incomeTarget:"gojekFinanceIncomeTargetV18",
-            profitTarget:"gojekFinanceProfitTargetV18",
-            orderTarget:"gojekFinanceOrderTargetV18",
-            hourTarget:"gojekFinanceHourTargetV18",
-            fuelEfficiency:"gojekFinanceFuelEfficiencyV16",
-            fuelPrice:"gojekFinanceFuelPriceV16"
-          };
-          const target=map[k];
-          if(target && v!==null && v!==undefined)localStorage.setItem(target,v);
-        });
-      }
-      status("✅ Data berhasil dipulihkan. Memuat ulang aplikasi...");
-      setTimeout(()=>location.reload(),500);
-    };
-    reader.readAsText(file);
-  }
-
-  function clearAll(){
-    if(!confirm("Yakin hapus SEMUA transaksi dan data target/pengaturan? Tindakan ini tidak bisa dibatalkan."))return;
-    localStorage.removeItem(KEY);
-    ["gojekFinanceDailyTarget","gojekFinanceIncomeTargetV18","gojekFinanceProfitTargetV18","gojekFinanceOrderTargetV18","gojekFinanceHourTargetV18","gojekFinanceFuelEfficiencyV16","gojekFinanceFuelPriceV16"].forEach(k=>localStorage.removeItem(k));
-    status("🗑️ Semua data aplikasi telah dihapus.");
-    setTimeout(()=>location.reload(),500);
-  }
-
-  window.addEventListener("load",()=>setTimeout(()=>{
-    document.getElementById("v22Backup")?.addEventListener("click",backup);
-    document.getElementById("v22Restore")?.addEventListener("click",()=>document.getElementById("v22File")?.click());
-    document.getElementById("v22File")?.addEventListener("change",e=>{
-      if(e.target.files&&e.target.files[0])restore(e.target.files[0]);
-      e.target.value="";
-    });
-    document.getElementById("v22Clear")?.addEventListener("click",clearAll);
-    status("🔒 Mode lokal aktif • "+getData().length+" transaksi tersimpan.");
-  },1600));
-})();
-</script>
-
-
-<script id="V23_COMPARISON">
-(function(){
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  const num=n=>Number(n||0);
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function key(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
-  function period(mode,offset){
-    const now=new Date();now.setHours(0,0,0,0);
-    let start,end;
-    if(mode==="week"){
-      const day=now.getDay();
-      const monday=(day+6)%7;
-      start=new Date(now);start.setDate(now.getDate()-monday-(offset?7:0));
-      end=new Date(start);end.setDate(start.getDate()+7);
-    }else{
-      const y=now.getFullYear(),m=now.getMonth()- (offset?1:0);
-      start=new Date(y,m,1);
-      end=new Date(y,m+1,1);
-    }
-    return {start,end};
-  }
-  function calc(mode,offset){
-    const p=period(mode,offset);
-    let income=0,expense=0,orders=0,distance=0,hours=0;
-    txs().forEach(x=>{
-      const d=new Date(key(x)+"T00:00:00");
-      if(Number.isNaN(d.getTime())||d<p.start||d>=p.end)return;
-      if(x.type==="income"){income+=num(x.amount);orders++;distance+=num(x.distance);}
-      else if(x.type==="expense")expense+=num(x.amount);
-    });
-    return {income,expense,net:income-expense,orders,distance};
-  }
-  function pct(a,b){return b===0?(a===0?0:100):((a-b)/Math.abs(b))*100}
-  function render(){
-    const mode=document.getElementById("v23Mode")?.value||"week";
-    const a=calc(mode,0),b=calc(mode,1);
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v23Current",money(a.net));set("v23Previous",money(b.net));
-    set("v23Change",(pct(a.net,b.net)>=0?"+":"")+pct(a.net,b.net).toFixed(1)+"%");
-    set("v23OrderChange",(pct(a.orders,b.orders)>=0?"+":"")+pct(a.orders,b.orders).toFixed(1)+"%");
-    const rows=[
-      ["Pemasukan",a.income,b.income],
-      ["Pengeluaran",a.expense,b.expense],
-      ["Bersih",a.net,b.net],
-      ["Order",a.orders,b.orders],
-      ["Jarak",a.distance,b.distance]
-    ];
-    const body=document.getElementById("v23Rows");
-    if(body)body.innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[0]==="Order"?r[1]:r[0]==="Jarak"?r[1].toFixed(2)+" km":money(r[1])}</td><td>${r[0]==="Order"?r[2]:r[0]==="Jarak"?r[2].toFixed(2)+" km":money(r[2])}</td><td>${(pct(r[1],r[2])>=0?"+":"")+pct(r[1],r[2]).toFixed(1)}%</td></tr>`).join("");
-    const advice=document.getElementById("v23Advice");
-    if(advice){
-      if(a.net>b.net) advice.textContent="🚀 Performa periode sekarang lebih baik. Pertahankan pola kerja dan cek jam ramai di V19 untuk mencari penyebabnya.";
-      else if(a.net<b.net) advice.textContent="⚠️ Bersih periode sekarang turun. Cek pengeluaran, jarak, dan jam kerja sebelum mengubah strategi narik.";
-      else advice.textContent="📊 Performa relatif sama. Tambahkan data agar perbandingan makin bermakna.";
-    }
-  }
-  window.addEventListener("load",()=>setTimeout(()=>{
-    document.getElementById("v23Mode")?.addEventListener("change",render);
-    render();
-  },1800));
-  window.renderV23=render;
-})();
-</script>
-
-
-<script id="V24_PREMIUM_DASHBOARD">
-(function(){
-  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
-  const num=n=>Number(n||0);
-  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
-  function dk(x){return String(x.date||x.day||x.tanggal||"").slice(0,10)}
-  function mins(x){
-    const a=String(x.startTime||"").match(/(\d{1,2})[:.](\d{2})/);
-    const b=String(x.endTime||"").match(/(\d{1,2})[:.](\d{2})/);
-    if(!a||!b)return 0;
-    let m=(+b[1]*60+ +b[2])-(+a[1]*60+ +a[2]);
-    if(m<0)m+=1440;
-    return Math.min(m,720);
-  }
-  function render(){
-    const today=new Date().toISOString().slice(0,10);
-    const list=txs().filter(x=>dk(x)===today);
-    const income=list.filter(x=>x.type==="income");
-    const expense=list.filter(x=>x.type==="expense");
-    const inc=income.reduce((s,x)=>s+num(x.amount),0);
-    const exp=expense.reduce((s,x)=>s+num(x.amount),0);
-    const net=inc-exp;
-    const dist=income.reduce((s,x)=>s+num(x.distance),0);
-    const hours=income.reduce((s,x)=>s+mins(x)/60,0);
-    const target=num(localStorage.getItem("gojekFinanceProfitTargetV18"));
-    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
-    set("v24NetToday",money(net));set("v24Income",money(inc));set("v24Expense",money(exp));
-    set("v24Orders",income.length);set("v24Distance",dist.toFixed(2)+" km");
-    set("v24PerOrder",money(income.length?net/income.length:0));
-    set("v24PerHour",money(hours?net/hours:0));
-    set("v24TargetText",money(net)+" / "+money(target));
-    const fill=document.getElementById("v24TargetFill");
-    if(fill)fill.style.width=(target>0?Math.min(100,Math.max(0,net/target*100)):0)+"%";
-    const status=document.getElementById("v24Status");
-    if(status)status.textContent=net>0?"🔥 Hari ini sudah menghasilkan profit.":net<0?"⚠️ Hari ini masih minus.":"Belum ada profit hari ini.";
-    const advice=document.getElementById("v24Advice");
-    if(advice){
-      if(!income.length)advice.textContent="📝 Belum ada order hari ini. Begitu transaksi masuk, dashboard akan otomatis menghitung performamu.";
-      else if(target>0&&net>=target)advice.textContent="🏆 Target profit harian tercapai! Kalau masih mau lanjut narik, kamu sedang berada di posisi yang bagus.";
-      else if(target>0)advice.textContent="🎯 Target belum tercapai. Kurang sekitar "+money(Math.max(0,target-net))+" untuk mencapai target profit hari ini.";
-      else advice.textContent="💡 Target profit belum diatur. Atur target di bagian Target Kerja agar progress harian lebih jelas.";
-    }
-  }
-  window.addEventListener("load",()=>setTimeout(render,2000));
-  window.renderV24=render;
-})();
-</script>
-
 </body>
 </html>
