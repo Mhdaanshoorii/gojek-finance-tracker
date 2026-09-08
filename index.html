@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#087f4e">
-<title>Gojek Finance Tracker V17</title>
+<title>Gojek Finance Tracker V18</title>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
@@ -46,6 +46,38 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 
 
 
+
+
+<!-- V18_GOALS -->
+<section class="box" id="v18Goals">
+  <h2>🎯 Target Kerja</h2>
+  <div class="grid">
+    <div class="field">
+      <label>Target pemasukan harian (Rp)</label>
+      <input id="v18IncomeTarget" type="number" min="0" inputmode="numeric" placeholder="Contoh: 200000">
+    </div>
+    <div class="field">
+      <label>Target profit harian (Rp)</label>
+      <input id="v18ProfitTarget" type="number" min="0" inputmode="numeric" placeholder="Contoh: 150000">
+    </div>
+    <div class="field">
+      <label>Target order harian</label>
+      <input id="v18OrderTarget" type="number" min="0" inputmode="numeric" placeholder="Contoh: 15">
+    </div>
+    <div class="field">
+      <label>Target jam narik</label>
+      <input id="v18HourTarget" type="number" min="0" step="0.5" inputmode="decimal" placeholder="Contoh: 8">
+    </div>
+  </div>
+  <div class="v18-note">Target tersimpan otomatis di HP. Progress dihitung dari transaksi hari ini.</div>
+  <div class="v18-grid" style="margin-top:12px">
+    <div class="v18-card"><small>💰 Pemasukan</small><b id="v18Income">Rp 0 / Rp 0</b><div class="v18-progress"><div class="v18-bar" id="v18IncomeBar"></div></div></div>
+    <div class="v18-card"><small>🧮 Profit</small><b id="v18Profit">Rp 0 / Rp 0</b><div class="v18-progress"><div class="v18-bar" id="v18ProfitBar"></div></div></div>
+    <div class="v18-card"><small>🛵 Order</small><b id="v18Orders">0 / 0</b><div class="v18-progress"><div class="v18-bar" id="v18OrderBar"></div></div></div>
+    <div class="v18-card"><small>⏱️ Jam narik</small><b id="v18Hours">0 / 0 jam</b><div class="v18-progress"><div class="v18-bar" id="v18HourBar"></div></div></div>
+  </div>
+  <div class="v18-advice" id="v18Advice">Atur targetmu untuk mulai mengejar target harian.</div>
+</section>
 
 <!-- V17_DAILY_REPORT -->
 <section class="box" id="v17DailyReport">
@@ -197,6 +229,19 @@ button{border:0;border-radius:12px;padding:12px 15px;font-weight:700;cursor:poin
 #v17DailyReport .v17-card b{display:block;font-size:18px;margin-top:5px}
 #v17DailyReport .v17-good{margin-top:12px;padding:12px 14px;border-radius:14px;background:#f8fafc;border:1px solid #e5e7eb;font-weight:600}
 @media(max-width:700px){#v17DailyReport .v17-grid{grid-template-columns:1fr}}
+</style>
+
+
+<style id="V18_CSS">
+#v18Goals .v18-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#v18Goals .v18-card{background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;padding:13px}
+#v18Goals .v18-card small{color:#6b7280}
+#v18Goals .v18-card b{display:block;font-size:18px;margin-top:5px}
+#v18Goals .v18-progress{height:11px;background:#e5e7eb;border-radius:99px;overflow:hidden;margin-top:8px}
+#v18Goals .v18-bar{height:100%;width:0;transition:.25s}
+#v18Goals .v18-note{font-size:12px;color:#6b7280;margin-top:7px}
+#v18Goals .v18-advice{margin-top:12px;padding:12px 14px;background:#f8fafc;border:1px solid #e5e7eb;border-radius:14px;font-weight:600}
+@media(max-width:700px){#v18Goals .v18-grid{grid-template-columns:1fr}}
 </style>
 
 </head>
@@ -908,6 +953,89 @@ window.addEventListener("load",()=>{
   }
   window.addEventListener("load",()=>setTimeout(render,800));
   window.renderV17=render;
+})();
+</script>
+
+
+<script id="V18_GOALS">
+(function(){
+  const keys={
+    income:"gojekFinanceIncomeTargetV18",
+    profit:"gojekFinanceProfitTargetV18",
+    order:"gojekFinanceOrderTargetV18",
+    hour:"gojekFinanceHourTargetV18"
+  };
+  const money=n=>"Rp "+Math.round(Number(n||0)).toLocaleString("id-ID");
+  function txs(){try{return JSON.parse(localStorage.getItem("gojekFinanceTransactionsV7")||"[]")}catch(e){return[]}}
+  function today(){return new Date().toISOString().slice(0,10)}
+  function dateOf(x){return x.date||x.day||x.tanggal||""}
+  function tm(s){const m=String(s||"").match(/(\d{1,2})[:.](\d{2})/);return m?+m[1]*60+ +m[2]:null}
+  function hours(list){
+    const a=[];
+    list.filter(x=>x.type==="income").forEach(x=>{
+      const s=tm(x.startTime||x.start||x.timeStart),e=tm(x.endTime||x.end||x.timeEnd);
+      if(s!=null)a.push(s);if(e!=null)a.push(e);
+    });
+    if(a.length<2)return 0;
+    let lo=Math.min(...a),hi=Math.max(...a);if(hi<lo)hi+=1440;
+    return (hi-lo)/60;
+  }
+  function get(k){return Number(localStorage.getItem(keys[k])||0)}
+  function setTarget(k,v){
+    if(v>0)localStorage.setItem(keys[k],String(v)); else localStorage.removeItem(keys[k]);
+  }
+  function bar(id,value,target){
+    const e=document.getElementById(id);
+    if(e)e.style.width=(target>0?Math.min(100,Math.max(0,value/target*100)):0)+"%";
+  }
+  function render(){
+    const list=txs().filter(x=>dateOf(x)===today());
+    const inc=list.filter(x=>x.type==="income").reduce((s,x)=>s+Number(x.amount||0),0);
+    const exp=list.filter(x=>x.type==="expense").reduce((s,x)=>s+Number(x.amount||0),0);
+    const profit=inc-exp;
+    const orders=list.filter(x=>x.type==="income").length;
+    const hrs=hours(list);
+    const it=get("income"),pt=get("profit"),ot=get("order"),ht=get("hour");
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v};
+    set("v18Income",money(inc)+" / "+money(it));
+    set("v18Profit",money(profit)+" / "+money(pt));
+    set("v18Orders",orders+" / "+ot);
+    set("v18Hours",(hrs?hrs.toFixed(1):"0")+" / "+ht+" jam");
+    bar("v18IncomeBar",inc,it);bar("v18ProfitBar",profit,pt);bar("v18OrderBar",orders,ot);bar("v18HourBar",hrs,ht);
+
+    const targets=[it,pt,ot,ht].filter(x=>x>0).length;
+    const done=[
+      it>0&&inc>=it,pt>0&&profit>=pt,ot>0&&orders>=ot,ht>0&&hrs>=ht
+    ].filter(Boolean).length;
+    const advice=document.getElementById("v18Advice");
+    if(advice){
+      if(!targets) advice.textContent="🎯 Atur minimal satu target untuk mulai mengejar target harian.";
+      else if(done===targets) advice.textContent="🔥 GILA! Semua target harian tercapai. Saatnya pertahankan atau naikkan target.";
+      else{
+        const remaining=[];
+        if(it>0&&inc<it)remaining.push("pemasukan "+money(it-inc));
+        if(pt>0&&profit<pt)remaining.push("profit "+money(pt-profit));
+        if(ot>0&&orders<ot)remaining.push("order "+(ot-orders));
+        if(ht>0&&hrs<ht)remaining.push("waktu "+(ht-hrs).toFixed(1)+" jam");
+        advice.textContent="💪 Masih kurang: "+remaining.join(" • ")+".";
+      }
+    }
+    const fields=[["v18IncomeTarget","income"],["v18ProfitTarget","profit"],["v18OrderTarget","order"],["v18HourTarget","hour"]];
+    fields.forEach(([id,k])=>{
+      const e=document.getElementById(id);
+      if(e && document.activeElement!==e)e.value=get(k)||"";
+    });
+  }
+  function bind(){
+    [["v18IncomeTarget","income"],["v18ProfitTarget","profit"],["v18OrderTarget","order"],["v18HourTarget","hour"]].forEach(([id,k])=>{
+      document.getElementById(id)?.addEventListener("change",e=>{
+        setTarget(k,Number(e.target.value||0));render();
+      });
+    });
+    render();
+  }
+  window.addEventListener("load",()=>setTimeout(bind,900));
+  window.renderV18=render;
 })();
 </script>
 
